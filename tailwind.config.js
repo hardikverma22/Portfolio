@@ -10,11 +10,11 @@ export default {
 
     extend: {
       backgroundImage: {
-        'wave': "url('./src/assets/wave.svg')",
-        'wave-dark': "url('./src/assets/wave-dark.svg')",
-        'wave-white': "url('./src/assets/wave-white.svg')",
-        'wave-black': "url('./src/assets/wave-black.svg')",
-        'wave-grad': "url('./src/assets/wave-grad.svg')",
+        'wave': 'url("/src/assets/wave.svg")',
+        'wave-dark': 'url("/src/assets/wave-dark.svg")',
+        'wave-white': 'url("/src/assets/wave-white.svg")',
+        'wave-black': 'url("/src/assets/wave-black.svg")',
+        'wave-grad': 'url("/src/assets/wave-grad.svg")',
       },
       animationDelay: {
         '1600': '1600ms',
