@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { useInViewport } from "react-in-viewport";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { MdEmail, MdLocationOn } from "react-icons/md";
@@ -6,14 +6,17 @@ import ContactForm from "./ContactForm";
 import { Toaster } from "react-hot-toast";
 import ScrollButton from "../ScrollButton";
 
-const ContactMe = () => {
+const ContactMe = forwardRef(({ contactMeRef }, ref) => {
   const contactMeSectionRef = useRef();
   const { inViewport } = useInViewport(contactMeSectionRef, {
     rootMargin: "0px",
   });
 
   return (
-    <section className="relative bg-white flex gap-10 flex-col h-fit md:h-screen justify-start items-center pt-40 dark:bg-black">
+    <section
+      ref={contactMeRef}
+      className="relative bg-white flex gap-10 flex-col h-fit md:h-screen justify-start items-center pt-40 dark:bg-black"
+    >
       <Toaster
         containerStyle={{
           top: 100,
@@ -46,7 +49,6 @@ const ContactMe = () => {
                 <MdLocationOn className="text-2xl" />
                 <span>Bengaluru, India</span>
               </div>
-              <div className="w-1/3 md:w-1/2 aspect-square absolute -bottom-20 md:-bottom-20 -right-20 md:-right-20 rounded-full bg-gradient-to-br from-blue-500 to-[#6994eb94]" />
             </div>
           </div>
           <div className="w-full p-5">
@@ -54,9 +56,9 @@ const ContactMe = () => {
           </div>
         </div>
       </div>
-      <ScrollButton pageNo={0} isGoToTop={true} />
+      <ScrollButton ref={ref} isGoToTop={true} />
     </section>
   );
-};
+});
 
 export default ContactMe;

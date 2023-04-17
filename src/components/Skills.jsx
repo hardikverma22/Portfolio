@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 import { FaAws, FaNodeJs, FaReact } from "react-icons/fa";
 import {
   SiDocker,
@@ -68,11 +68,8 @@ const skillset = [
   { title: "AWS", icon: FaAws, animationDelay: "animation-delay-2000" },
 ];
 
-const Skills = ({ setMoveImg }) => {
-  const skillSectionRef = useRef();
-  const { inViewport } = useInViewport(skillSectionRef, {
-    rootMargin: "-300px",
-  });
+const Skills = forwardRef(({ setMoveImg, skillRef }, ref) => {
+  const { inViewport } = useInViewport(skillRef, {});
 
   const skillheadingRef = useRef();
   const { inViewport: headingInViewPort } = useInViewport(skillheadingRef, {
@@ -85,11 +82,10 @@ const Skills = ({ setMoveImg }) => {
 
   return (
     <section
-      id="skills"
-      ref={skillSectionRef}
-      className="z-50 relative flex flex-col gap-10 h-screen justify-start items-center md:pt-40 pt-32 bg-tertiary dark:bg-[#232323]"
+      ref={skillRef}
+      className="mt-24 md:mt-0 z-50 relative flex flex-col gap-10 h-screen w-full justify-center items-center bg-tertiary dark:bg-[#232323]"
     >
-      <div className="-z-10 bg-wave-white dark:bg-wave-black absolute top-0 min-w-full min-h-full bg-no-repeat bg-cover"></div>
+      <div className="-z-10 bg-wave-white dark:bg-wave-black absolute -top-5 min-w-full min-h-full bg-no-repeat bg-cover"></div>
       <h2
         ref={skillheadingRef}
         className="z-50 text-4xl text-white font-bold flex justify-center items-center uppercase"
@@ -112,9 +108,9 @@ const Skills = ({ setMoveImg }) => {
         ))}
       </div>
 
-      <ScrollButton pageNo={2} isLight={true} />
+      <ScrollButton isLight={true} ref={ref} />
     </section>
   );
-};
+});
 
 export default Skills;

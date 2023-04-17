@@ -8,12 +8,15 @@ import {
   FcPortraitMode,
 } from "react-icons/fc";
 import DarkModeButton from "./DarkModeButton";
-import useScroll from "./hooks/useScroll";
 
-const NavigationBar = () => {
+const NavigationBar = ({
+  summaryRef,
+  skillRef,
+  aboutMeRef,
+  projectsRef,
+  contactMeRef,
+}) => {
   const [open, setOpen] = useState(false);
-
-  const [scrollTo] = useScroll();
 
   const sideNavRef = useRef(null);
 
@@ -31,16 +34,23 @@ const NavigationBar = () => {
     }
   };
 
-  const handleScroll = (pageNo) => {
-    scrollTo(pageNo);
+  const handleScroll = (ref) => {
+    scrollIntoView(ref);
     setOpen(false);
   };
 
+  const scrollIntoView = (ref) => {
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <header className="w-full fixed top-0 z-[1000]">
-      <nav className="bg-white bg-opacity-70 dark:bg-black dark:bg-opacity-70 shadow-lg flex items-center justify-between px-10 h-24 md:h-16">
+    <header className="w-full fixed top-0 z-[1000] dark:bg-black bg-white">
+      <nav className="bg-white bg-opacity-70 dark:bg-black dark:bg-opacity-70 shadow-lg flex items-center justify-between px-10 h-16 sm:h-24 md:h-16">
         <h1 className="text-2xl md:text-3xl text-tertiary dark:text-white">
-          <a className="cursor-pointer" onClick={() => scrollTo(0)}>
+          <a
+            className="cursor-pointer"
+            onClick={() => scrollIntoView(summaryRef)}
+          >
             Hardik Verma
           </a>
         </h1>
@@ -48,7 +58,7 @@ const NavigationBar = () => {
           <ul className="hidden md:flex items-center justify-center gap-6 font-medium tracking-wide">
             <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
               <a
-                onClick={() => scrollTo(0)}
+                onClick={() => scrollIntoView(summaryRef)}
                 className="flex gap-2 justify-center items-center"
               >
                 <FcPortraitMode className="text-xl" />
@@ -57,7 +67,7 @@ const NavigationBar = () => {
             </li>
             <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
               <a
-                onClick={() => scrollTo(1)}
+                onClick={() => scrollIntoView(skillRef)}
                 className="flex gap-2 justify-center items-center"
               >
                 <FcDiploma2 className="text-xl" />
@@ -66,7 +76,7 @@ const NavigationBar = () => {
             </li>
             <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
               <a
-                onClick={() => scrollTo(2)}
+                onClick={() => scrollIntoView(aboutMeRef)}
                 className="flex gap-2 justify-center items-center"
               >
                 <FcBusinessman className="text-xl" />
@@ -75,7 +85,7 @@ const NavigationBar = () => {
             </li>
             <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
               <a
-                onClick={() => scrollTo(3)}
+                onClick={() => scrollIntoView(projectsRef)}
                 className="flex gap-2 justify-center items-center"
               >
                 <FcList className="text-xl" />
@@ -84,7 +94,7 @@ const NavigationBar = () => {
             </li>
             <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
               <a
-                onClick={() => scrollTo(4)}
+                onClick={() => scrollIntoView(contactMeRef)}
                 className="flex gap-2 justify-center items-center"
               >
                 <FcCellPhone className="text-xl" />
@@ -108,41 +118,41 @@ const NavigationBar = () => {
           }`}
         >
           <h1
-            onClick={() => handleScroll(0)}
+            onClick={() => handleScroll(summaryRef)}
             className="cursor-pointer text-4xl font-bold text-white p-2"
           >
             Hardik
           </h1>
           <li
-            onClick={() => handleScroll(0)}
+            onClick={() => handleScroll(summaryRef)}
             className="flex gap-2 items-center p-4 border-b border-b-primary  dark:border-b-white cursor-pointer hover:bg-white hover:text-black duration-500"
           >
             <FcPortraitMode className="text-xl" />
             <span>Who I Am</span>
           </li>
           <li
-            onClick={() => handleScroll(1)}
+            onClick={() => handleScroll(skillRef)}
             className="flex gap-2 items-center p-4 border-b border-b-primary  dark:border-b-white cursor-pointer hover:bg-white hover:text-black duration-500"
           >
             <FcDiploma2 className="text-xl" />
             <span>Skills</span>
           </li>
           <li
-            onClick={() => handleScroll(2)}
+            onClick={() => handleScroll(aboutMeRef)}
             className="flex gap-2 items-center p-4 border-b border-b-primary  dark:border-b-white cursor-pointer hover:bg-white hover:text-black duration-500"
           >
             <FcBusinessman className="text-xl" />
             <span>About Me</span>
           </li>
           <li
-            onClick={() => handleScroll(3)}
+            onClick={() => handleScroll(projectsRef)}
             className="flex gap-2 items-center p-4 border-b border-b-primary  dark:border-b-white cursor-pointer hover:bg-white hover:text-black duration-500"
           >
             <FcList className="text-xl" />
             <span>Projects</span>
           </li>
           <li
-            onClick={() => handleScroll(4)}
+            onClick={() => handleScroll(contactMeRef)}
             className="flex gap-2 items-center p-4 border-b border-b-primary  dark:border-b-white cursor-pointer hover:bg-white hover:text-black duration-500"
           >
             <FcCellPhone className="text-xl" />

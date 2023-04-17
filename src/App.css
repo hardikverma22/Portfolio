@@ -3,3 +3,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.h-screen {
+    height: 100vh;
+    /* Fallback for browsers that do not support Custom Properties */
+    height: calc(var(--vh, 1vh) * 100);
+}
+
+*,
+*::before,
+*::after {
+    margin: 0
+}
+
+/* * {
+    border: 1px solid red
+}
+
+section {
+    border: 5px dotted green
+} */
+
+
+body.dark {
+    background-color: black;
+}
+
+body {
+    background-color: white;
+}
