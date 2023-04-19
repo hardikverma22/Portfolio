@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BsFillSunFill, BsMoonFill } from "react-icons/bs";
+import { BsFillSunFill, BsMoonFill } from "./Icons";
 
 const THEMES = {
   LIGHT: "light",

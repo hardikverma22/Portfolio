@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
+import { AiOutlineArrowDown, AiOutlineArrowUp } from "./Icons";
 
 const ScrollButton = forwardRef(
   ({ isLight = false, isGoToTop = false }, ref) => {
@@ -15,7 +15,7 @@ const ScrollButton = forwardRef(
 
     return (
       <div
-        className={`z-400 absolute bottom-5 ${
+        className={`z-[400] absolute bottom-5 ${
           isGoToTop ? "right-5" : "mx-auto"
         }`}
       >

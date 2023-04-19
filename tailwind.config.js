@@ -29,21 +29,6 @@ export default {
       fontFamily: {
         poppins: ['Poppins', 'sans-serif']
       },
-      keyframes: {
-        move: {
-          '0%': { opacity: '0' },
-          '100%': { transform: 'translateY(0px)', opacity: '1' },
-        },
-        opacity: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' }
-        },
-      },
-      animation: {
-        'move': 'move 0.5s ease-in-out forwards',
-        'moveSlow': 'move 1s ease-in forwards',
-        'loadUp': 'opacity 1s ease-in forwards'
-      },
     },
   },
   plugins: [require("tailwindcss-animation-delay"),],

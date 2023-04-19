@@ -1,13 +1,13 @@
-import { forwardRef, useRef } from "react";
-import pic from "../assets/pic.jpeg";
+import { motion } from "framer-motion";
+import { forwardRef } from "react";
+
 import bnwPic from "../assets/bnwPic.jpeg";
+import pic from "../assets/pic.jpeg";
+
+import { slideIn, textVariant } from "../motion";
 import ScrollButton from "./ScrollButton";
-import { useInViewport } from "react-in-viewport";
 
 const AboutMe = forwardRef(({ aboutMeRef }, ref) => {
-  const aboutMeSectionRef = useRef();
-  const { inViewport } = useInViewport(aboutMeSectionRef);
-
   return (
     <section
       ref={aboutMeRef}
@@ -15,14 +15,20 @@ const AboutMe = forwardRef(({ aboutMeRef }, ref) => {
     >
       <div className="z-0 bg-wave dark:bg-wave-dark absolute top-0 min-w-full min-h-full bg-no-repeat bg-cover"></div>
       <div className="my-20 md:my-0 z-10 flex gap-10 flex-col justify-start items-center w-full">
-        <h2 className="text-4xl text-primary dark:text-white font-bold flex justify-center items-center uppercase">
-          About Me
-        </h2>
-        <div
-          ref={aboutMeSectionRef}
-          className={`${
-            inViewport ? "animate-moveSlow" : ""
-          } z-10 bg-white relative dark:bg-[#232323] dark:text-white w-[70%] portrait:w-[90%] lg:w-[80%] mx-auto translate-y-24 shadow-lg dark:shadow-[#232323] rounded-xl flex flex-col md:flex-row justify-center items-center md:drop-shadow-lg`}
+        <motion.div
+          variants={textVariant(0.1)}
+          initial="hidden"
+          whileInView="show"
+        >
+          <h2 className="text-4xl text-primary dark:text-white font-bold flex justify-center items-center uppercase">
+            About Me
+          </h2>
+        </motion.div>
+        <motion.div
+          variants={slideIn("down", "", 0, 1)}
+          initial={"hidden"}
+          whileInView={"show"}
+          className="z-10 bg-white relative dark:bg-[#232323] dark:text-white w-[70%] portrait:w-[90%] lg:w-[80%] mx-auto translate-y-24 shadow-lg dark:shadow-[#232323] rounded-xl flex flex-col md:flex-row justify-center items-center md:drop-shadow-lg"
         >
           <div className="flex justify-center items-end md:items-center md:justify-start p-5">
             <img
@@ -49,7 +55,7 @@ const AboutMe = forwardRef(({ aboutMeRef }, ref) => {
               everyday.
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
       <ScrollButton ref={ref} />
     </section>

@@ -12,69 +12,68 @@ import { useInViewport } from "react-in-viewport";
 import ScrollButton from "./ScrollButton";
 import SkillCard from "./SkillCard";
 
+import { motion } from "framer-motion";
+import { staggerContainer, textVariant } from "../motion";
+
 const skillset = [
   {
     title: "React.js",
     icon: FaReact,
-    animationDelay: "animation-delay-200",
+    animationDelay: "0.2",
   },
   {
     title: "Node.js",
     icon: FaNodeJs,
-    animationDelay: "animation-delay-400",
+    animationDelay: "0.4",
   },
   {
     title: "Typescript",
     icon: TbBrandTypescript,
-    animationDelay: "animation-delay-600",
+    animationDelay: "0.6",
   },
 
   {
-    title: "Tailwind CSS",
+    title: "TailwindCSS",
     icon: SiTailwindcss,
-    animationDelay: "animation-delay-800",
+    animationDelay: "0.8",
   },
 
   {
-    title: "Mongo DB",
+    title: "MongoDB",
     icon: TbBrandMongodb,
-    animationDelay: "animation-delay-1000",
+    animationDelay: "1",
   },
 
   {
     title: "Firebase",
     icon: SiFirebase,
-    animationDelay: "animation-delay-1200",
+    animationDelay: "1.2",
   },
 
   {
     title: "GraphQL",
     icon: SiGraphql,
-    animationDelay: "animation-delay-1400",
+    animationDelay: "1.4",
   },
 
   {
     title: "Dot Net",
     icon: SiDotnet,
-    animationDelay: "animation-delay-1600",
+    animationDelay: "1.6",
   },
 
   {
     title: "Docker",
     icon: SiDocker,
-    animationDelay: "animation-delay-1800",
+    animationDelay: "1.8",
   },
 
-  { title: "AWS", icon: FaAws, animationDelay: "animation-delay-2000" },
+  { title: "AWS", icon: FaAws, animationDelay: "1.8" },
 ];
 
 const Skills = forwardRef(({ setMoveImg, skillRef }, ref) => {
-  const { inViewport } = useInViewport(skillRef, {});
-
   const skillheadingRef = useRef();
-  const { inViewport: headingInViewPort } = useInViewport(skillheadingRef, {
-    // rootMargin: "-300px",
-  });
+  const { inViewport: headingInViewPort } = useInViewport(skillheadingRef);
 
   useEffect(() => {
     setMoveImg(headingInViewPort);
@@ -83,30 +82,37 @@ const Skills = forwardRef(({ setMoveImg, skillRef }, ref) => {
   return (
     <section
       ref={skillRef}
-      className="mt-24 md:mt-0 z-50 relative flex flex-col gap-10 h-screen w-full justify-center items-center bg-tertiary dark:bg-[#232323]"
+      className="pt-24 md:pt-0 z-50 relative flex flex-col gap-10 h-screen w-full justify-center items-center bg-tertiary dark:bg-[#232323]"
     >
       <div className="-z-10 bg-wave-white dark:bg-wave-black absolute -top-5 min-w-full min-h-full bg-no-repeat bg-cover"></div>
-      <h2
-        ref={skillheadingRef}
-        className="z-50 text-4xl text-white font-bold flex justify-center items-center uppercase"
+      <motion.div
+        variants={textVariant(0.1)}
+        initial="hidden"
+        whileInView="show"
       >
-        Skills
-      </h2>
+        <h2
+          ref={skillheadingRef}
+          className="z-50 text-4xl text-white font-bold flex justify-center items-center uppercase"
+        >
+          Skills
+        </h2>
+      </motion.div>
 
-      <div
-        className={`${
-          inViewport ? "animate-loadUp" : ""
-        } grid grid-cols-3 md:grid-cols-5 sm:grid-cols-3 gap-10 ease-in transition duration-300`}
+      <motion.div
+        variants={staggerContainer()}
+        initial={"hidden"}
+        whileInView={"show"}
+        className="grid grid-cols-3 md:grid-cols-5 sm:grid-cols-3 gap-10 ease-in transition duration-300"
       >
-        {skillset.map((skill) => (
+        {skillset.map((skill, index) => (
           <SkillCard
             key={skill.title}
             title={skill.title}
             Icon={skill.icon}
-            delay={skill.animationDelay}
+            index={index}
           />
         ))}
-      </div>
+      </motion.div>
 
       <ScrollButton isLight={true} ref={ref} />
     </section>

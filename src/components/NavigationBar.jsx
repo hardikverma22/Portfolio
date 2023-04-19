@@ -1,13 +1,16 @@
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
+import { slideIn } from "../motion";
+import DarkModeButton from "./DarkModeButton";
 import {
+  AiOutlineClose,
+  AiOutlineMenu,
   FcBusinessman,
   FcCellPhone,
   FcDiploma2,
   FcList,
   FcPortraitMode,
-} from "react-icons/fc";
-import DarkModeButton from "./DarkModeButton";
+} from "./Icons";
 
 const NavigationBar = ({
   summaryRef,
@@ -47,18 +50,34 @@ const NavigationBar = ({
     <header className="w-full fixed top-0 z-[1000] dark:bg-black bg-white">
       <nav className="bg-white bg-opacity-70 dark:bg-black dark:bg-opacity-70 shadow-lg flex items-center justify-between px-10 h-16 sm:h-24 md:h-16">
         <h1 className="text-2xl md:text-3xl text-tertiary dark:text-white">
-          <a
-            className="cursor-pointer"
-            onClick={() => scrollIntoView(summaryRef)}
+          <motion.div
+            variants={slideIn("left", "spring", 0.5, 0.5)}
+            initial={"hidden"}
+            whileInView={"show"}
+            viewport={{ once: true }}
           >
-            Hardik Verma
-          </a>
+            <a
+              className="cursor-pointer"
+              onClick={() => scrollIntoView(summaryRef)}
+            >
+              Hardik Verma
+            </a>
+          </motion.div>
         </h1>
         <div className="flex gap-6">
-          <ul className="hidden md:flex items-center justify-center gap-6 font-medium tracking-wide">
+          <motion.ul
+            variants={slideIn("up", "spring", 0.5, 0.5)}
+            initial={"hidden"}
+            whileInView={"show"}
+            viewport={{ once: true }}
+            className="hidden md:flex items-center justify-center gap-6 font-medium tracking-wide"
+          >
             <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
               <a
-                onClick={() => scrollIntoView(summaryRef)}
+                onClick={() => {
+                  scrollIntoView(summaryRef);
+                  console.log(summaryRef);
+                }}
                 className="flex gap-2 justify-center items-center"
               >
                 <FcPortraitMode className="text-xl" />
@@ -101,15 +120,23 @@ const NavigationBar = ({
                 <span>Contact</span>
               </a>
             </li>
-          </ul>
-          <DarkModeButton />
-          <button
-            type="button"
-            className="md:hidden bg-none outline-none hover:bg-gray-400 dark:text-white rounded-full w-10 h-10 flex justify-center items-center duration-300 text-3xl"
-            onClick={() => setOpen(!open)}
+          </motion.ul>
+          <motion.div
+            variants={slideIn("right", "spring", 0.5, 0.5)}
+            initial={"hidden"}
+            whileInView={"show"}
+            viewport={{ once: true }}
+            className="flex gap-6"
           >
-            {open ? <AiOutlineClose /> : <AiOutlineMenu />}
-          </button>
+            <DarkModeButton />
+            <button
+              type="button"
+              className="md:hidden bg-none outline-none hover:bg-gray-400 dark:text-white rounded-full w-10 h-10 flex justify-center items-center duration-300 text-3xl"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <AiOutlineClose /> : <AiOutlineMenu />}
+            </button>
+          </motion.div>
         </div>
         <ul
           ref={sideNavRef}

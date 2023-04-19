@@ -36,7 +36,7 @@ const App = () => {
         contactMeRef={contactMeRef}
       />
 
-      <Summary moveImg={moveImg} ref={skillRef} summaryRef={summaryRef} />
+      <Summary moveImg={moveImg} summaryRef={summaryRef} ref={skillRef} />
       <Skills setMoveImg={setMoveImg} skillRef={skillRef} ref={aboutMeRef} />
       <AboutMe aboutMeRef={aboutMeRef} ref={projectsRef} />
       <Projects projectsRef={projectsRef} ref={contactMeRef} />

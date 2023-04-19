@@ -1,9 +1,9 @@
-import { BsGithub } from "react-icons/bs";
+import { BsGithub } from "../Icons";
 
 const Slide = ({ title, description, githubURL, liveURL }) => {
   return (
     <div className="mx-auto flex items-center justify-center">
-      <div className="max-w-md border mx-5 rounded-lg bg-white shadow-xl p-5 flex flex-col gap-5 dark:bg-[#232323]">
+      <div className="max-w-md h-[15rem] border mx-5 rounded-lg bg-white shadow-xl p-5 flex flex-col gap-5 dark:bg-[#232323]">
         <h5 className="text-2xl font-bold tracking-tight  text-gray-900 dark:text-white">
           {title}
         </h5>

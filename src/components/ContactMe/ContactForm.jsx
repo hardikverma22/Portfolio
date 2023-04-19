@@ -1,9 +1,8 @@
-import { useForm } from "react-hook-form";
-import { BsCheck } from "react-icons/bs";
-import { MdErrorOutline } from "react-icons/md";
 import emailjs from "@emailjs/browser";
 import { useRef } from "react";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { BsCheck, MdErrorOutline } from "../Icons";
 
 const ContactForm = () => {
   const formRef = useRef();
@@ -30,7 +29,7 @@ const ContactForm = () => {
           reset();
         },
         (error) => {
-          console.log(error.text);
+          toast.error("Error Sending email. Try again in sometime.");
         }
       );
   };
