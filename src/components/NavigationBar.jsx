@@ -12,6 +12,9 @@ import {
   FcPortraitMode,
 } from "./Icons";
 
+import logo from "../assets/logo.svg";
+import logoWhite from "../assets/logo-white.svg";
+
 const NavigationBar = ({
   summaryRef,
   skillRef,
@@ -57,10 +60,16 @@ const NavigationBar = ({
             viewport={{ once: true }}
           >
             <a
-              className="cursor-pointer"
+              className="cursor-pointer flex gap-2 justify-center items-center hover:text-primary"
               onClick={() => scrollIntoView(summaryRef)}
             >
-              Hardik Verma
+              <img src={logo} alt="logo" className="h-10 sm:12 dark:hidden" />
+              <img
+                src={logoWhite}
+                alt="logo"
+                className="hidden h-10 sm:12 dark:flex"
+              />
+              <span className="lg:flex hidden">Hardik Verma</span>
             </a>
           </motion.div>
         </h1>

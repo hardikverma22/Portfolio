@@ -17,8 +17,6 @@ const App = () => {
   const projectsRef = useRef();
   const contactMeRef = useRef();
 
-  const [moveImg, setMoveImg] = useState(false);
-
   useEffect(() => {
     document.documentElement.style.setProperty(
       "--vh",
@@ -36,8 +34,8 @@ const App = () => {
         contactMeRef={contactMeRef}
       />
 
-      <Summary moveImg={moveImg} summaryRef={summaryRef} ref={skillRef} />
-      <Skills setMoveImg={setMoveImg} skillRef={skillRef} ref={aboutMeRef} />
+      <Summary summaryRef={summaryRef} ref={skillRef} />
+      <Skills skillRef={skillRef} ref={aboutMeRef} />
       <AboutMe aboutMeRef={aboutMeRef} ref={projectsRef} />
       <Projects projectsRef={projectsRef} ref={contactMeRef} />
       <ContactMe contactMeRef={contactMeRef} ref={summaryRef} />

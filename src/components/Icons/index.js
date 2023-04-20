@@ -1,6 +1,11 @@
-import { AiFillHeart, AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { FaDownload } from "react-icons/fa";
-import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
+import {
+    AiFillHeart,
+    AiOutlineArrowDown,
+    AiOutlineArrowUp,
+    AiOutlineClose,
+    AiOutlineMenu
+} from "react-icons/ai";
+
 import {
     FcBusinessman,
     FcCellPhone,
@@ -9,14 +14,21 @@ import {
     FcPortraitMode,
 } from "react-icons/fc";
 
-import { MdErrorOutline, MdEmail, MdLocationOn } from "react-icons/md";
+import { MdEmail, MdErrorOutline, MdLocationOn, MdDownloadForOffline } from "react-icons/md";
 
-import { BsFillSunFill, BsMoonFill, BsGithub, BsCheck, BsFillTelephoneFill } from "react-icons/bs";
+import {
+    BsCheck,
+    BsFillSunFill,
+    BsFillTelephoneFill,
+    BsGithub,
+    BsLinkedin,
+    BsMoonFill
+} from "react-icons/bs";
 
 
 export {
     AiFillHeart,
-    FaDownload,
+    MdDownloadForOffline,
     AiOutlineArrowDown,
     AiOutlineArrowUp,
     AiOutlineClose,
@@ -33,5 +45,6 @@ export {
     MdErrorOutline,
     BsFillTelephoneFill,
     MdEmail,
-    MdLocationOn
-}
+    MdLocationOn,
+    BsLinkedin
+};

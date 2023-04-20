@@ -71,18 +71,11 @@ const skillset = [
   { title: "AWS", icon: FaAws, animationDelay: "1.8" },
 ];
 
-const Skills = forwardRef(({ setMoveImg, skillRef }, ref) => {
-  const skillheadingRef = useRef();
-  const { inViewport: headingInViewPort } = useInViewport(skillheadingRef);
-
-  useEffect(() => {
-    setMoveImg(headingInViewPort);
-  }, [headingInViewPort]);
-
+const Skills = forwardRef(({ skillRef }, ref) => {
   return (
     <section
       ref={skillRef}
-      className="pt-24 md:pt-0 z-50 relative flex flex-col gap-10 h-screen w-full justify-center items-center bg-tertiary dark:bg-[#232323]"
+      className="pt-24 md:pt-0 z-[50] p-2 relative flex flex-col gap-10 h-screen w-full justify-center items-center bg-custom-grad dark:bg-dark-custom-grad"
     >
       <div className="-z-10 bg-wave-white dark:bg-wave-black absolute -top-5 min-w-full min-h-full bg-no-repeat bg-cover"></div>
       <motion.div
@@ -90,10 +83,7 @@ const Skills = forwardRef(({ setMoveImg, skillRef }, ref) => {
         initial="hidden"
         whileInView="show"
       >
-        <h2
-          ref={skillheadingRef}
-          className="z-50 text-4xl text-white font-bold flex justify-center items-center uppercase"
-        >
+        <h2 className="z-50 text-4xl text-white font-bold flex justify-center items-center uppercase">
           Skills
         </h2>
       </motion.div>
