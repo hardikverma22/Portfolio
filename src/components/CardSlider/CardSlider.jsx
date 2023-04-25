@@ -19,6 +19,13 @@ const projects = [
     liveURL: "https://code-me.netlify.app/",
   },
   {
+    title: "AI Keyword Extractor",
+    description:
+      "ey Extractor is based on OpenAI's Chat GPT to extract keywords from text paragraphs.",
+    githubURL: "https://github.com/hardikverma22/key-extractor",
+    liveURL: "https://keyext.netlify.app/",
+  },
+  {
     title: "PortFolio Website",
     description: `Portfolio website to showcase skills visually and react out many people.`,
     githubURL: "https://github.com/hardikverma22/CodeMe",
