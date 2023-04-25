@@ -21,7 +21,7 @@ const projects = [
   {
     title: "AI Keyword Extractor",
     description:
-      "ey Extractor is based on OpenAI's Chat GPT to extract keywords from text paragraphs.",
+      "Key Extractor is based on OpenAI's Chat GPT to extract keywords from text paragraphs.",
     githubURL: "https://github.com/hardikverma22/key-extractor",
     liveURL: "https://keyext.netlify.app/",
   },
