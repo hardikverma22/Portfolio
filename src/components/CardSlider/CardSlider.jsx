@@ -15,8 +15,8 @@ const projects = [
     title: "CodeMe",
     description: `CodeMe is an online editor plus IDE to develop small web applications
           using HTML, CSS and Javascript`,
-    githubURL: "https://github.com/hardikverma22/CodeMe",
-    liveURL: "https://code-me.netlify.app/",
+    githubURL: "https://github.com/hardikverma22/Code-Me-with-tailwind-reziable-panels",
+    liveURL: "https://hardikverma22.github.io/Code-Me-with-tailwind-reziable-panels/",
   },
   {
     title: "AI Keyword Extractor",
