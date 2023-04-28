@@ -15,8 +15,10 @@ const projects = [
     title: "CodeMe",
     description: `CodeMe is an online editor plus IDE to develop small web applications
           using HTML, CSS and Javascript`,
-    githubURL: "https://github.com/hardikverma22/Code-Me-with-tailwind-reziable-panels",
-    liveURL: "https://hardikverma22.github.io/Code-Me-with-tailwind-reziable-panels/",
+    githubURL:
+      "https://github.com/hardikverma22/Code-Me-with-tailwind-reziable-panels",
+    liveURL:
+      "https://hardikverma22.github.io/Code-Me-with-tailwind-reziable-panels/",
   },
   {
     title: "AI Keyword Extractor",
@@ -40,11 +42,9 @@ const CardSlider = () => {
     speed: 400,
     slidesToShow: 3,
     slidesToScroll: 1,
-    // focusOnSelect: true,
     swipeToSlide: true,
     autoplay: true,
     autoplaySpeed: 4000,
-    // centerMode: true,
     responsive: [
       {
         breakpoint: 1024,
@@ -70,15 +70,7 @@ const CardSlider = () => {
       <Slide {...projects[0]} />
       <Slide {...projects[1]} />
       <Slide {...projects[2]} />
-      <Slide {...projects[0]} />
-      <Slide {...projects[1]} />
-      <Slide {...projects[2]} />
-      {/* <Slide title="HDocs 2" />
-      <Slide title="HDocs 3" />
-      <Slide title="HDocs 4" />
-      <Slide title="HDocs 5" />
-      <Slide title="HDocs 6" />
-      <Slide title="HDocs 7" /> */}
+      <Slide {...projects[3]} />
     </Slider>
   );
 };

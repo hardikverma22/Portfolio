@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "./App.css";
 import {
   AboutMe,
@@ -8,7 +8,6 @@ import {
   Skills,
   Summary,
 } from "./components";
-import ScrollButton from "./components/ScrollButton";
 
 const App = () => {
   const summaryRef = useRef();

@@ -69,7 +69,6 @@ const NavigationBar = ({
                 alt="logo"
                 className="hidden h-10 sm:12 dark:flex"
               />
-              <span className="lg:flex hidden">Hardik Verma</span>
             </a>
           </motion.div>
         </h1>

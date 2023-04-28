@@ -7,7 +7,7 @@ const THEMES = {
 };
 
 const DarkModeButton = () => {
-  const [theme, setTheme] = useState(THEMES.LIGHT);
+  const [theme, setTheme] = useState(THEMES.DARK);
 
   const toggleTheme = (isDark) => {
     const theme = isDark ? THEMES.LIGHT : THEMES.DARK;

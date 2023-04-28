@@ -1,0 +1,11 @@
+Model Information:
+* title:	Bitcoin Factory - Voxel art
+* source:	https://sketchfab.com/3d-models/bitcoin-factory-voxel-art-d6b36d8c19e841bfb0b6a6e5e033a172
+* author:	Alok (https://sketchfab.com/alok.aks50)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Bitcoin Factory - Voxel art" (https://sketchfab.com/3d-models/bitcoin-factory-voxel-art-d6b36d8c19e841bfb0b6a6e5e033a172) by Alok (https://sketchfab.com/alok.aks50) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
