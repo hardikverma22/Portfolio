@@ -6,7 +6,7 @@ import CanvasLoader from "./Loader";
 
 const Model = ({ isMobile, isLandscape }) => {
   const { scene, animations } = useGLTF("./bitcoin/scene.gltf");
-
+  console.log(isMobile);
   const mixer = useRef();
   const [action, setAction] = useState();
   const meshRef = useRef();
@@ -78,7 +78,7 @@ const ModelCanvas = ({ isLandscape }) => {
 
   useEffect(() => {
     // Add a listener for changes to the screen size
-    const mediaQuery = window.matchMedia("(max-width: 11680px)");
+    const mediaQuery = window.matchMedia("(max-width: 1090px)");
 
     // Set the initial value of the `isMobile` state variable
     setIsMobile(mediaQuery.matches);
