@@ -60,7 +60,7 @@ const projects = [
   },
   {
     title: "Portfolio Website",
-    description: `Portfolio website to showcase skills visually and react out many people.`,
+    description: `Portfolio website is built to showcase skills, projects and about me and react out many people.`,
     githubURL: "https://github.com/hardikverma22/CodeMe",
     liveURL: "https://code-me.netlify.app/",
     techStack: [
@@ -81,11 +81,11 @@ const CardSlider = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     swipeToSlide: true,
-    // autoplay: true,
+    autoplay: true,
     autoplaySpeed: 4000,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1460,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
@@ -94,7 +94,7 @@ const CardSlider = () => {
         },
       },
       {
-        breakpoint: 872,
+        breakpoint: 1032,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,

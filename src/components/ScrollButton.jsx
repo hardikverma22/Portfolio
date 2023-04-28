@@ -9,7 +9,6 @@ const ScrollButton = forwardRef(
 
     const handleClick = (e) => {
       e.stopPropagation();
-      console.log(ref);
       ref.current?.scrollIntoView({ behavior: "smooth" });
     };
 
