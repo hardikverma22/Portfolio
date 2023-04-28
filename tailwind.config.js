@@ -18,10 +18,6 @@ export default {
         'custom-grad': 'linear-gradient(180deg, rgba(135, 227, 250, 1) 0%, rgba(66, 116, 217, 1) 50%, rgba(27, 76, 131, 1) 100%)',
         'dark-custom-grad': 'linear-gradient(180deg, rgba(35,35,35,1) 0%, rgba(35,35,35,1) 50%)'
       },
-      animationDelay: {
-        '1600': '1600ms',
-        '1800': '1800ms',
-      },
       colors: {
         'primary': '#002B5B',
         'secondary': '#87e3fa',
@@ -33,5 +29,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animation-delay"),],
+  plugins: [],
 }
