@@ -4,9 +4,9 @@ import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import CanvasLoader from "./Loader";
 
-const Model = ({ isMobile, isLandscape }) => {
+const Model = ({ isMobile, isLandscape, isInView }) => {
   const { scene, animations } = useGLTF("./bitcoin/scene.gltf");
-  console.log(isMobile);
+
   const mixer = useRef();
   const [action, setAction] = useState();
   const meshRef = useRef();
@@ -15,12 +15,18 @@ const Model = ({ isMobile, isLandscape }) => {
     if (scene) {
       mixer.current = new THREE.AnimationMixer(scene);
       const newAction = mixer.current.clipAction(animations[0]);
-      newAction.setLoop(THREE.LoopRepeat);
       setAction(newAction);
-      // Start the animation when it's loaded
-      newAction.play();
     }
   }, [scene, animations]);
+
+  useEffect(() => {
+    if (scene && action) {
+      if (isInView) {
+        action.setLoop(THREE.LoopRepeat);
+        action.play();
+      } else action.stop();
+    }
+  }, [scene, isInView, action]);
 
   useFrame((state, delta) => {
     if (mixer.current && action) {
@@ -33,13 +39,6 @@ const Model = ({ isMobile, isLandscape }) => {
       scene.rotation.y = Math.sin(state.clock.elapsedTime) * 0.06;
     }
   });
-
-  useEffect(() => {
-    if (action) {
-      action.setLoop(THREE.LoopRepeat);
-      action.play();
-    }
-  }, [action]);
 
   return (
     <mesh ref={meshRef} position-y={isMobile ? -3 : 0}>
@@ -73,7 +72,7 @@ const Model = ({ isMobile, isLandscape }) => {
   );
 };
 
-const ModelCanvas = ({ isLandscape }) => {
+const ModelCanvas = ({ isLandscape, isInView }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -99,7 +98,7 @@ const ModelCanvas = ({ isLandscape }) => {
 
   return (
     <Canvas
-      frameloop="always"
+      frameloop={isInView ? "always" : "never"}
       shadows
       dpr={[1, 2]}
       camera={{
@@ -114,7 +113,11 @@ const ModelCanvas = ({ isLandscape }) => {
           maxPolarAngle={Math.PI / 3}
           minPolarAngle={Math.PI / 3}
         />
-        <Model isMobile={isMobile} isLandscape={isLandscape} />
+        <Model
+          isMobile={isMobile}
+          isLandscape={isLandscape}
+          isInView={isInView}
+        />
       </Suspense>
 
       <Preload all />

@@ -1,14 +1,16 @@
-import { forwardRef, useEffect, useRef } from "react";
-import { FaAws, FaNodeJs, FaReact } from "react-icons/fa";
+import { forwardRef } from "react";
 import {
+  FaAws,
+  FaNodeJs,
+  FaReact,
   SiDocker,
   SiDotnet,
   SiFirebase,
   SiGraphql,
   SiTailwindcss,
-} from "react-icons/si";
-import { TbBrandMongodb, TbBrandTypescript } from "react-icons/tb";
-import { useInViewport } from "react-in-viewport";
+  TbBrandMongodb,
+  TbBrandTypescript,
+} from "./Icons";
 import ScrollButton from "./ScrollButton";
 import SkillCard from "./SkillCard";
 

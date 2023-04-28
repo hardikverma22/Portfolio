@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { forwardRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { forwardRef, useRef } from "react";
 import Typed from "react-typed";
 import { slideIn } from "../motion";
 import { AiFillHeart } from "./Icons";
@@ -8,6 +8,8 @@ import ScrollButton from "./ScrollButton";
 import SocialMediaButtons from "./SocialMediaButtons";
 
 const Summary = forwardRef(({ summaryRef }, ref) => {
+  const isInView = useInView(summaryRef);
+
   return (
     <>
       <section ref={summaryRef}>
@@ -52,7 +54,7 @@ const Summary = forwardRef(({ summaryRef }, ref) => {
             </motion.div>
           </div>
           <div className="z-[100] flex items-start justify-center md:justify-start md:items-center h-full lg:items-end md:w-[50%]">
-            <ModelCanvas isLandscape={true} />
+            <ModelCanvas isLandscape={true} isInView={isInView} />
           </div>
           <ScrollButton ref={ref} />
         </div>
@@ -96,7 +98,7 @@ const Summary = forwardRef(({ summaryRef }, ref) => {
             </motion.div>
           </div>
           <div className="flex items-start justify-center md:justify-center h-full lg:items-end w-full">
-            <ModelCanvas isLandscape={false} />
+            <ModelCanvas isLandscape={false} isInView={isInView} />
           </div>
           <ScrollButton ref={ref} />
         </div>
