@@ -1,0 +1,50 @@
+ :root {
+     --primary: hsl(0, 2%, 67%);
+     --secondary: rgb(55 65 81);
+     --dark-primary: rgb(43, 42, 42);
+     --dark-secondary: rgb(231, 231, 231);
+ }
+
+ body {
+     scrollbar-width: thin;
+     scrollbar-color: var(--secondary) var(--primary);
+ }
+
+ body.dark {
+     scrollbar-color: var(--dark-secondary) var(--dark-primary);
+ }
+
+ /* Chrome, Edge, and Safari */
+ body::-webkit-scrollbar {
+     width: 15px;
+ }
+
+ body::-webkit-scrollbar-track {
+     background: var(--primary);
+ }
+
+ body::-webkit-scrollbar-thumb {
+     background-color: var(--secondary);
+     border-radius: 14px;
+     border: 3px solid var(--primary);
+ }
+
+ body.dark::-webkit-scrollbar-track {
+     background: var(--primary);
+ }
+
+ body.dark::-webkit-scrollbar-thumb {
+     background-color: var(--dark-secondary);
+     border-radius: 14px;
+     border: 3px solid var(--dark-primary);
+ }
+
+ /* Hide the up arrow button */
+ body::-webkit-scrollbar-button:start {
+     display: none;
+ }
+
+ /* Hide the down arrow button */
+ body::-webkit-scrollbar-button:end {
+     display: none;
+ }

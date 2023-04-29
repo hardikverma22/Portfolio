@@ -26,6 +26,36 @@ const NavigationBar = ({
 
   const sideNavRef = useRef(null);
 
+  const [activeTab, setActiveTab] = useState(0);
+
+  const tabs = [
+    {
+      title: "Who I Am",
+      icon: <FcPortraitMode className="text-xl" />,
+      passedInRef: summaryRef,
+    },
+    {
+      title: "Skills",
+      icon: <FcDiploma2 className="text-xl" />,
+      passedInRef: skillRef,
+    },
+    {
+      title: "About Me",
+      icon: <FcBusinessman className="text-xl" />,
+      passedInRef: aboutMeRef,
+    },
+    {
+      title: "Projects",
+      icon: <FcList className="text-xl" />,
+      passedInRef: projectsRef,
+    },
+    {
+      title: "Contact",
+      icon: <FcCellPhone className="text-xl" />,
+      passedInRef: contactMeRef,
+    },
+  ];
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
 
@@ -80,54 +110,36 @@ const NavigationBar = ({
             viewport={{ once: true }}
             className="hidden md:flex items-center justify-center gap-6 font-medium tracking-wide"
           >
-            <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
-              <a
-                onClick={() => {
-                  scrollIntoView(summaryRef);
-                  console.log(summaryRef);
-                }}
-                className="flex gap-2 justify-center items-center"
+            {tabs.map((tab, index) => (
+              <li
+                key={`${tab}_${index}`}
+                className="relative cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary"
               >
-                <FcPortraitMode className="text-xl" />
-                <span>Who I Am</span>
-              </a>
-            </li>
-            <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
-              <a
-                onClick={() => scrollIntoView(skillRef)}
-                className="flex gap-2 justify-center items-center"
-              >
-                <FcDiploma2 className="text-xl" />
-                <span>Skills</span>
-              </a>
-            </li>
-            <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
-              <a
-                onClick={() => scrollIntoView(aboutMeRef)}
-                className="flex gap-2 justify-center items-center"
-              >
-                <FcBusinessman className="text-xl" />
-                <span>About Me</span>
-              </a>
-            </li>
-            <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
-              <a
-                onClick={() => scrollIntoView(projectsRef)}
-                className="flex gap-2 justify-center items-center"
-              >
-                <FcList className="text-xl" />
-                <span>Projects</span>
-              </a>
-            </li>
-            <li className="cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary">
-              <a
-                onClick={() => scrollIntoView(contactMeRef)}
-                className="flex gap-2 justify-center items-center"
-              >
-                <FcCellPhone className="text-xl" />
-                <span>Contact</span>
-              </a>
-            </li>
+                <a
+                  onClick={() => {
+                    scrollIntoView(tab.passedInRef);
+                    setActiveTab(index);
+                  }}
+                  className="flex gap-2 justify-center items-center p-2"
+                >
+                  {activeTab === index && (
+                    <motion.span
+                      layoutId="bubble"
+                      className="absolute inset-0 z-10 bg-[#2962d62b] dark:bg-white dark:mix-blend-exclusion mix-blend-color-burn"
+                      style={{ borderRadius: 9999 }}
+                      transition={{
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 0.6,
+                      }}
+                    />
+                  )}
+
+                  {tab.icon}
+                  <span>{tab.title}</span>
+                </a>
+              </li>
+            ))}
           </motion.ul>
           <motion.div
             variants={slideIn("right", "spring", 0.5, 0.5)}

@@ -15,17 +15,30 @@ const Slide = ({ title, description, githubURL, liveURL, techStack }) => {
   return (
     <div className="mx-auto flex items-center justify-center">
       <div
-        className="group relative lg:max-w-md max-w-lg rounded-3xl border border-gray-700 bg-white dark:bg-gray-900 p-8"
+        style={{
+          "--dark-purple": "4 6 22",
+          "--light-purple": "120 119 198",
+
+          "--bg-color":
+            "linear-gradient(rgb(var(--dark-purple)), rgb(var(--dark-purple)))",
+          "--border-color": `linear-gradient(145deg,
+            rgb(var(--light-purple)) 0%,
+            rgb(var(--light-purple) / 0.3) 33.33%,
+            rgb(var(--light-purple) / 0.14) 66.67%,
+            rgb(var(--light-purple) / 0.1) 100%)
+          `,
+        }}
+        className="dark:[background:padding-box_var(--bg-color),border-box_var(--border-color)] border border-transparent group relative lg:max-w-md max-w-lg rounded-3xl  bg-white dark:bg-gray-900 p-8"
         onMouseMove={handleMouseMove}
       >
         <motion.div
-          className="hidden dark:block pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
+          className="hidden dark:block pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100"
           style={{
             background: useMotionTemplate`radial-gradient(
-          650px circle at ${mouseX}px ${mouseY}px,
-          rgb(14 165 233 / 20%),
-          transparent 80%
-        )`,
+                                          650px circle at ${mouseX}px ${mouseY}px,
+                                          rgb(14 165 233 / 20%),
+                                          transparent 80%
+                                          )`,
           }}
         />
         <div>
