@@ -30,7 +30,7 @@ export const projects = [
   {
     title: "CodeMe",
     description: `CodeMe is an online editor plus IDE to develop small web applications
-          using HTML, CSS and Javascript`,
+          using HTML, CSS and Javascript.`,
     githubURL:
       "https://github.com/hardikverma22/Code-Me-with-tailwind-reziable-panels",
     liveURL:
@@ -42,11 +42,11 @@ export const projects = [
     ],
   },
   {
-    title: "AI Keyword Extractor",
-    description:
-      " Key Extractor is based on OpenAI's Chat GPT to extract keywords from text paragraphs.",
-    githubURL: "https://github.com/hardikverma22/key-extractor",
-    liveURL: "https://keyext.netlify.app/",
+    title: "Textop.AI",
+    description: `A text analysis tool for sentiment analysis, text classification,
+       keyword extraction, and text summarization.`,
+    githubURL: "https://github.com/hardikverma22/textop.AI",
+    liveURL: "https://hardikverma22.github.io/textop.AI/",
     techStack: [
       { name: "React", icon: <FaReact className="text-xl" /> },
       { name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" /> },
@@ -56,7 +56,8 @@ export const projects = [
   },
   {
     title: "Portfolio Website",
-    description: `Portfolio website is built to showcase skills, projects and about me and react out many people.`,
+    description: `Portfolio website is built to showcase skills,
+     projects and about me and react out many people.`,
     githubURL: "https://github.com/hardikverma22/CodeMe",
     liveURL: "https://code-me.netlify.app/",
     techStack: [
