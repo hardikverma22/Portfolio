@@ -1,7 +1,7 @@
 import { motion, useInView } from "framer-motion";
-import { forwardRef, useRef } from "react";
+import { forwardRef } from "react";
 import Typed from "react-typed";
-import { slideIn } from "../motion";
+import { slideIn } from "../constants/motion";
 import { AiFillHeart } from "./Icons";
 import ModelCanvas from "./Model/Computers";
 import ScrollButton from "./ScrollButton";

@@ -4,7 +4,7 @@ import { forwardRef } from "react";
 import bnwPic from "../assets/bnwPic.jpeg";
 import pic from "../assets/pic.jpeg";
 
-import { slideIn, textVariant } from "../motion";
+import { slideIn, textVariant } from "../constants/motion";
 import ScrollButton from "./ScrollButton";
 
 const AboutMe = forwardRef(({ aboutMeRef }, ref) => {

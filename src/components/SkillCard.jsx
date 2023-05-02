@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Tilt } from "react-tilt";
-import { fadeIn } from "../motion";
+import { fadeIn } from "../constants/motion";
 
 const SkillCard = ({ title, Icon, index }) => {
   return (

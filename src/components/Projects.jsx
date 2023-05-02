@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { forwardRef } from "react";
-import { textVariant } from "../motion";
+import { textVariant } from "../constants/motion";
 import CardSlider from "./CardSlider/CardSlider";
 import ScrollButton from "./ScrollButton";
 

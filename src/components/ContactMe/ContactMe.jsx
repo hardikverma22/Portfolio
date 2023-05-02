@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { forwardRef } from "react";
 import { Toaster } from "react-hot-toast";
 
-import { slideIn, textVariant } from "../../motion";
+import { slideIn, textVariant } from "../../constants/motion";
 import { BsFillTelephoneFill, MdEmail, MdLocationOn } from "../Icons";
 
 import ScrollButton from "../ScrollButton";

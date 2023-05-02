@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { slideIn } from "../motion";
+import { slideIn } from "../constants/motion";
 import DarkModeButton from "./DarkModeButton";
 import {
   AiOutlineClose,

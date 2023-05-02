@@ -15,7 +15,7 @@ import ScrollButton from "./ScrollButton";
 import SkillCard from "./SkillCard";
 
 import { motion } from "framer-motion";
-import { staggerContainer, textVariant } from "../motion";
+import { staggerContainer, textVariant } from "../constants/motion";
 
 const skillset = [
   {
