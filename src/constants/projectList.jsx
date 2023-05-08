@@ -28,6 +28,17 @@ export const projects = [
     ],
   },
   {
+    title: "Shoe Forge",
+    description: `3D Shoe Configurator, which allows real-time visualization of shoe textures and colors on the web.`,
+    githubURL: "https://github.com/hardikverma22/shoe-forge",
+    liveURL: "https://hardikverma22.github.io/shoe-forge",
+    techStack: [
+      { name: "ThreeJS", icon: <TbBrandThreejs className="text-xl" /> },
+      { name: "React", icon: <FaReact className="text-xl" /> },
+      { name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" /> },
+    ],
+  },
+  {
     title: "CodeMe",
     description: `CodeMe is an online editor plus IDE to develop small web applications
           using HTML, CSS and Javascript.`,
