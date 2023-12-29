@@ -20,8 +20,6 @@ const ContactMe = forwardRef(({contactMeRef}, ref) => {
         }}
       />
       <div className="w-full flex gap-10 flex-col justify-start items-center">
-        {/* <div className="z-0 bg-wave-grad dark:bg-wave-dark absolute top-0 min-w-full min-h-full bg-no-repeat bg-cover"></div> */}
-
         <motion.div variants={textVariant(0.1)} initial="hidden" whileInView="show">
           <h2 className="z-50 text-4xl text-primary dark:text-white font-bold flex justify-center items-center uppercase">
             Get In Touch
