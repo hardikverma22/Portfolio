@@ -1,20 +1,23 @@
 import emailjs from "@emailjs/browser";
-import { useRef } from "react";
-import { useForm } from "react-hook-form";
+import {useRef, useState} from "react";
+import {useForm} from "react-hook-form";
 import toast from "react-hot-toast";
-import { BsCheck, MdErrorOutline } from "../Icons";
+import {BsCheck, MdErrorOutline} from "../Icons";
 
 const ContactForm = () => {
   const formRef = useRef();
+
+  const [isSending, setIsSending] = useState(false);
   const {
     register,
     formState,
-    formState: { errors, touchedFields },
+    formState: {errors, touchedFields},
     handleSubmit,
     reset,
-  } = useForm({ mode: "all" });
+  } = useForm({mode: "all"});
 
   const onSubmit = (data) => {
+    setIsSending(true);
     emailjs
       .sendForm(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
@@ -31,7 +34,8 @@ const ContactForm = () => {
         (error) => {
           toast.error("Error Sending email. Try again in sometime.");
         }
-      );
+      )
+      .finally(() => setIsSending(false));
   };
 
   return (
@@ -42,11 +46,7 @@ const ContactForm = () => {
             <label
               htmlFor="name"
               className={`${
-                errors.name
-                  ? "text-red-500"
-                  : touchedFields.name
-                  ? "text-green-600"
-                  : "text-gray-500 dark:text-white"
+                errors.name ? "text-red-500" : touchedFields.name ? "text-green-600" : "text-gray-500 dark:text-white"
               } text-sm font-medium`}
             >
               Your Name
@@ -63,9 +63,11 @@ const ContactForm = () => {
                     : touchedFields.name
                     ? "border-green-600"
                     : "border-gray-500 dark:border-white"
-                } focus:outline-none active:border-b bg-transparent placeholder:text-sm placeholder:pt-2`}
+                } focus:outline-none active:border-b bg-transparent placeholder:text-sm placeholder:pt-2
+                disabled:bg-gray-100 disabled:rounded-sm`}
                 type="text"
                 name="name"
+                disabled={isSending}
               />
               {errors.name ? (
                 <MdErrorOutline className="absolute right-0 top-0 mx-auto text-2xl text-red-600" />
@@ -75,19 +77,13 @@ const ContactForm = () => {
                 ""
               )}
             </label>
-            {errors.name && (
-              <p className="text-red-500 pt-2">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-red-500 pt-2">{errors.name.message}</p>}
           </div>
           <div className="flex flex-col">
             <label
               htmlFor="email"
               className={`${
-                errors.email
-                  ? "text-red-500"
-                  : touchedFields.email
-                  ? "text-green-600"
-                  : "text-gray-500 dark:text-white"
+                errors.email ? "text-red-500" : touchedFields.email ? "text-green-600" : "text-gray-500 dark:text-white"
               } text-sm font-medium`}
             >
               Your Email
@@ -99,8 +95,7 @@ const ContactForm = () => {
                   pattern: {
                     value:
                       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                    message:
-                      "Oops! It looks like the email you entered isn't valid.",
+                    message: "Oops! It looks like the email you entered isn't valid.",
                   },
                 })}
                 className={`w-full border-b dark:text-white ${
@@ -109,9 +104,10 @@ const ContactForm = () => {
                     : touchedFields.email
                     ? "border-green-600"
                     : "border-gray-500 dark:border-white"
-                } focus:outline-none active:border-b bg-transparent`}
+                } focus:outline-none active:border-b bg-transparent disabled:bg-gray-100 disabled:rounded-sm`}
                 type="text"
                 name="email"
+                disabled={isSending}
               />
               {errors.email ? (
                 <MdErrorOutline className="absolute right-0 top-0 mx-auto text-2xl text-red-600" />
@@ -121,20 +117,14 @@ const ContactForm = () => {
                 ""
               )}
             </div>
-            {errors.email?.type === "required" && (
-              <p className="text-red-500 pt-2">{errors.email.message}</p>
-            )}
-            {errors.email?.type === "pattern" && (
-              <p className="text-red-500 pt-2">{errors.email.message}</p>
-            )}
+            {errors.email?.type === "required" && <p className="text-red-500 pt-2">{errors.email.message}</p>}
+            {errors.email?.type === "pattern" && <p className="text-red-500 pt-2">{errors.email.message}</p>}
           </div>
           <div className="flex flex-col">
             <label
               htmlFor="message"
               className={`${
-                errors.message
-                  ? "text-red-500"
-                  : "text-gray-500 dark:text-white"
+                errors.message ? "text-red-500" : "text-gray-500 dark:text-white"
               } text-gray-500 text-sm font-medium`}
             >
               Message
@@ -142,8 +132,7 @@ const ContactForm = () => {
             <div className="relative w-full">
               <textarea
                 {...register("message", {
-                  required:
-                    "Would be great if you can add a message, I promise I read every word.",
+                  required: "Would be great if you can add a message, I promise I read every word.",
                 })}
                 name="message"
                 cols="30"
@@ -155,7 +144,8 @@ const ContactForm = () => {
                     : touchedFields.message
                     ? " border-green-500"
                     : "placeholder:text-gray-500 border-gray-500 dark:border-white dark:placeholder:text-white"
-                }  focus:outline-none active:border-b bg-transparent`}
+                }  focus:outline-none active:border-b bg-transparent disabled:bg-gray-100 disabled:rounded-sm`}
+                disabled={isSending}
               />
               {errors.message ? (
                 <MdErrorOutline className="absolute right-0 top-0 mx-auto text-2xl text-red-600" />
@@ -165,17 +155,15 @@ const ContactForm = () => {
                 ""
               )}
             </div>
-            {errors.message && (
-              <p className="text-red-500 pt-2">{errors.message.message}</p>
-            )}
+            {errors.message && <p className="text-red-500 pt-2">{errors.message.message}</p>}
           </div>
           <button
-            disabled={!formState.isValid}
+            disabled={!formState.isValid || isSending}
             className={`p-2 h-full w-40 ${
               !formState.isValid ? "bg-gray-500" : "bg-tertiary"
-            } text-white shadow-md rounded-lg`}
+            } text-white shadow-md rounded-lg disabled:bg-gray-500`}
           >
-            Send Message
+            {isSending ? "Sending..." : "Send Message"}
           </button>
         </div>
       </form>

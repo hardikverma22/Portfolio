@@ -1,27 +1,13 @@
-import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { slideIn } from "../constants/motion";
+import {motion} from "framer-motion";
+import {useEffect, useRef, useState} from "react";
+import {slideIn} from "../constants/motion";
 import DarkModeButton from "./DarkModeButton";
-import {
-  AiOutlineClose,
-  AiOutlineMenu,
-  FcBusinessman,
-  FcCellPhone,
-  FcDiploma2,
-  FcList,
-  FcPortraitMode,
-} from "./Icons";
+import {AiOutlineClose, AiOutlineMenu, FcBusinessman, FcCellPhone, FcDiploma2, FcList, FcPortraitMode} from "./Icons";
 
 import logo from "../assets/logo.svg";
 import logoWhite from "../assets/logo-white.svg";
 
-const NavigationBar = ({
-  summaryRef,
-  skillRef,
-  aboutMeRef,
-  projectsRef,
-  contactMeRef,
-}) => {
+const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMeRef}) => {
   const [open, setOpen] = useState(false);
 
   const sideNavRef = useRef(null);
@@ -76,7 +62,7 @@ const NavigationBar = ({
   };
 
   const scrollIntoView = (ref) => {
-    ref.current?.scrollIntoView({ behavior: "smooth" });
+    ref.current?.scrollIntoView({behavior: "smooth"});
   };
 
   return (
@@ -87,18 +73,14 @@ const NavigationBar = ({
             variants={slideIn("left", "spring", 0.5, 0.5)}
             initial={"hidden"}
             whileInView={"show"}
-            viewport={{ once: true }}
+            viewport={{once: true}}
           >
             <a
               className="cursor-pointer flex gap-2 justify-center items-center hover:text-primary"
               onClick={() => scrollIntoView(summaryRef)}
             >
               <img src={logo} alt="logo" className="h-10 sm:12 dark:hidden" />
-              <img
-                src={logoWhite}
-                alt="logo"
-                className="hidden h-10 sm:12 dark:flex"
-              />
+              <img src={logoWhite} alt="logo" className="hidden h-10 sm:12 dark:flex" />
             </a>
           </motion.div>
         </h1>
@@ -107,7 +89,7 @@ const NavigationBar = ({
             variants={slideIn("up", "spring", 0.5, 0.5)}
             initial={"hidden"}
             whileInView={"show"}
-            viewport={{ once: true }}
+            viewport={{once: true}}
             className="hidden md:flex items-center justify-center gap-6 font-medium tracking-wide"
           >
             {tabs.map((tab, index) => (
@@ -126,7 +108,7 @@ const NavigationBar = ({
                     <motion.span
                       layoutId="bubble"
                       className="absolute inset-0 z-10 bg-[#2962d62b] dark:bg-white dark:mix-blend-exclusion mix-blend-color-burn"
-                      style={{ borderRadius: 9999 }}
+                      style={{borderRadius: 9999}}
                       transition={{
                         type: "spring",
                         bounce: 0.2,
@@ -145,7 +127,7 @@ const NavigationBar = ({
             variants={slideIn("right", "spring", 0.5, 0.5)}
             initial={"hidden"}
             whileInView={"show"}
-            viewport={{ once: true }}
+            viewport={{once: true}}
             className="flex gap-6"
           >
             <DarkModeButton />
@@ -164,10 +146,7 @@ const NavigationBar = ({
             open ? "left-0" : "left-[-100%]"
           }`}
         >
-          <h1
-            onClick={() => handleScroll(summaryRef)}
-            className="cursor-pointer text-4xl font-bold text-white p-2"
-          >
+          <h1 onClick={() => handleScroll(summaryRef)} className="cursor-pointer text-4xl font-bold text-white p-2">
             Hardik
           </h1>
           <li

@@ -1,12 +1,12 @@
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { BsGithub, CgWebsite } from "../Icons";
-const Slide = ({ title, description, githubURL, liveURL, techStack }) => {
+import {motion, useMotionTemplate, useMotionValue} from "framer-motion";
+import {BsGithub, CgWebsite} from "../Icons";
+const Slide = ({title, description, githubURL, liveURL, techStack}) => {
   let mouseX = useMotionValue(0);
   let mouseY = useMotionValue(0);
 
   const handleMouseMove = (e) => {
-    let { currentTarget, clientX, clientY } = e;
-    let { left, top } = currentTarget.getBoundingClientRect();
+    let {currentTarget, clientX, clientY} = e;
+    let {left, top} = currentTarget.getBoundingClientRect();
 
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
@@ -19,8 +19,7 @@ const Slide = ({ title, description, githubURL, liveURL, techStack }) => {
           "--dark-purple": "4 6 22",
           "--light-purple": "120 119 198",
 
-          "--bg-color":
-            "linear-gradient(rgb(var(--dark-purple)), rgb(var(--dark-purple)))",
+          "--bg-color": "linear-gradient(rgb(var(--dark-purple)), rgb(var(--dark-purple)))",
           "--border-color": `linear-gradient(145deg,
             rgb(var(--light-purple)) 0%,
             rgb(var(--light-purple) / 0.3) 33.33%,
@@ -59,10 +58,7 @@ const Slide = ({ title, description, githubURL, liveURL, techStack }) => {
                     grid grid-rows-3 grid-cols-2 gap-1"
           >
             {techStack.map((tech) => (
-              <li
-                key={tech.name}
-                className="flex gap-2 justify-start items-center col-span-1"
-              >
+              <li key={tech.name} className="flex gap-2 justify-start items-center col-span-1">
                 {tech.icon}
                 <span>{tech.name}</span>
               </li>
