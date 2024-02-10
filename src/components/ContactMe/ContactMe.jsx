@@ -29,18 +29,18 @@ const ContactMe = forwardRef(({contactMeRef}, ref) => {
           variants={slideIn("down", "", 0, 0.5)}
           initial={"hidden"}
           whileInView={"show"}
-          className="bg-white dark:bg-[#232323] w-[70%] mx-auto translate-y-24 shadow-lg dark:shadow-cyan-500/50 dark:shadow-sm md:rounded-lg flex flex-col md:flex-row justify-center items-center gap-10 lg:gap-0 md:drop-shadow-lg"
+          className="bg-white dark:bg-[#232323] landscape:lg:w-[70%] portrait:w-[80%] mx-auto translate-y-24 shadow-lg dark:shadow-cyan-500/50 dark:shadow-sm md:rounded-lg flex flex-col md:flex-row justify-center items-center gap-10 lg:gap-0 md:drop-shadow-lg"
         >
           <div className="md:w-[40%] w-full h-full p-3">
             <div className="relative overflow-hidden flex flex-col gap-5 justify-start p-5 h-full text-white bg-tertiary rounded-lg">
               <div className="text-xl font-medium">Contact</div>
               <div className="flex gap-5">
                 <BsFillTelephoneFill className="text-2xl" />
-                <span>+91 - 7550147914</span>
+                <span className="text-sm lg:text-base">+91 - 7550147914</span>
               </div>
               <div className="flex gap-5">
-                <MdEmail className="text-2xl" />
-                <span>Hardikverma22@gmail.com</span>
+                <MdEmail className="lg:text-2xl text-sm" />
+                <span className="text-sm">Hardikverma22@gmail.com</span>
               </div>
               <div className="flex gap-5">
                 <MdLocationOn className="text-2xl" />

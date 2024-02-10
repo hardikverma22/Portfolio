@@ -3,7 +3,6 @@ import {forwardRef} from "react";
 import Typed from "react-typed";
 import {slideIn} from "../constants/motion";
 import {AiFillHeart} from "./Icons";
-import ModelCanvas from "./Model/Computers";
 import ScrollButton from "./ScrollButton";
 import SocialMediaButtons from "./SocialMediaButtons";
 import Code from "./Summary/Code";
@@ -19,16 +18,18 @@ const Summary = forwardRef(({summaryRef}, ref) => {
         {/* landscape */}
         <div
           className="portrait:hidden
-                    mt-24 md:mt-0 md:px-14 px-5
+                    mt-24 lg:mt-0 md:px-14 px-5
                     z-100 w-full h-screen 
                     flex flex-col md:flex-row items-center justify-center gap-6
                     bg-white dark:bg-black overflow-y-hidden"
         >
-          <div className="flex flex-col gap-4 items-center justify-center md:justify-end pt-14 md:pt-0 md:w-[50%] w-full">
+          <div
+            className="flex flex-col gap-4 items-center justify-center md:justify-end
+                          pt-14 md:pt-0 md:w-[50%]"
+          >
             <Intro />
           </div>
-
-          <div className="flex flex-col justify-center items-center h-full">
+          <div className="flex flex-col justify-center items-center h-full md:w-[50%]">
             <div className="flex flex-col gap-5">
               <Code />
               <ColorCodes />
@@ -52,7 +53,9 @@ const Summary = forwardRef(({summaryRef}, ref) => {
               whileInView={"show"}
               className="w-fit flex flex-col justify-center items-center md:items-start gap-2"
             >
-              <div className="md:text-7xl text-xl text-gray-500 font-normal dark:text-white">Hello I am</div>
+              <div className="md:text-7xl text-xl text-gray-500 font-normal dark:text-white">
+                Hello I am
+              </div>
               <div className="md:text-7xl text-3xl uppercase font-bold bg-clip-text bg-gradient-to-r from-secondary to-tertiary text-transparent">
                 hardik Verma
               </div>
@@ -65,7 +68,11 @@ const Summary = forwardRef(({summaryRef}, ref) => {
                 </span>
                 <Typed
                   className="font-bold md:pl-3 pl-2"
-                  strings={["Building Rich User Interfaces", "Problem Solving", "Collaboration"]}
+                  strings={[
+                    "Building Rich User Interfaces",
+                    "Problem Solving",
+                    "Collaboration",
+                  ]}
                   typeSpeed={80}
                   backSpeed={50}
                   loop

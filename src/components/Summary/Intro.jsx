@@ -17,7 +17,7 @@ const Intro = () => {
         <div className="text-xl lg:text-2xl text-gray-500 font-normal dark:text-white">Hello I am</div>
 
         <div
-          className="text-3xl lg:text-7xl
+          className="text-xl lg:text-7xl
                            uppercase font-bold 
                            bg-clip-text 
                            bg-gradient-to-r from-secondary to-tertiary text-transparent"

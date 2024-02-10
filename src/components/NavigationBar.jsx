@@ -90,7 +90,7 @@ const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMe
             initial={"hidden"}
             whileInView={"show"}
             viewport={{once: true}}
-            className="hidden md:flex items-center justify-center gap-6 font-medium tracking-wide"
+            className="hidden lg:flex items-center justify-center gap-6 font-medium tracking-wide"
           >
             {tabs.map((tab, index) => (
               <li
@@ -133,7 +133,7 @@ const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMe
             <DarkModeButton />
             <button
               type="button"
-              className="md:hidden bg-none outline-none hover:bg-gray-400 dark:text-white rounded-full w-10 h-10 flex justify-center items-center duration-300 text-3xl"
+              className="lg:hidden bg-none outline-none hover:bg-gray-400 dark:text-white rounded-full w-10 h-10 flex justify-center items-center duration-300 text-3xl"
               onClick={() => setOpen(!open)}
             >
               {open ? <AiOutlineClose /> : <AiOutlineMenu />}
