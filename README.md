@@ -8,7 +8,7 @@ It also includes a contact me form for easy communication.
 
 ## Demo
 
-Check out the live version of my portfolio [here](hardikverma22.github.io/Portfolio/).
+Check out the live version of my portfolio [here](https://hardikverma22.github.io/Portfolio/).
 
 ## Technologies Used
 
