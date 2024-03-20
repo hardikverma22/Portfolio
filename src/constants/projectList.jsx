@@ -14,13 +14,16 @@ import {
   SiNextdotjs,
 } from "../components/Icons";
 
-import convexLogo from "../../public/convex-logo.svg";
-import clerkLogo from "../../public/clerk.svg";
+import convexLogo from "../assets/convex-logo.svg";
+import clerkLogo from "../assets/clerk.svg";
+import togetherAILogo from "../assets/together.ai.svg";
 
 const Convex = () => {
-  return (
-    <img alt="Convex logo" src={convexLogo} className="w-5 h-5 grayscale" />
-  );
+  return <img alt="Convex logo" src={convexLogo} className="w-5 h-5 grayscale" />;
+};
+
+const TogetherAI = () => {
+  return <img alt="Together.ai logo" src={togetherAILogo} className="w-5 h-5 grayscale" />;
 };
 
 const Clerk = () => {
@@ -40,6 +43,20 @@ export const projects = [
       {name: "Convex", icon: <Convex />},
       {name: "Clerk", icon: <Clerk />},
       {name: "Stripe", icon: <FaCcStripe className="text-xl" />},
+    ],
+  },
+  {
+    title: "Voice Wise AI",
+    description: `Enables users to record audio notes and convet it into transcription, summmary and useful action items`,
+    githubURL: "https://github.com/hardikverma22/VoiceWiseAI",
+    liveURL: "https://voice-wise-ai.vercel.app/",
+    techStack: [
+      {name: "NextJS", icon: <SiNextdotjs className="text-xl" />},
+      {name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" />},
+      {name: "Whisper AI", icon: <SiOpenai className="text-xl" />},
+      {name: "together.ai", icon: <TogetherAI />},
+      {name: "Convex", icon: <Convex />},
+      {name: "Clerk", icon: <Clerk />},
     ],
   },
   {
@@ -71,10 +88,8 @@ export const projects = [
     title: "CodeMe",
     description: `CodeMe is an online editor plus IDE to develop small web applications
           using HTML, CSS and Javascript.`,
-    githubURL:
-      "https://github.com/hardikverma22/Code-Me-with-tailwind-reziable-panels",
-    liveURL:
-      "https://hardikverma22.github.io/Code-Me-with-tailwind-reziable-panels/",
+    githubURL: "https://github.com/hardikverma22/Code-Me-with-tailwind-reziable-panels",
+    liveURL: "https://hardikverma22.github.io/Code-Me-with-tailwind-reziable-panels/",
     techStack: [
       {name: "React", icon: <FaReact className="text-xl" />},
       {name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" />},

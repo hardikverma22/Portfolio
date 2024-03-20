@@ -3,7 +3,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import Slide from "./Slide";
 
-import { projects } from "../../constants/projectList";
+import {projects} from "../../constants/projectList";
 
 const CardSlider = () => {
   const settings = {
@@ -37,10 +37,9 @@ const CardSlider = () => {
   };
   return (
     <Slider {...settings} className="w-full flex">
-      <Slide {...projects[0]} />
-      <Slide {...projects[1]} />
-      <Slide {...projects[2]} />
-      <Slide {...projects[3]} />
+      {projects.map((project) => (
+        <Slide {...project} />
+      ))}
     </Slider>
   );
 };
