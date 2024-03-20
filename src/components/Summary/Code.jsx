@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {fadeIn, fadeInX, slideIn} from "../../constants/motion";
+import {fadeIn} from "../../constants/motion";
 
 const Code = () => {
   return (
@@ -13,7 +13,7 @@ const Code = () => {
                 dark:bg-gray-800 dark:text-white 
                   shadow-lg
                   font-extralight
-                  text-sm md:text-base"
+                  text-sm md:text-base select-none"
     >
       <pre>
         1&nbsp;&nbsp;class <b>Person </b>

@@ -18,7 +18,7 @@ const Projects = forwardRef(({projectsRef}, ref) => {
           Projects
         </h2>
       </motion.div>
-      <div className="h-full md:w-[94%] w-[75%] py-10 flex items-center justify-center md:max-h-screen">
+      <div className="h-full md:w-[94%] w-[75%] flex items-center justify-center md:max-h-screen">
         <CardSlider />
       </div>
       <ScrollButton ref={ref} isLight={true} />

@@ -101,7 +101,7 @@ export const colorCodeContainer = (staggerChildren = 0.2, delayChildren = 0) => 
   },
 });
 
-export const fadeInX = (x = -50, duration = 0.9) => ({
+export const fadeInRotateX = (x = -50, duration = 0.9) => ({
   hidden: {opacity: 0, x: x, rotate: 0, borderRadius: "20%"},
   show: {
     opacity: 1,

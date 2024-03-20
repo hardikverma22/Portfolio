@@ -46,13 +46,19 @@ const ContactForm = () => {
             <label
               htmlFor="name"
               className={`${
-                errors.name ? "text-red-500" : touchedFields.name ? "text-green-600" : "text-gray-500 dark:text-white"
+                errors.name
+                  ? "text-red-500"
+                  : touchedFields.name
+                  ? "text-green-600"
+                  : "text-gray-500 dark:text-white"
               } text-sm font-medium`}
             >
               Your Name
             </label>
             <label className="relative w-full">
               <input
+                autoComplete="name"
+                id="name"
                 {...register("name", {
                   required: "Uh oh, looks like you forgot to tell your name!",
                 })}
@@ -83,13 +89,19 @@ const ContactForm = () => {
             <label
               htmlFor="email"
               className={`${
-                errors.email ? "text-red-500" : touchedFields.email ? "text-green-600" : "text-gray-500 dark:text-white"
+                errors.email
+                  ? "text-red-500"
+                  : touchedFields.email
+                  ? "text-green-600"
+                  : "text-gray-500 dark:text-white"
               } text-sm font-medium`}
             >
               Your Email
             </label>
             <div className="relative w-full">
               <input
+                autoComplete="email"
+                id="email"
                 {...register("email", {
                   required: "Uh oh, looks like you forgot to tell your email!",
                   pattern: {
@@ -117,8 +129,12 @@ const ContactForm = () => {
                 ""
               )}
             </div>
-            {errors.email?.type === "required" && <p className="text-red-500 pt-2">{errors.email.message}</p>}
-            {errors.email?.type === "pattern" && <p className="text-red-500 pt-2">{errors.email.message}</p>}
+            {errors.email?.type === "required" && (
+              <p className="text-red-500 pt-2">{errors.email.message}</p>
+            )}
+            {errors.email?.type === "pattern" && (
+              <p className="text-red-500 pt-2">{errors.email.message}</p>
+            )}
           </div>
           <div className="flex flex-col">
             <label
@@ -131,6 +147,8 @@ const ContactForm = () => {
             </label>
             <div className="relative w-full">
               <textarea
+                autoComplete="off"
+                id="message"
                 {...register("message", {
                   required: "Would be great if you can add a message, I promise I read every word.",
                 })}

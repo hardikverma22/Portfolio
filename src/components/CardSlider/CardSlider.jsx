@@ -38,7 +38,7 @@ const CardSlider = () => {
   return (
     <Slider {...settings} className="w-full flex">
       {projects.map((project) => (
-        <Slide {...project} />
+        <Slide key={project.title} {...project} />
       ))}
     </Slider>
   );

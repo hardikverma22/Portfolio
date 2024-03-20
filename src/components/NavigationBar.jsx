@@ -1,18 +1,24 @@
-import {motion} from "framer-motion";
+import {motion, useInView} from "framer-motion";
 import {useEffect, useRef, useState} from "react";
 import {slideIn} from "../constants/motion";
 import DarkModeButton from "./DarkModeButton";
-import {AiOutlineClose, AiOutlineMenu, FcBusinessman, FcCellPhone, FcDiploma2, FcList, FcPortraitMode} from "./Icons";
+import {
+  AiOutlineClose,
+  AiOutlineMenu,
+  FcBusinessman,
+  FcCellPhone,
+  FcDiploma2,
+  FcList,
+  FcPortraitMode,
+} from "./Icons";
 
 import logo from "../assets/logo.svg";
 import logoWhite from "../assets/logo-white.svg";
 
-const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMeRef}) => {
+const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMeRef, mainRef}) => {
   const [open, setOpen] = useState(false);
 
   const sideNavRef = useRef(null);
-
-  const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
     {
@@ -41,6 +47,17 @@ const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMe
       passedInRef: contactMeRef,
     },
   ];
+
+  const refsInView = tabs.map((tab) => useInView(tab.passedInRef, {amount: 0.5}));
+
+  const [activeTab, setActiveTab] = useState(0);
+
+  useEffect(() => {
+    const inViewTabIndex = refsInView.indexOf(true);
+    if (inViewTabIndex != -1 && Number.isInteger(inViewTabIndex)) {
+      setActiveTab(inViewTabIndex);
+    }
+  }, [refsInView]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -90,11 +107,15 @@ const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMe
             initial={"hidden"}
             whileInView={"show"}
             viewport={{once: true}}
-            className="hidden lg:flex items-center justify-center gap-6 font-medium tracking-wide"
+            className="hidden 
+                      lg:flex items-center justify-center
+                      gap-6 
+                      font-medium tracking-wide
+                      select-none"
           >
             {tabs.map((tab, index) => (
               <li
-                key={`${tab}_${index}`}
+                key={tab.title}
                 className="relative cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary"
               >
                 <a
@@ -146,7 +167,10 @@ const NavigationBar = ({summaryRef, skillRef, aboutMeRef, projectsRef, contactMe
             open ? "left-0" : "left-[-100%]"
           }`}
         >
-          <h1 onClick={() => handleScroll(summaryRef)} className="cursor-pointer text-4xl font-bold text-white p-2">
+          <h1
+            onClick={() => handleScroll(summaryRef)}
+            className="cursor-pointer text-4xl font-bold text-white p-2"
+          >
             Hardik
           </h1>
           <li

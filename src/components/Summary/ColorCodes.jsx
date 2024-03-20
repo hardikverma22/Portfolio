@@ -1,7 +1,7 @@
 import {colors} from "../../constants";
 import {motion} from "framer-motion";
 import toast from "react-hot-toast";
-import {colorCodeContainer, fadeInX} from "../../constants/motion";
+import {colorCodeContainer, fadeInRotateX} from "../../constants/motion";
 
 const ColorCodes = () => {
   const handleColorClick = (e, c) => {
@@ -38,11 +38,7 @@ const ColorCodes = () => {
         <motion.div
           whileTap={{scale: 0.8}}
           whileHover={{scale: 1.2}}
-          variants={fadeInX()}
-          // animate={{
-          //   rotate: [0, 0, 270, 270, 0],
-          //   borderRadius: ["20%", "20%", "50%", "50%", "20%"],
-          // }}
+          variants={fadeInRotateX()}
           key={c}
           style={{backgroundColor: c}}
           className="md:w-10 md:h-10 w-8 h-8
