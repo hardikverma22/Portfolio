@@ -1,5 +1,5 @@
 import {motion} from "framer-motion";
-import {fadeIn} from "../../constants/motion";
+import {fadeIn} from "lib/constants/motion";
 
 const Code = () => {
   return (
@@ -8,12 +8,12 @@ const Code = () => {
       initial={"hidden"}
       whileInView={"show"}
       viewport={{once: true}}
-      className="p-4 my-2 md:my-0 rounded-md 
+      className="xl:p-4 p-2 rounded-xl
                 text-tertiary bg-white
                 dark:bg-gray-800 dark:text-white 
                   shadow-lg
                   font-extralight
-                  text-sm md:text-base select-none"
+                  text-sm xl:text-base select-none tracking-tighter text-wrap"
     >
       <pre>
         1&nbsp;&nbsp;class <b>Person </b>

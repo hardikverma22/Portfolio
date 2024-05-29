@@ -1,5 +1,5 @@
 import {motion, useMotionTemplate, useMotionValue} from "framer-motion";
-import {BsGithub, CgWebsite} from "../Icons";
+import {BsGithub, CgWebsite} from "src/components/icons";
 
 const Slide = ({title, description, githubURL, liveURL, techStack}) => {
   let mouseX = useMotionValue(0);

@@ -12,25 +12,23 @@ import {
   AiOutlineMail,
   SiFramer,
   SiNextdotjs,
-} from "../components/Icons";
+  TbGridDots,
+} from "src/components/icons";
 
-import convexLogo from "../assets/convex-logo.svg";
-import clerkLogo from "../assets/clerk.svg";
-import togetherAILogo from "../assets/together.ai.svg";
+import convexLogo from "src/assets/convex-logo.svg";
+import clerkLogo from "src/assets/clerk.svg";
+// import togetherAILogo from "src/assets/togetherai.svg";
+import {cn} from "lib/utils/cn";
 
-const Convex = () => {
-  return <img alt="Convex logo" src={convexLogo} className="w-5 h-5 grayscale" />;
+export const Convex = ({className = "w-6 h-6"}) => {
+  return <img alt="Convex logo" src={convexLogo} className={cn("dark:grayscale", className)} />;
 };
 
-const TogetherAI = () => {
-  return <img alt="Together.ai logo" src={togetherAILogo} className="w-5 h-5 grayscale" />;
+export const Clerk = ({className = "w-6 h-6"}) => {
+  return <img alt="Clerk logo" src={clerkLogo} className={cn("grayscale ", className)} />;
 };
 
-const Clerk = () => {
-  return <img alt="Clerk logo" src={clerkLogo} className="w-5 h-5" />;
-};
-
-export const projects = [
+export const PROJECTS = [
   {
     title: "Travel Planner AI",
     description: `AI travel companion designed to simplify the process of planning your next adventure.`,
@@ -40,8 +38,8 @@ export const projects = [
       {name: "NextJS", icon: <SiNextdotjs className="text-xl" />},
       {name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" />},
       {name: "OpenAI", icon: <SiOpenai className="text-xl" />},
-      {name: "Convex", icon: <Convex />},
-      {name: "Clerk", icon: <Clerk />},
+      // {name: "Convex", icon: <Convex className="h-5 w-5" />},
+      // {name: "Clerk", icon: <Clerk className="h-5 w-5" />},
       {name: "Stripe", icon: <FaCcStripe className="text-xl" />},
     ],
   },
@@ -54,7 +52,10 @@ export const projects = [
       {name: "NextJS", icon: <SiNextdotjs className="text-xl" />},
       {name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" />},
       {name: "Whisper AI", icon: <SiOpenai className="text-xl" />},
-      {name: "together.ai", icon: <TogetherAI />},
+      {
+        name: "Together.ai",
+        icon: <TbGridDots className="text-xl" />,
+      },
       {name: "Convex", icon: <Convex />},
       {name: "Clerk", icon: <Clerk />},
     ],
