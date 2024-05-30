@@ -101,8 +101,8 @@ export const PROJECTS = [
     title: "Textop.AI",
     description: `A text analysis tool for sentiment analysis, text classification,
        keyword extraction, and text summarization.`,
-    githubURL: "https://github.com/hardikverma22/textop.AI",
-    liveURL: "https://hardikverma22.github.io/textop.AI/",
+    githubURL: "https://github.com/hardikverma22/TextOp-AI",
+    liveURL: "https://text-op-ai.vercel.app/",
     techStack: [
       {name: "React", icon: <FaReact className="text-xl" />},
       {name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" />},
