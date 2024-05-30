@@ -1,8 +1,8 @@
 import React from "react";
-import {BsGithub, BsLinkedin, MdDownloadForOffline} from "./Icons";
-import resume from "../assets/resume.pdf";
+import {BsGithub, BsLinkedin, MdDownloadForOffline} from "src/components/icons";
+import resume from "src/assets/resume.pdf";
 import {motion} from "framer-motion";
-import {colorCodeContainer, fadeInRotateX} from "../constants/motion";
+import {colorCodeContainer, fadeInRotateX} from "lib";
 
 const SocialMediaButtons = () => {
   return (

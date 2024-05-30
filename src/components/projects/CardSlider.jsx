@@ -1,9 +1,9 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import Slide from "./Slide";
+import Slide from "src/components/projects/Slide";
 
-import {projects} from "../../constants/projectList";
+import {PROJECTS} from "lib/constants/projectList";
 
 const CardSlider = () => {
   const settings = {
@@ -37,7 +37,7 @@ const CardSlider = () => {
   };
   return (
     <Slider {...settings} className="w-full flex">
-      {projects.map((project) => (
+      {PROJECTS.map((project) => (
         <Slide key={project.title} {...project} />
       ))}
     </Slider>

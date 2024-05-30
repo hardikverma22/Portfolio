@@ -1,34 +1,26 @@
-import { useEffect, useState } from "react";
-import { BsFillSunFill, BsMoonFill } from "./Icons";
+import {BsFillSunFill, BsMoonFill} from "src/components/icons";
+import {useTheme} from "src/contexts/ThemeContextProvider";
+import {THEMES} from "lib/constants";
+import {motion} from "framer-motion";
 
-const THEMES = {
-  LIGHT: "light",
-  DARK: "dark",
+const slideInX = {
+  hidden: {opacity: 0, x: 200},
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {duration: 0.9, type: "spring", bounce: 0.3, delay: 0.9},
+  },
 };
 
 const DarkModeButton = () => {
-  const [theme, setTheme] = useState(THEMES.DARK);
-
-  const toggleTheme = (isDark) => {
-    const theme = isDark ? THEMES.LIGHT : THEMES.DARK;
-    setTheme(theme);
-    localStorage.setItem("hdk-portfolio-theme", theme);
-  };
-
-  useEffect(() => {
-    const localTheme = localStorage.getItem("hdk-portfolio-theme");
-    if (localTheme) {
-      document.body.className = localTheme;
-      setTheme(localTheme);
-    } else {
-      document.body.className = theme;
-    }
-  }, [theme]);
-
+  const {theme, toggleTheme} = useTheme();
   const IsDark = theme == THEMES.DARK;
 
   return (
-    <label
+    <motion.label
+      variants={slideInX}
+      initial={"hidden"}
+      animate={"show"}
       htmlFor="customCheckbox"
       className={`flex ${
         IsDark ? "bg-gray-600" : "bg-gray-300"
@@ -39,7 +31,7 @@ const DarkModeButton = () => {
         type="checkbox"
         id="customCheckbox"
         className="peer sr-only"
-        onChange={() => toggleTheme(IsDark)}
+        onChange={toggleTheme}
       />
       <span className="w-2/5 h-4/5 bg-white absolute rounded-full left-1 top-1 peer-checked:bg-black peer-checked:left-11 duration-300 transition-all flex justify-center items-center">
         {IsDark ? (
@@ -48,7 +40,7 @@ const DarkModeButton = () => {
           <BsFillSunFill className="text-black text-xl" />
         )}
       </span>
-    </label>
+    </motion.label>
   );
 };
 

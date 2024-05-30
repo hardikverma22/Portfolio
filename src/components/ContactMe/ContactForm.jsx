@@ -1,8 +1,11 @@
 import emailjs from "@emailjs/browser";
+
 import {useRef, useState} from "react";
 import {useForm} from "react-hook-form";
 import toast from "react-hot-toast";
-import {BsCheck, MdErrorOutline} from "../Icons";
+import {BsCheck, MdErrorOutline} from "src/components/icons";
+import {Input} from "src/components/ui/input";
+import {Textarea} from "src/components/ui/textarea";
 
 const ContactForm = () => {
   const formRef = useRef();
@@ -18,6 +21,7 @@ const ContactForm = () => {
 
   const onSubmit = (data) => {
     setIsSending(true);
+    const toastId = toast.loading("Your email is being sent to me, Hold Tight!");
     emailjs
       .sendForm(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
@@ -27,11 +31,12 @@ const ContactForm = () => {
       )
       .then(
         (result) => {
-          console.log(result.text);
+          toast.dismiss(toastId);
           toast.success("Thanks for getting in touch! I'll be in contact soon");
           reset();
         },
         (error) => {
+          toast.dismiss(toastId);
           toast.error("Error Sending email. Try again in sometime.");
         }
       )
@@ -42,7 +47,7 @@ const ContactForm = () => {
     <>
       <form ref={formRef} onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="flex flex-col gap-8">
-          <div className="flex flex-col -gap-3">
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="name"
               className={`${
@@ -55,37 +60,33 @@ const ContactForm = () => {
             >
               Your Name
             </label>
-            <label className="relative w-full">
-              <input
+            <div className="relative w-full">
+              <Input
                 autoComplete="name"
                 id="name"
                 {...register("name", {
                   required: "Uh oh, looks like you forgot to tell your name!",
                 })}
                 aria-invalid={errors?.name ? "true" : "false"}
-                className={`w-full border-b dark:text-white focus:border-b ${
+                type="text"
+                name="name"
+                disabled={isSending}
+                className={`${
                   errors.name
                     ? "border-red-500"
                     : touchedFields.name
                     ? "border-green-600"
                     : "border-gray-500 dark:border-white"
-                } focus:outline-none active:border-b bg-transparent placeholder:text-sm placeholder:pt-2
-                disabled:bg-gray-100 disabled:rounded-sm`}
-                type="text"
-                name="name"
-                disabled={isSending}
+                } flex justify-center`}
               />
-              {errors.name ? (
-                <MdErrorOutline className="absolute right-0 top-0 mx-auto text-2xl text-red-600" />
-              ) : touchedFields.name ? (
-                <BsCheck className="absolute right-0 top-0 mx-auto text-2xl text-green-600" />
-              ) : (
-                ""
-              )}
-            </label>
+              <RenderInputIcon
+                hasError={errors.name || false}
+                isTouched={touchedFields.name || false}
+              />
+            </div>
             {errors.name && <p className="text-red-500 pt-2">{errors.name.message}</p>}
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="email"
               className={`${
@@ -99,7 +100,7 @@ const ContactForm = () => {
               Your Email
             </label>
             <div className="relative w-full">
-              <input
+              <Input
                 autoComplete="email"
                 id="email"
                 {...register("email", {
@@ -110,24 +111,22 @@ const ContactForm = () => {
                     message: "Oops! It looks like the email you entered isn't valid.",
                   },
                 })}
-                className={`w-full border-b dark:text-white ${
+                aria-invalid={errors?.name ? "true" : "false"}
+                type="text"
+                name="email"
+                disabled={isSending}
+                className={`${
                   errors.email
                     ? "border-red-500"
                     : touchedFields.email
                     ? "border-green-600"
                     : "border-gray-500 dark:border-white"
-                } focus:outline-none active:border-b bg-transparent disabled:bg-gray-100 disabled:rounded-sm`}
-                type="text"
-                name="email"
-                disabled={isSending}
+                } flex justify-center`}
               />
-              {errors.email ? (
-                <MdErrorOutline className="absolute right-0 top-0 mx-auto text-2xl text-red-600" />
-              ) : touchedFields.email ? (
-                <BsCheck className="absolute right-0 top-0 mx-auto text-2xl text-green-600" />
-              ) : (
-                ""
-              )}
+              <RenderInputIcon
+                hasError={errors.email || false}
+                isTouched={touchedFields.email || false}
+              />
             </div>
             {errors.email?.type === "required" && (
               <p className="text-red-500 pt-2">{errors.email.message}</p>
@@ -136,7 +135,7 @@ const ContactForm = () => {
               <p className="text-red-500 pt-2">{errors.email.message}</p>
             )}
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="message"
               className={`${
@@ -146,15 +145,38 @@ const ContactForm = () => {
               Message
             </label>
             <div className="relative w-full">
-              <textarea
+              <Textarea
+                autoComplete="off"
+                id="message"
+                {...register("message", {
+                  required: "Would be great if you can add a message, I promise I read every word.",
+                })}
+                cols="30"
+                rows="10"
+                placeholder="write your message here"
+                aria-invalid={errors?.message ? "true" : "false"}
+                name="message"
+                disabled={isSending}
+                className={`${
+                  errors.message
+                    ? "border-red-500"
+                    : touchedFields.message
+                    ? "border-green-600"
+                    : "border-gray-500 dark:border-white"
+                } flex justify-center`}
+              />
+              <RenderInputIcon
+                hasError={errors.message || false}
+                isTouched={touchedFields.message || false}
+              />
+              {/* <textarea
                 autoComplete="off"
                 id="message"
                 {...register("message", {
                   required: "Would be great if you can add a message, I promise I read every word.",
                 })}
                 name="message"
-                cols="30"
-                rows="10"
+               
                 placeholder="write your message here"
                 className={`w-full dark:text-white placeholder:text-sm placeholder:pt-2 resize-none h-32 border-b ${
                   errors.message
@@ -171,7 +193,7 @@ const ContactForm = () => {
                 <BsCheck className="absolute right-0 top-0 mx-auto text-2xl text-green-600" />
               ) : (
                 ""
-              )}
+              )} */}
             </div>
             {errors.message && <p className="text-red-500 pt-2">{errors.message.message}</p>}
           </div>
@@ -190,3 +212,13 @@ const ContactForm = () => {
 };
 
 export default ContactForm;
+
+const RenderInputIcon = ({hasError, isTouched}) => {
+  return hasError ? (
+    <MdErrorOutline className="absolute right-2 top-[25%] mx-auto text-2xl text-red-600" />
+  ) : isTouched ? (
+    <BsCheck className="absolute right-2 top-[25%] mx-auto text-2xl text-green-600" />
+  ) : (
+    ""
+  );
+};

@@ -1,7 +1,8 @@
-import {colors} from "../../constants";
 import {motion} from "framer-motion";
 import toast from "react-hot-toast";
-import {colorCodeContainer, fadeInRotateX} from "../../constants/motion";
+
+import {colors} from "lib/constants";
+import {colorCodeContainer, fadeInRotateX} from "lib/constants/motion";
 
 const ColorCodes = () => {
   const handleColorClick = (e, c) => {
@@ -25,14 +26,15 @@ const ColorCodes = () => {
           rgb(var(--light-purple) / 0.1) 100%)
         `,
       }}
-      className="flex justify-evenly flex-1
-                md:gap-8 gap-6
-                md:p-6 p-4  w-full
+      className="flex justify-evenly
+                xl:gap-8 gap-6
+                lg:p-6 p-4 
                 dark:[background:padding-box_var(--bg-color),border-box_var(--border-color)]
-                border border-transparent group relative rounded-3xl 
+                border border-transparent group relative rounded-xl 
                  bg-slate-100 dark:bg-gray-900"
       initial="hidden"
       whileInView="show"
+      viewport={{once: true}}
     >
       {colors.map((c) => (
         <motion.div
@@ -43,7 +45,7 @@ const ColorCodes = () => {
           style={{backgroundColor: c}}
           className="md:w-10 md:h-10 w-8 h-8
                       shadow-lg rounded-md
-                      dark:border-white/50 border-2"
+                      dark:border-white/50 border-2 cursor-pointer"
           onClick={(e) => handleColorClick(e, c)}
         ></motion.div>
       ))}

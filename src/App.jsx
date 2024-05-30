@@ -1,37 +1,40 @@
-import {useEffect, useRef} from "react";
+import {useEffect} from "react";
 import "./App.css";
 import {AboutMe, ContactMe, NavigationBar, Projects, Skills, Summary} from "./components";
+import {Toaster} from "react-hot-toast";
+import Testimonials from "components/testimonials/Testimonials";
+import {ErrorBoundary} from "react-error-boundary";
 
 const App = () => {
-  const summaryRef = useRef();
-  const skillRef = useRef();
-  const aboutMeRef = useRef();
-  const projectsRef = useRef();
-  const contactMeRef = useRef();
-  const mainRef = useRef();
-
   useEffect(() => {
     document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
   }, []);
 
+  function fallbackRender({error, resetErrorBoundary}) {
+    // Call resetErrorBoundary() to reset the error boundary and retry the render.
+
+    return (
+      <div role="alert">
+        <p>Something went wrong:</p>
+        <pre style={{color: "red"}}>{error.message}</pre>
+      </div>
+    );
+  }
+
   return (
     <main>
-      <NavigationBar
-        summaryRef={summaryRef}
-        skillRef={skillRef}
-        aboutMeRef={aboutMeRef}
-        projectsRef={projectsRef}
-        contactMeRef={contactMeRef}
-        mainRef={mainRef}
-      />
-
-      <div ref={mainRef}>
-        <Summary summaryRef={summaryRef} ref={skillRef} />
-        <Skills skillRef={skillRef} ref={aboutMeRef} />
-        <AboutMe aboutMeRef={aboutMeRef} ref={projectsRef} />
-        <Projects projectsRef={projectsRef} ref={contactMeRef} />
-        <ContactMe contactMeRef={contactMeRef} ref={summaryRef} />
-      </div>
+      <ErrorBoundary fallbackRender={fallbackRender}>
+        <NavigationBar />
+        <div className="pt-16">
+          <Summary index={-1} />
+          <Skills index={0} />
+          <AboutMe index={1} />
+          <Projects index={2} />
+          <Testimonials index={3} />
+          <ContactMe index={4} />
+        </div>
+        <Toaster containerStyle={{top: 100}} />
+      </ErrorBoundary>
     </main>
   );
 };

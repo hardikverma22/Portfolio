@@ -3,24 +3,20 @@ import {
   AiOutlineArrowDown,
   AiOutlineArrowUp,
   AiOutlineClose,
-  AiOutlineMenu,
   AiOutlineEdit,
   AiOutlineMail,
+  AiOutlineMenu,
 } from "react-icons/ai";
 
-import {
-  FcBusinessman,
-  FcCellPhone,
-  FcDiploma2,
-  FcList,
-  FcPortraitMode,
-} from "react-icons/fc";
+import {FcPortraitMode} from "react-icons/fc";
 
 import {
+  MdArchitecture,
+  MdDownloadForOffline,
   MdEmail,
   MdErrorOutline,
   MdLocationOn,
-  MdDownloadForOffline,
+  MdOutlineContactEmergency,
 } from "react-icons/md";
 
 import {
@@ -32,66 +28,74 @@ import {
   BsMoonFill,
 } from "react-icons/bs";
 
-import {FaCcStripe, FaAws, FaNodeJs, FaReact, FaCss3} from "react-icons/fa";
+import {FaAws, FaCcStripe, FaCode, FaCss3, FaNodeJs, FaPalette, FaReact} from "react-icons/fa";
 
 import {
+  SiCodemirror,
   SiDocker,
   SiDotnet,
   SiFirebase,
-  SiGraphql,
-  SiTailwindcss,
-  SiOpenai,
-  SiCodemirror,
   SiFramer,
+  SiGraphql,
   SiNextdotjs,
+  SiOpenai,
+  SiTailwindcss,
+  SiRazorpay,
 } from "react-icons/si";
-import {
-  TbBrandMongodb,
-  TbBrandTypescript,
-  TbBrandThreejs,
-} from "react-icons/tb";
+import {TbBrandMongodb, TbBrandThreejs, TbBrandTypescript} from "react-icons/tb";
 
 import {CgWebsite} from "react-icons/cg";
+import {GiInfo, GiSkills} from "react-icons/gi";
+import {GrProjects} from "react-icons/gr";
+import {TbGridDots} from "react-icons/tb";
+import {VscFeedback} from "react-icons/vsc";
+SiRazorpay;
 
 export {
+  SiRazorpay,
   AiFillHeart,
   AiOutlineArrowDown,
   AiOutlineArrowUp,
   AiOutlineClose,
-  AiOutlineMenu,
   AiOutlineEdit,
   AiOutlineMail,
-  FcBusinessman,
-  FcCellPhone,
-  FcDiploma2,
-  FcList,
-  FcPortraitMode,
-  BsFillSunFill,
-  BsMoonFill,
-  BsGithub,
+  AiOutlineMenu,
   BsCheck,
-  BsLinkedin,
+  BsFillSunFill,
   BsFillTelephoneFill,
-  MdErrorOutline,
+  BsGithub,
+  BsLinkedin,
+  BsMoonFill,
+  CgWebsite,
+  FaAws,
+  FaCcStripe,
+  FaCode,
+  FaCss3,
+  FaNodeJs,
+  FaPalette,
+  FaReact,
+  FcPortraitMode,
+  GiInfo,
+  GiSkills,
+  GrProjects,
+  MdArchitecture,
   MdDownloadForOffline,
   MdEmail,
+  MdErrorOutline,
   MdLocationOn,
-  FaCcStripe,
-  FaAws,
-  FaNodeJs,
-  FaReact,
-  FaCss3,
+  MdOutlineContactEmergency,
+  SiCodemirror,
   SiDocker,
   SiDotnet,
   SiFirebase,
-  SiGraphql,
-  SiOpenai,
-  SiCodemirror,
   SiFramer,
-  SiTailwindcss,
+  SiGraphql,
   SiNextdotjs,
+  SiOpenai,
+  SiTailwindcss,
   TbBrandMongodb,
-  TbBrandTypescript,
   TbBrandThreejs,
-  CgWebsite,
+  TbBrandTypescript,
+  TbGridDots,
+  VscFeedback,
 };

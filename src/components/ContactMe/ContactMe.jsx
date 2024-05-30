@@ -1,24 +1,20 @@
-import {motion} from "framer-motion";
 import {forwardRef} from "react";
-import {Toaster} from "react-hot-toast";
+import {motion} from "framer-motion";
 
-import {slideIn, textVariant} from "../../constants/motion";
-import {BsFillTelephoneFill, MdEmail, MdLocationOn} from "../Icons";
+import ScrollButton from "src/components/common/ScrollButton";
+import ContactForm from "src/components/contactMe/ContactForm";
+import SectionWrapper from "src/hoc/SectionWrapper";
 
-import ScrollButton from "../ScrollButton";
-import ContactForm from "./ContactForm";
+import {slideIn, textVariant} from "lib/constants/motion";
+import {BsFillTelephoneFill, MdEmail, MdLocationOn} from "src/components/icons";
 
-const ContactMe = forwardRef(({contactMeRef}, ref) => {
+const ContactMe = forwardRef((_, ref) => {
   return (
     <section
-      ref={contactMeRef}
-      className="relative bg-white flex gap-10 flex-col h-fit md:h-screen justify-start items-center pt-40 dark:bg-black"
+      ref={ref}
+      id="contactme"
+      className="bg-white flex gap-10 flex-col min-h-screen md:h-screen justify-start items-center pt-40 dark:bg-black"
     >
-      <Toaster
-        containerStyle={{
-          top: 100,
-        }}
-      />
       <div className="w-full flex gap-10 flex-col justify-start items-center">
         <motion.div variants={textVariant(0.1)} initial="hidden" whileInView="show">
           <h2 className="z-50 text-4xl text-primary dark:text-white font-bold flex justify-center items-center uppercase">
@@ -53,9 +49,8 @@ const ContactMe = forwardRef(({contactMeRef}, ref) => {
           </div>
         </motion.div>
       </div>
-      <ScrollButton ref={ref} isGoToTop={true} />
     </section>
   );
 });
 
-export default ContactMe;
+export default SectionWrapper(ContactMe);

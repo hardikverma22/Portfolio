@@ -1,50 +1,43 @@
- :root {
-     --primary: hsl(0, 2%, 67%);
-     --secondary: rgb(55 65 81);
-     --dark-primary: rgb(43, 42, 42);
-     --dark-secondary: rgb(231, 231, 231);
- }
+:root {
+  --primary: hsl(0, 2%, 67%);
+  --secondary: rgb(55 65 81);
+  --dark-primary: rgb(43, 42, 42);
+  --dark-secondary: rgb(231, 231, 231);
+  --tertiary: "#2962d6";
+}
 
- body {
-     scrollbar-width: thin;
-     scrollbar-color: var(--secondary) var(--primary);
- }
+/* width */
+::-webkit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--primary);
+}
 
- body.dark {
-     scrollbar-color: var(--dark-secondary) var(--dark-primary);
- }
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--primary);
+}
 
- /* Chrome, Edge, and Safari */
- body::-webkit-scrollbar {
-     width: 15px;
- }
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);
+  border-radius: 14px;
+  border: 3px solid var(--primary);
+}
 
- body::-webkit-scrollbar-track {
-     background: var(--primary);
- }
+.dark::-webkit-scrollbar-thumb {
+  background-color: white;
+}
 
- body::-webkit-scrollbar-thumb {
-     background-color: var(--secondary);
-     border-radius: 14px;
-     border: 3px solid var(--primary);
- }
+.dark::-webkit-scrollbar-track {
+  background: gray;
+}
 
- body.dark::-webkit-scrollbar-track {
-     background: var(--primary);
- }
+/* Hide the up arrow button */
+::-webkit-scrollbar-button:start {
+  display: none;
+}
 
- body.dark::-webkit-scrollbar-thumb {
-     background-color: var(--dark-secondary);
-     border-radius: 14px;
-     border: 3px solid var(--dark-primary);
- }
-
- /* Hide the up arrow button */
- body::-webkit-scrollbar-button:start {
-     display: none;
- }
-
- /* Hide the down arrow button */
- body::-webkit-scrollbar-button:end {
-     display: none;
- }
+/* Hide the down arrow button */
+body::-webkit-scrollbar-button:end {
+  display: none;
+}
