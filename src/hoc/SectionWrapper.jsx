@@ -11,7 +11,6 @@ const SectionWrapper = (Component) => {
 
     useEffect(() => {
       if (!inView) return;
-      console.log({activeIndex, index, isInView});
       if (activeIndex !== index && isInView) {
         setActiveIndex(index);
       }

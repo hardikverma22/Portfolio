@@ -11,13 +11,13 @@ import MobileMenu from "src/components/navigation/MobileMenu";
 
 const NavigationBar = () => {
   return (
-    <header id="navbar" className="w-full fixed top-0 z-[1000] dark:bg-black bg-white">
+    <header id="navbar" className="w-full fixed top-0 z-[1000] ">
       <nav
-        className="bg-white bg-opacity-70 dark:bg-black dark:bg-opacity-70
-                      shadow-lg 
+        className="shadow-lg 
                       flex items-center justify-between 
                       md:px-10 px-5 
-                      h-16"
+                      h-16
+                      backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-black/60"
       >
         <motion.div
           variants={slideIn("left", "spring", 0.2, 0.5)}

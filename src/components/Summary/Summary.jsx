@@ -6,7 +6,6 @@ import {slideIn} from "lib/constants/motion";
 import Code from "src/components/summary/Code";
 import ColorCodes from "src/components/summary/ColorCodes";
 import Intro from "src/components/summary/Intro";
-import ScrollButton from "src/components/common/ScrollButton";
 import SectionWrapper from "src/hoc/SectionWrapper";
 
 const Summary = forwardRef((_, ref) => {
@@ -16,7 +15,7 @@ const Summary = forwardRef((_, ref) => {
       id="summary"
       className="w-full h-[calc(100svh-4rem)] 
                 grid lg:grid-rows-1 grid-rows-2 lg:grid-cols-5 lg:gap-2
-                bg-white/10 dark:bg-black overflow-hidden relative"
+                bg-white/10 dark:bg-black overflow-hidden"
     >
       <motion.div
         variants={slideIn("left", "spring", 0.1, 0.2)}
@@ -47,7 +46,6 @@ const Summary = forwardRef((_, ref) => {
         <Code />
         <ColorCodes />
       </motion.div>
-      <ScrollButton id="skills" />
     </section>
   );
 });

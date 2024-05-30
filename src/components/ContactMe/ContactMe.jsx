@@ -13,7 +13,7 @@ const ContactMe = forwardRef((_, ref) => {
     <section
       ref={ref}
       id="contactme"
-      className="relative bg-white flex gap-10 flex-col h-fit md:h-screen justify-start items-center pt-40 dark:bg-black"
+      className="bg-white flex gap-10 flex-col min-h-screen md:h-screen justify-start items-center pt-40 dark:bg-black"
     >
       <div className="w-full flex gap-10 flex-col justify-start items-center">
         <motion.div variants={textVariant(0.1)} initial="hidden" whileInView="show">
@@ -49,7 +49,6 @@ const ContactMe = forwardRef((_, ref) => {
           </div>
         </motion.div>
       </div>
-      <ScrollButton id="navbar" isGoToTop={true} />
     </section>
   );
 });

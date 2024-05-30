@@ -1,7 +1,6 @@
 import {forwardRef} from "react";
 import {motion} from "framer-motion";
 
-import ScrollButton from "src/components/common/ScrollButton";
 import SkillCard from "src/components/skills/SkillCard";
 import SectionTitle from "src/components/common/SectionTitle";
 import SectionWrapper from "src/hoc/SectionWrapper";
@@ -16,7 +15,7 @@ const Skills = forwardRef((_, ref) => {
       id="skills"
       className="w-full min-h-screen 
                 flex flex-col gap-10 justify-center items-center
-                md:px-14 px-5 relative
+                md:px-14 px-5
                 bg-gradient-to-b from-secondary/10 to-tertiary/10"
     >
       <SectionTitle title="Skills" />
@@ -30,8 +29,6 @@ const Skills = forwardRef((_, ref) => {
           <SkillCard key={skill.title} title={skill.title} Icon={skill.icon} index={index} />
         ))}
       </motion.div>
-
-      <ScrollButton id="aboutme" />
     </section>
   );
 });

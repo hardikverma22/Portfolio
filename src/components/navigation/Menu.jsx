@@ -25,7 +25,7 @@ const slideInX = {
 };
 
 const Menu = () => {
-  const {activeIndex, setActiveIndex} = useActiveIndex();
+  const {activeIndex} = useActiveIndex();
 
   return (
     <motion.ul
@@ -45,20 +45,13 @@ const Menu = () => {
           <motion.li
             variants={slideInX}
             key={title}
-            className="relative cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary"
+            className="relative cursor-pointer hover:text-black text-tertiary dark:text-gray-300 dark:hover:text-white"
           >
-            <a
-              // onClick={(e) => {
-              //   e.preventDefault();
-              //   document.getElementById(tab.id).scrollIntoView({behavior: "smooth"});
-              // }}
-              href={`#${id}`}
-              className="flex gap-2 justify-center items-center p-2"
-            >
+            <a href={`#${id}`} className="flex gap-2 justify-center items-center p-2">
               {activeIndex === index && (
                 <motion.span
                   layoutId="bubble"
-                  className="absolute inset-0 z-10 bg-[#2962d62b] dark:bg-white dark:mix-blend-exclusion mix-blend-color-burn"
+                  className="absolute inset-0 z-10 bg-[#5143432b] dark:bg-white mix-blend-exclusion"
                   style={{borderRadius: 9999}}
                   transition={{
                     type: "spring",
