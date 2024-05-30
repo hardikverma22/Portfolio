@@ -31,7 +31,7 @@ export const BentoGridItem = ({className, name, recommendationText, occupation, 
   return (
     <BackgroundGradient
       containerClassName={cn("row-span-1 ", className)}
-      className={cn("rounded-[22px] md:p-6 sm:p-10 bg-white dark:bg-zinc-900 flex gap-2 h-full")}
+      className={cn("rounded-[22px] p-6 bg-white dark:bg-[#232323] flex gap-2 h-full")}
     >
       <div className="min-w-fit">
         <img

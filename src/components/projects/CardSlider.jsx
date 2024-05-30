@@ -8,12 +8,12 @@ import {PROJECTS} from "lib/constants/projectList";
 const CardSlider = () => {
   const settings = {
     dots: true,
-    infinite: false,
-    speed: 4,
+    infinite: true,
+    speed: 400,
     slidesToShow: 3,
     slidesToScroll: 1,
     swipeToSlide: true,
-    autoplay: false,
+    autoplay: true,
     autoplaySpeed: 4000,
     responsive: [
       {

@@ -31,7 +31,6 @@ const ContactForm = () => {
       )
       .then(
         (result) => {
-          console.log(result.text);
           toast.dismiss(toastId);
           toast.success("Thanks for getting in touch! I'll be in contact soon");
           reset();

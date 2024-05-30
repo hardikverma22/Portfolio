@@ -1,15 +1,19 @@
+import {forwardRef} from "react";
 import {motion} from "framer-motion";
+
+import ScrollButton from "src/components/common/ScrollButton";
+import SectionTitle from "src/components/common/SectionTitle";
+import SectionWrapper from "src/hoc/SectionWrapper";
 
 import bnwPic from "src/assets/bnwPic.jpeg";
 import pic from "src/assets/pic.jpeg";
 
 import {slideIn} from "lib/constants/motion";
-import ScrollButton from "src/components/common/ScrollButton";
-import SectionTitle from "src/components/common/SectionTitle";
 
-const AboutMe = () => {
+const AboutMe = forwardRef((_, ref) => {
   return (
     <section
+      ref={ref}
       id="aboutme"
       className="bg-secondary/20 pt-24 md:pt-0 relative flex gap-5 flex-col min-h-screen md:min-h-max md:h-screen justify-center items-center bg-white text-tertiary dark:bg-black dark:text-white"
     >
@@ -42,6 +46,6 @@ const AboutMe = () => {
       <ScrollButton id="projects" />
     </section>
   );
-};
+});
 
-export default AboutMe;
+export default SectionWrapper(AboutMe);

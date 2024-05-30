@@ -1,5 +1,5 @@
 import {BsFillSunFill, BsMoonFill} from "src/components/icons";
-import {useTheme} from "src/contexts/ThemeContext.jsx";
+import {useTheme} from "src/contexts/ThemeContextProvider";
 import {THEMES} from "lib/constants";
 import {motion} from "framer-motion";
 
@@ -8,7 +8,7 @@ const slideInX = {
   show: {
     opacity: 1,
     x: 0,
-    transition: {duration: 0.9, type: "spring", bounce: 0.3, delay: 0.8},
+    transition: {duration: 0.9, type: "spring", bounce: 0.3, delay: 0.9},
   },
 };
 
@@ -19,6 +19,8 @@ const DarkModeButton = () => {
   return (
     <motion.label
       variants={slideInX}
+      initial={"hidden"}
+      animate={"show"}
       htmlFor="customCheckbox"
       className={`flex ${
         IsDark ? "bg-gray-600" : "bg-gray-300"

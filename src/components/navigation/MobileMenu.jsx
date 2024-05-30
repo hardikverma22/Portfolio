@@ -41,7 +41,7 @@ const MobileMenu = () => {
                     fixed top-0 left-0
                     bg-white dark:bg-[#232323] dark:text-white/80
                     shadow-2xl
-                    w-[30%] min-h-[100svh] ease-in-out duration-700 
+                    w-[50%] min-h-[100svh] ease-in-out duration-700 
                      ${open ? "left-0" : "left-[-100%]"}`}
       >
         <h1 className="cursor-pointer text-4xl font-bold text-secondary p-2">

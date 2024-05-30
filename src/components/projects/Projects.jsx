@@ -1,10 +1,15 @@
+import {forwardRef} from "react";
+
 import CardSlider from "src/components/projects/CardSlider";
 import ScrollButton from "src/components/common/ScrollButton";
 import SectionTitle from "src/components/common/SectionTitle";
 
-const Projects = () => {
+import SectionWrapper from "src/hoc/SectionWrapper";
+
+const Projects = forwardRef((_, ref) => {
   return (
     <section
+      ref={ref}
       id="projects"
       className="relative
                 flex flex-col gap-10 justify-center lg:justify-center items-center
@@ -18,6 +23,6 @@ const Projects = () => {
       <ScrollButton id="contactme" />
     </section>
   );
-};
+});
 
-export default Projects;
+export default SectionWrapper(Projects);

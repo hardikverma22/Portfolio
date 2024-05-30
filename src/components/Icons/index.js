@@ -40,6 +40,7 @@ import {
   SiNextdotjs,
   SiOpenai,
   SiTailwindcss,
+  SiRazorpay,
 } from "react-icons/si";
 import {TbBrandMongodb, TbBrandThreejs, TbBrandTypescript} from "react-icons/tb";
 
@@ -48,7 +49,10 @@ import {GiInfo, GiSkills} from "react-icons/gi";
 import {GrProjects} from "react-icons/gr";
 import {TbGridDots} from "react-icons/tb";
 import {VscFeedback} from "react-icons/vsc";
+SiRazorpay;
+
 export {
+  SiRazorpay,
   AiFillHeart,
   AiOutlineArrowDown,
   AiOutlineArrowUp,

@@ -2,9 +2,13 @@ import ScrollButton from "components/common/ScrollButton";
 import SectionTitle from "components/common/SectionTitle";
 import TestimonialsBentoGrid from "components/testimonials/TestimonialsBentoGrid";
 
-const Testimonials = () => {
+import {forwardRef} from "react";
+import SectionWrapper from "src/hoc/SectionWrapper";
+
+const Testimonials = forwardRef((_, ref) => {
   return (
     <section
+      ref={ref}
       id="testimonials"
       className="w-full min-h-screen
                 flex flex-col gap-10 justify-center items-center
@@ -16,6 +20,6 @@ const Testimonials = () => {
       <ScrollButton id="contactme" />
     </section>
   );
-};
+});
 
-export default Testimonials;
+export default SectionWrapper(Testimonials);

@@ -1,6 +1,8 @@
 import {motion} from "framer-motion";
 import {TABS} from "lib/constants";
+import {useEffect} from "react";
 import {useState} from "react";
+import {useActiveIndex} from "src/contexts/ActiveIndexContextProvider";
 
 const container = {
   hidden: {opacity: 0},
@@ -23,7 +25,7 @@ const slideInX = {
 };
 
 const Menu = () => {
-  const [activeTab, setActiveTab] = useState(-1);
+  const {activeIndex, setActiveIndex} = useActiveIndex();
 
   return (
     <motion.ul
@@ -38,21 +40,22 @@ const Menu = () => {
                 select-none"
     >
       {TABS.map((tab, index) => {
-        const {title, icon, id} = tab;
+        const {title, id} = tab;
         return (
           <motion.li
             variants={slideInX}
             key={title}
-            className="relative cursor-pointer hover:bg-[#2962d62b] transition-all duration-500 rounded-3xl hover:text-black text-gray-700 dark:text-white dark:hover:text-tertiary"
+            className="relative cursor-pointer hover:text-black text-tertiary dark:text-white dark:hover:text-tertiary"
           >
             <a
-              onClick={() => {
-                setActiveTab(index);
-              }}
+              // onClick={(e) => {
+              //   e.preventDefault();
+              //   document.getElementById(tab.id).scrollIntoView({behavior: "smooth"});
+              // }}
               href={`#${id}`}
               className="flex gap-2 justify-center items-center p-2"
             >
-              {activeTab === index && (
+              {activeIndex === index && (
                 <motion.span
                   layoutId="bubble"
                   className="absolute inset-0 z-10 bg-[#2962d62b] dark:bg-white dark:mix-blend-exclusion mix-blend-color-burn"

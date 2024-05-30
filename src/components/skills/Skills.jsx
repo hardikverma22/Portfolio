@@ -1,14 +1,18 @@
+import {forwardRef} from "react";
+import {motion} from "framer-motion";
+
 import ScrollButton from "src/components/common/ScrollButton";
 import SkillCard from "src/components/skills/SkillCard";
+import SectionTitle from "src/components/common/SectionTitle";
+import SectionWrapper from "src/hoc/SectionWrapper";
 
-import {motion} from "framer-motion";
 import {staggerContainer} from "lib/constants/motion";
 import {SKILLS} from "lib/constants";
-import SectionTitle from "src/components/common/SectionTitle";
 
-const Skills = () => {
+const Skills = forwardRef((_, ref) => {
   return (
     <section
+      ref={ref}
       id="skills"
       className="w-full min-h-screen 
                 flex flex-col gap-10 justify-center items-center
@@ -30,6 +34,6 @@ const Skills = () => {
       <ScrollButton id="aboutme" />
     </section>
   );
-};
+});
 
-export default Skills;
+export default SectionWrapper(Skills);

@@ -16,8 +16,8 @@ import {
   TbBrandTypescript,
   VscFeedback,
 } from "components/icons";
-import { Clerk, Convex } from "lib/constants/projectList";
-import { FaCss3, FaHtml5 } from "react-icons/fa";
+import {Clerk, Convex} from "lib/constants/projectList";
+import {FaCss3, FaHtml5} from "react-icons/fa";
 
 export const colors = ["#002B5B", "#87e3fa", "#2962d6", "#FFFFFF", "#232323", "#9fb0d2"];
 
@@ -49,7 +49,7 @@ export const TABS = [
   },
   {
     id: "testimonials",
-    title: "Professional Testimonials",
+    title: "Testimonials",
     icon: VscFeedback,
   },
   {
@@ -76,7 +76,7 @@ export const SKILLS = [
     animationDelay: "0.6",
   },
   {
-    title: "TailwindCSS",
+    title: "Tailwind CSS",
     icon: SiTailwindcss,
     animationDelay: "0.8",
   },

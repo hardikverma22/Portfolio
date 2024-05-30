@@ -13,19 +13,19 @@ import {
   SiFramer,
   SiNextdotjs,
   TbGridDots,
+  SiRazorpay,
 } from "src/components/icons";
 
 import convexLogo from "src/assets/convex-logo.svg";
 import clerkLogo from "src/assets/clerk.svg";
-// import togetherAILogo from "src/assets/togetherai.svg";
 import {cn} from "lib/utils/cn";
 
 export const Convex = ({className = "w-6 h-6"}) => {
-  return <img alt="Convex logo" src={convexLogo} className={cn("dark:grayscale", className)} />;
+  return <img alt="Convex logo" src={convexLogo} className={cn("grayscale", className)} />;
 };
 
 export const Clerk = ({className = "w-6 h-6"}) => {
-  return <img alt="Clerk logo" src={clerkLogo} className={cn("grayscale ", className)} />;
+  return <img alt="Clerk logo" src={clerkLogo} className={cn("grayscale", className)} />;
 };
 
 export const PROJECTS = [
@@ -38,9 +38,9 @@ export const PROJECTS = [
       {name: "NextJS", icon: <SiNextdotjs className="text-xl" />},
       {name: "Tailwind CSS", icon: <SiTailwindcss className="text-xl" />},
       {name: "OpenAI", icon: <SiOpenai className="text-xl" />},
-      // {name: "Convex", icon: <Convex className="h-5 w-5" />},
-      // {name: "Clerk", icon: <Clerk className="h-5 w-5" />},
-      {name: "Stripe", icon: <FaCcStripe className="text-xl" />},
+      {name: "Convex", icon: <Convex />},
+      {name: "Clerk", icon: <Clerk />},
+      {name: "Razorpay", icon: <SiRazorpay className="text-xl" />},
     ],
   },
   {

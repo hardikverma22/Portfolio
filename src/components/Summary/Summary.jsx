@@ -1,13 +1,18 @@
+import {forwardRef} from "react";
 import {motion} from "framer-motion";
+
 import {slideIn} from "lib/constants/motion";
+
 import Code from "src/components/summary/Code";
 import ColorCodes from "src/components/summary/ColorCodes";
 import Intro from "src/components/summary/Intro";
 import ScrollButton from "src/components/common/ScrollButton";
+import SectionWrapper from "src/hoc/SectionWrapper";
 
-const Summary = () => {
+const Summary = forwardRef((_, ref) => {
   return (
     <section
+      ref={ref}
       id="summary"
       className="w-full h-[calc(100svh-4rem)] 
                 grid lg:grid-rows-1 grid-rows-2 lg:grid-cols-5 lg:gap-2
@@ -45,6 +50,6 @@ const Summary = () => {
       <ScrollButton id="skills" />
     </section>
   );
-};
+});
 
-export default Summary;
+export default SectionWrapper(Summary);

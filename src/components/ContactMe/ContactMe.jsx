@@ -1,14 +1,17 @@
+import {forwardRef} from "react";
 import {motion} from "framer-motion";
+
+import ScrollButton from "src/components/common/ScrollButton";
+import ContactForm from "src/components/contactMe/ContactForm";
+import SectionWrapper from "src/hoc/SectionWrapper";
 
 import {slideIn, textVariant} from "lib/constants/motion";
 import {BsFillTelephoneFill, MdEmail, MdLocationOn} from "src/components/icons";
 
-import ScrollButton from "src/components/common/ScrollButton";
-import ContactForm from "src/components/contactMe/ContactForm";
-
-const ContactMe = () => {
+const ContactMe = forwardRef((_, ref) => {
   return (
     <section
+      ref={ref}
       id="contactme"
       className="relative bg-white flex gap-10 flex-col h-fit md:h-screen justify-start items-center pt-40 dark:bg-black"
     >
@@ -49,6 +52,6 @@ const ContactMe = () => {
       <ScrollButton id="navbar" isGoToTop={true} />
     </section>
   );
-};
+});
 
-export default ContactMe;
+export default SectionWrapper(ContactMe);

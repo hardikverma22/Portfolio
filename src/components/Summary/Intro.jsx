@@ -78,7 +78,7 @@ const Intro = () => {
       </motion.div>
       <motion.h1
         variants={slideUp(50)}
-        className="text-4xl lg:text-9xl md:text-7xl drop-shadow-2xl
+        className="text-6xl lg:text-9xl md:text-8xl drop-shadow-2xl
                       uppercasepnpm dev
                       bg-clip-text
                       bg-gradient-to-r
