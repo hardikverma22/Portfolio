@@ -35,7 +35,7 @@ export const BentoGridItem = ({className, name, recommendationText, occupation, 
     >
       <div className="min-w-fit">
         <img
-          src={`/Portfolio/src/assets/${avatar}.jfif`}
+          src={`${avatar}.jfif`}
           alt={`${name}'s profile pic`}
           className="rounded-full w-14 aspect-square"
         />
