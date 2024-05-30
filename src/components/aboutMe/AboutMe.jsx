@@ -27,7 +27,10 @@ const AboutMe = forwardRef((_, ref) => {
                      flex flex-col lg:flex-row justify-center items-center md:drop-shadow-lg"
         >
           <div className="flex justify-center items-end md:items-center md:justify-start p-5">
-            <img src={pic} className="block dark:hidden md:w-48 md:h-64 w-40 h-52 rounded-xl" />
+            <img
+              src={pic}
+              className="block dark:hidden lg:w-72 md:w-64 w-44 aspect-auto rounded-xl"
+            />
             <img
               src={bnwPic}
               className="hidden dark:block lg:w-72 md:w-64 w-44 aspect-auto rounded-xl"
@@ -36,16 +39,28 @@ const AboutMe = forwardRef((_, ref) => {
           <div className="p-5 md:w-full">
             <div className="text-lg leading-9  text-black dark:text-white">
               Embarking on an amazing journey as a{" "}
-              <span className="text-blue-200">Full Stack Developer</span> , I bring a wealth of
-              experience in crafting robust,{" "}
-              <span className="text-blue-200">scalable solutions</span> that drive business success.
-              As a <span className="text-blue-200">Certified SAFe® 5 Practitioner</span>, I
-              seamlessly merge technical prowess with Agile methodologies to sculpt a unique project
-              management approach. My career narrative unfolds through a relentless pursuit of
-              honing <span className="text-blue-200">problem-solving</span> acumen, recognizing its
-              pivotal role in navigating the relentless pace of technological evolution.{" "}
-              <span className="text-blue-200">Collaboration</span> with cross-functional teams is
-              not just a preference but a cornerstone of my professional ethos.
+              <span className="text-tertiary dark:text-secondary tracking-wide">
+                Full Stack Developer
+              </span>{" "}
+              , I bring a wealth of experience in crafting robust,{" "}
+              <span className="text-tertiary dark:text-secondary tracking-wide">
+                scalable solutions
+              </span>{" "}
+              that drive business success. As a{" "}
+              <span className="text-tertiary dark:text-secondary tracking-wide">
+                Certified SAFe® 5 Practitioner
+              </span>
+              , I seamlessly merge technical prowess with Agile methodologies to sculpt a unique
+              project management approach. My career narrative unfolds through a relentless pursuit
+              of honing{" "}
+              <span className="text-tertiary dark:text-secondary tracking-wide">
+                problem-solving
+              </span>{" "}
+              acumen, recognizing its pivotal role in navigating the relentless pace of
+              technological evolution.{" "}
+              <span className="text-tertiary dark:text-secondary tracking-wide">Collaboration</span>{" "}
+              with cross-functional teams is not just a preference but a cornerstone of my
+              professional ethos.
             </div>
           </div>
         </motion.div>

@@ -1,6 +1,6 @@
 import React from "react";
 import {motion} from "framer-motion";
-import {FlipWords} from "src/components/ui/flip-words";
+import {FlipWords} from "src/components/ui/flip-words-new";
 import {MdArchitecture, FaPalette, FaCode} from "src/components/icons";
 import {DockPanel} from "src/components/summary/DockPanel";
 
@@ -79,7 +79,7 @@ const Intro = () => {
       <motion.h1
         variants={slideUp(50)}
         className="text-6xl lg:text-9xl md:text-8xl drop-shadow-2xl
-                      uppercasepnpm dev
+                      uppercase
                       bg-clip-text
                       bg-gradient-to-r
                       from-secondary to-tertiary dark:to-white dark:from-secondary text-transparent

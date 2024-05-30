@@ -1,34 +1,32 @@
 "use client";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {AnimatePresence, motion, LayoutGroup} from "framer-motion";
 import {cn} from "lib/utils/cn";
 
 export const FlipWords = ({words, duration = 3000, className}) => {
   const [currentWord, setCurrentWord] = useState(words[0]);
-  
-  const intervalRef = useRef(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // thanks for the fix Julian - https://github.com/Julian-AT
+  const startAnimation = useCallback(() => {
+    const word = words[words.indexOf(currentWord) + 1] || words[0];
+    setCurrentWord(word);
+    setIsAnimating(true);
+  }, [currentWord, words]);
+
   useEffect(() => {
-    if (words.length === 0) return;
-
-    let i = 0;
-    if (intervalRef.current) clearInterval(intervalRef.current);
-
-    intervalRef.current = setInterval(() => {
-      i++;
-      if (i === words.length) {
-        i = 0;
-      }
-      const word = words[i];
-      setCurrentWord(word);
-    }, duration);
-
-    return () => {
-      clearInterval(intervalRef.current);
-    };
-  }, [words, duration]);
+    if (!isAnimating)
+      setTimeout(() => {
+        startAnimation();
+      }, duration);
+  }, [isAnimating, duration, startAnimation]);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence
+      onExitComplete={() => {
+        setIsAnimating(false);
+      }}
+    >
       <motion.div
         initial={{
           opacity: 0,
@@ -59,7 +57,7 @@ export const FlipWords = ({words, duration = 3000, className}) => {
         )}
         key={currentWord}
       >
-        {currentWord.split("").map((char, index) => (
+        {currentWord.split("").map((letter, index) => (
           <motion.span
             key={currentWord + index}
             initial={{opacity: 0, y: 10, filter: "blur(8px)"}}
@@ -68,9 +66,9 @@ export const FlipWords = ({words, duration = 3000, className}) => {
               delay: index * 0.08,
               duration: 0.4,
             }}
-            className={cn("inline-block", {"whitespace-pre": char === " "})}
+            className={cn("inline-block", {"whitespace-pre": letter === " "})}
           >
-            {char}
+            {letter}
           </motion.span>
         ))}
       </motion.div>

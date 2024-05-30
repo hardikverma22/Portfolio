@@ -6,7 +6,6 @@ import {
   SiFirebase,
   SiCodemirror,
   FaAws,
-  FaCcStripe,
   FaReact,
   TbBrandThreejs,
   AiOutlineMail,
