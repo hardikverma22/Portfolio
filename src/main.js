@@ -39,7 +39,7 @@ function trace(agent, msg, ok) {
    ========================================================= */
 function render() {
   $('#impact-grid').innerHTML = impact.map((i) => `
-    <div class="imp"><span class="imp-d mono">${i.d}</span><span class="imp-k">${i.k}</span>${i.countries ? `<span class="imp-cty">${i.countries.map((c) => `<a href="${i.link}">${c}</a>`).join('')}</span>` : ''}<span class="imp-v">${i.v}</span></div>`).join('');
+    <div class="imp${i.big ? ' imp-big' : ''}"><span class="imp-d mono">${i.d}</span><span class="imp-k">${i.k}</span><span class="imp-v">${i.v}</span>${i.countries ? `<span class="imp-cty">${i.countries.map((c) => `<a href="${i.link}">${c}</a>`).join('')}</span>` : ''}<p class="imp-r">${i.r}</p>${i.go ? `<a class="imp-go mono" href="${i.go[1]}">${i.go[0]} →</a>` : ''}</div>`).join('');
 
   // about → words for scroll-scrubbed reading
   const walk = (node) => [...node.childNodes].forEach((n) => {

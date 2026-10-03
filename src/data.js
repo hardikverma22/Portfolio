@@ -18,12 +18,10 @@ export const identity = {
 };
 
 export const impact = [
-  { k: 'Staff', v: 'Promoted to Staff Software Engineer', d: 'Sep 2026' },
-  { k: '~80%', v: 'Fewer tokens per session, global hackathon finalist', d: '2026' },
-  { k: '60 → 3', v: 'Minutes of manual on-call investigation, with a multi-agent triage system', d: '2025' },
-  { k: '3', v: 'Countries where I built and launched identity platforms', d: '2024–26', countries: ['Chile', 'Mexico', 'Canada'], link: '#engineering' },
-  { k: 'Teaching', v: 'Advocating AI-native engineering at Walmart-wide forums, on LinkedIn and on Medium', d: '2025–26' },
-  { k: 'Inner-source', v: 'Features contributed upstream to the company\u2019s internal AI super-agent used across engineering', d: '2026' },
+  { k: '60 → 3 min', big: true, v: 'Incident investigation, by hand vs. with the triage agent', r: 'About 60 minutes to find and correlate information across many sources and reach a decision, down to about 3 minutes when the agent does it with its memory and context.', d: '2025', go: ['See the triage agent', '#case-triage'] },
+  { k: '~80%', big: true, v: 'Fewer tokens on tasks developers repeat', r: 'Tokens spent on tasks a developer repeats every day, measured with and without tokenOs. Global hackathon finalist.', d: '2026', go: ['See tokenOs', '#case-tokens'] },
+  { k: '3', v: 'Countries with identity platforms I built and launched', r: 'Sign-in and account security for millions of users.', d: '2024–26', countries: ['Chile', 'Mexico', 'Canada'], link: '#engineering' },
+  { k: '10 yrs', v: 'From enterprise apps to AI agents', r: 'TCS, Fidelity, Walmart. Promoted to Staff Software Engineer in Sep 2026.', d: '2016–26', go: ['See the timeline', '#log'] },
 ];
 
 export const triage = {
@@ -135,7 +133,7 @@ export const caseStudies = [
     id: 'tokens',
     no: '03',
     when: 'Walmart · 2026 hackathon',
-    title: 'Token-efficiency layer for AI coding assistants',
+    title: 'tokenOs: a token-efficiency layer for AI coding assistants',
     line: 'A layer that compresses, routes and explains what goes into an LLM’s context before every call.',
     problem: 'Coding assistants spend much of their context window on duplicate, irrelevant and noisy input, which costs tokens and hurts answers.',
     role: 'I built it in hack week as a single Rust binary, then published it internally as a plugin.',
@@ -143,7 +141,7 @@ export const caseStudies = [
       'Ships as an MCP server, a CLI and editor hooks.',
       'Dedupes, summarises and routes context, and shows you exactly what was cut and why.',
     ],
-    result: 'About 80% fewer tokens per session. Finalist out of thousands of entries in a company-wide global hackathon (2026).',
+    result: 'About 80% fewer tokens on tasks developers repeat. Finalist out of thousands of entries in a company-wide global hackathon (2026).',
     stack: ['Rust', 'MCP', 'CLI', 'Editor hooks'],
   },
 ];
@@ -200,7 +198,7 @@ export const lanes = [
 export const commits = [
   { lane: 3, date: 'Sep 2026', msg: 'release: promoted to Staff Software Engineer', tag: 'v-staff', body: 'Recognising the market launches, identity platform foundations and the self-driven AI track.' },
   { lane: 4, date: 'Jul 2026', msg: 'docs(medium): Loop Engineering + four more essays', body: 'Agents, retrieval, governance and interpretability, five essays in 2026.' },
-  { lane: 3, date: 'Jun 2026', msg: 'feat(ai): token-efficiency runtime, hackathon finalist', body: 'Single Rust binary built in hack week; ~80% fewer tokens per session.' },
+  { lane: 3, date: 'Jun 2026', msg: 'feat(ai): token-efficiency runtime, hackathon finalist', body: 'tokenOs: a single Rust binary built in hack week; ~80% fewer tokens on repeated tasks.' },
   { lane: 3, date: '2026', msg: 'feat(mimo): record a task once, your agent runs it forever', body: 'A local-first skill recorder for macOS. Show the workflow, review the skill, reuse it.' },
   { lane: 3, date: 'May 2026', msg: 'feat(agents): delegated access with RFC 8693', body: 'User-granted, revocable agent permissions, end to end.' },
   { lane: 4, date: '2026', msg: 'wip(nailoria): on-device nail try-on + booking', body: 'Hand tracking and a custom segmentation model in the browser; a full booking platform for one real studio.' },
@@ -294,7 +292,7 @@ export const toolbox = [
   ['ai', 'Mc', 'MCP', 'Wrote a log/trace MCP server from scratch; MCP everywhere since'],
   ['ai', 'Fa', 'FastAPI', 'The service layer under every agent I ship'],
   ['ai', 'Rg', 'RAG', 'Vector search over past incidents and runbooks'],
-  ['ai', 'Cx', 'Context engineering', 'Token-efficiency runtime: ~80% fewer tokens per session'],
+  ['ai', 'Cx', 'Context engineering', 'Token-efficiency runtime: ~80% fewer tokens on repeated tasks'],
   ['ai', 'Sk', 'Agent skills', 'mimo, skill miner, headless scheduler'],
   ['ai', 'A2', 'A2A · A2UI', 'Agent-to-agent calls and agents that drive native UI'],
   ['ai', 'Cl', 'Claude / OpenAI', 'Daily drivers, via API and coding agents'],
