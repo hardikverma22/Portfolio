@@ -1,8 +1,8 @@
 // Hero FX, after the old portfolio's hero:
-//  · portrait — B&W photo revealed as halftone; a gooey 3-lens metaball
+//  · portrait, B&W photo revealed as halftone; a gooey 3-lens metaball
 //    follows the cursor and shows the colour photo through it; resting
 //    the cursor blooms colour across the frame.
-//  · x-ray name — letters hollow out / fill in near the cursor.
+//  · x-ray name, letters hollow out / fill in near the cursor.
 import * as THREE from 'three';
 
 const VERT = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;

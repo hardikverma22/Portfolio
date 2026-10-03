@@ -24,7 +24,7 @@ export function mountTriage(root, trace) {
   root.innerHTML = `
     <div class="demo-bar">
       <span class="lights"><i></i><i></i><i></i></span>
-      <span>triage.supervisor — human-in-the-loop</span>
+      <span>triage.supervisor, human-in-the-loop</span>
       <span class="sp"></span>
       <button class="dbtn solid" data-run data-cursor="run">▶ Dispatch</button>
       <button class="dbtn" data-reset>Reset</button>
@@ -141,7 +141,7 @@ export function mountTriage(root, trace) {
     if (!b) return;
     verdict.innerHTML = {
       approve: '<span class="k">approved ▸</span> fix opened behind a flag · status update sent · runbook updated with this incident.',
-      redirect: '<span class="k">redirected ▸</span> supervisor re-planning with your hint — checking the messaging client’s connection pool next.',
+      redirect: '<span class="k">redirected ▸</span> supervisor re-planning with your hint, checking the messaging client’s connection pool next.',
       takeover: '<span class="k">handed over ▸</span> full trace, HAR, diffs and timeline exported to you. Agents standing by.',
     }[b.dataset.act];
     hitl.classList.remove('on');
@@ -193,7 +193,7 @@ export function mountDelegate(root, trace) {
       </div>
       <div class="dg-console">
         <div class="layers">${delegate.layers.map((l) => `<div class="layer">${l}</div>`).join('')}</div>
-        <div class="dg-log" aria-live="polite"><div class="sys">// Press “Let the agent shop”. Then change the policy — or revoke — mid-run.</div></div>
+        <div class="dg-log" aria-live="polite"><div class="sys">// Press “Let the agent shop”. Then change the policy, or revoke, mid-run.</div></div>
       </div>
     </div>`;
 
@@ -220,7 +220,7 @@ export function mountDelegate(root, trace) {
     access.setAttribute('aria-checked', state.active);
     rv.classList.toggle('off', !state.active);
     root.querySelector('[data-rvs]').textContent = state.active ? 'active · revoke anytime' : 'revoked · next exchange will fail';
-    line(state.active ? 'sys' : 'no', state.active ? '// access re-granted by user' : '// user revoked agent access — no code change, no redeploy');
+    line(state.active ? 'sys' : 'no', state.active ? '// access re-granted by user' : '// user revoked agent access, no code change, no redeploy');
     trace?.('gateway', state.active ? 'grant restored' : 'grant revoked');
   });
 
@@ -313,7 +313,7 @@ export function mountTokens(root, trace) {
       <button class="dbtn solid" data-run data-cursor="run">▶ Compress</button>
       <button class="dbtn" data-reset>Reset</button>
     </div>
-    <div class="tk-meter"><div class="tk-num" data-n>48,210<small>tokens</small></div><div class="tk-pct" data-p>— baseline</div></div>
+    <div class="tk-meter"><div class="tk-num" data-n>48,210<small>tokens</small></div><div class="tk-pct" data-p>baseline</div></div>
     <div class="tk-bar"><span data-bar></span></div>
     <div class="tk-field"></div>
     <div class="tk-legend">
@@ -350,7 +350,7 @@ export function mountTokens(root, trace) {
       cur = Math.round(from + (to - from) * e);
       numEl.innerHTML = cur.toLocaleString('en-US') + '<small>tokens</small>';
       const pct = Math.round((1 - cur / BASE) * 100);
-      pctEl.textContent = pct ? `−${pct}%` : '— baseline';
+      pctEl.textContent = pct ? `−${pct}%` : 'baseline';
       bar.style.width = (cur / BASE) * 100 + '%';
       if (k < 1) anim = requestAnimationFrame(step);
     };

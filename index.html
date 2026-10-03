@@ -3,11 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hardik Verma — Delegated</title>
-  <meta name="description" content="Hardik Verma, Staff Software Engineer at Walmart. I build multi-agent AI systems and the identity layer that makes them safe to trust." />
+  <title>Hardik Verma | Staff Engineer, AI Agents</title>
+  <meta name="description" content="Hardik Verma, Staff Software Engineer at Walmart. I build multi-agent AI systems, agent tooling and the identity layer that makes agents safe to trust. Ten years of shipping software." />
+  <link rel="canonical" href="https://hardikverma22.github.io/Portfolio/" />
   <meta name="theme-color" content="#0B0D12" />
-  <meta property="og:title" content="Hardik Verma — Delegated" />
-  <meta property="og:description" content="Multi-agent AI systems and the identity layer that makes them safe to trust." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Hardik Verma | Staff Engineer, AI Agents" />
+  <meta property="og:description" content="Staff Software Engineer at Walmart. I build multi-agent systems, agent tooling and the identity layer that makes agents safe to trust." />
+  <meta property="og:image" content="https://hardikverma22.github.io/Portfolio/hero-color.jpeg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Hardik Verma | Staff Engineer, AI Agents" />
+  <meta name="twitter:description" content="Multi-agent systems, agent tooling and the identity layer that makes agents safe to trust." />
+  <meta name="twitter:image" content="https://hardikverma22.github.io/Portfolio/hero-color.jpeg" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Person","name":"Hardik Verma","jobTitle":"Staff Software Engineer","worksFor":{"@type":"Organization","name":"Walmart Global Tech"},"email":"mailto:hardikverma22@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Bengaluru","addressCountry":"IN"},"knowsAbout":["Multi-agent systems","Model Context Protocol","Context engineering","AI governance","OAuth 2.0 token exchange","Identity platforms"],"sameAs":["https://www.linkedin.com/in/hardikverma22/","https://github.com/hardikverma22","https://medium.com/@hardikverma22"]}
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0D12'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%237FB2FF'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,6 +25,7 @@
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body class="is-locked">
+  <noscript><p style="padding:2rem;font-family:sans-serif;color:#eee;background:#0B0D12">Hardik Verma, Staff Software Engineer at Walmart Global Tech. Multi-agent systems, agent tooling and identity platforms. This site needs JavaScript. <a href="mailto:hardikverma22@gmail.com" style="color:#7FB2FF">hardikverma22@gmail.com</a> · <a href="https://www.linkedin.com/in/hardikverma22/" style="color:#7FB2FF">LinkedIn</a> · <a href="https://github.com/hardikverma22" style="color:#7FB2FF">GitHub</a> · <a href="https://medium.com/@hardikverma22" style="color:#7FB2FF">Medium</a></p></noscript>
   <a class="skip" href="#main">Skip to content</a>
 
   <!-- ========== GATE: token exchange preloader ========== -->
@@ -25,11 +36,12 @@
       <pre class="gate-log mono" id="gate-log" aria-live="polite"></pre>
       <div class="gate-bar"><span id="gate-bar"></span></div>
       <div class="gate-actions" id="gate-actions">
-        <p class="gate-q">An agent wants to show you ten years of work.<br /><em>Grant it read access?</em></p>
+        <p class="gate-q">An agent wants to show you ten years of work.<br /><em id="gate-count">Granting read access automatically…</em></p>
         <div class="gate-btns">
-          <button class="btn btn-solid" id="gate-grant" data-cursor="grant">Grant access <kbd>↵</kbd></button>
-          <button class="btn btn-ghost" id="gate-deny" data-cursor="deny">Deny</button>
+          <button class="btn btn-solid" id="gate-grant" data-cursor="grant">Enter now <kbd>↵</kbd></button>
+          <button class="btn btn-ghost" id="gate-deny" data-cursor="deny">Wait</button>
         </div>
+        <div class="gate-auto" aria-hidden="true"><i></i></div>
       </div>
     </div>
     <p class="gate-foot mono">human-in-the-loop · you can revoke at any time</p>
@@ -37,15 +49,12 @@
 
   <!-- ========== CHROME ========== -->
   <header class="hud" id="hud">
-    <a href="#top" class="hud-logo" aria-label="Back to top" data-cursor="top">hv<span>/</span></a>
-    <div class="hud-token mono" id="hud-token" title="Your delegated token">
-      <span class="dot"></span><span class="tok-label">token</span><span id="tok-id">eyJ…</span>
-      <span class="tok-sep">·</span><span id="tok-ttl">ttl 15:00</span>
-    </div>
+    <a href="#top" class="hud-logo" aria-label="hv, back to top" data-cursor="top">hv<span>/</span></a>
     <nav class="hud-nav mono" aria-label="Sections">
-      <a href="#agents">agents</a><a href="#engineering">identity</a><a href="#log">log</a><a href="#stack">stack</a><a href="#work">work</a><a href="#writing">writing</a><a href="#contact">contact</a>
+      <a href="#agents">work</a><a href="#engineering">identity</a><a href="#writing">writing</a><a href="#log">record</a><a href="#contact">contact</a>
     </nav>
     <div class="hud-right mono">
+      <a class="hud-cta" href="#contact">Get in touch</a>
       <button class="hud-k" id="open-palette" aria-label="Open command palette" data-cursor="⌘K">⌘K</button>
     </div>
   </header>
@@ -73,15 +82,19 @@
           </div>
         </div>
         <div class="hero-right">
-          <p class="hero-role mono">Staff Software Engineer — Walmart Global Tech</p>
+          <p class="hero-role mono">Staff Software Engineer, Walmart Global Tech</p>
           <h1 class="hero-name" aria-label="Hardik Verma">
             <span class="hn-line" aria-hidden="true">HARDIK</span>
             <span class="hn-line hn-outline" aria-hidden="true">VERMA</span>
           </h1>
-          <p class="hero-intro">I build AI agents that do real work — multi-agent systems, agent skills and tooling, and the guardrails that make them safe to trust. Ten years of shipping software, the last two teaching agents to work alongside engineers.</p>
+          <p class="hero-intro">I build AI agents that do real engineering work: multi-agent systems, agent skills and tooling, and the guardrails that make them safe to trust. Ten years of shipping software, the last two spent teaching agents to work alongside engineers.</p>
           <ul class="hero-caps" aria-label="Capabilities">
             <li>Multi-Agent Systems</li><li>Agent Skills &amp; MCP</li><li>Context Engineering</li><li>AI Governance</li><li>Interactive Frontend</li>
           </ul>
+          <div class="hero-ctas">
+            <a class="btn btn-solid" href="#contact" data-cursor="email">Get in touch</a>
+            <a class="btn btn-ghost" href="https://www.linkedin.com/in/hardikverma22/" target="_blank" rel="noopener">LinkedIn ↗</a>
+          </div>
           <a class="hero-cue" href="#impact" data-cursor="scroll">Scroll down <span aria-hidden="true">↓</span></a>
         </div>
       </div>
@@ -97,9 +110,9 @@
       </header>
       <div class="impact-grid" id="impact-grid"></div>
       <p class="about" id="about">
-        Ten years of software — enterprise apps at TCS, product and architecture at Fidelity, platforms for millions at Walmart.
-        These days nearly all of it is <em>AI</em>: agents that investigate incidents, skills that turn a demo into a playbook, runtimes that cut what goes into a model’s context, and the <em>governance layer</em> that decides what an agent may do on your behalf.
-        I advocate for AI-native engineering wherever I can — on stage at Walmart-wide forums, on LinkedIn, and in essays on Medium about agents, retrieval and what happens behind a model’s answers.
+        I have spent ten years building software: enterprise apps at TCS, product architecture at Fidelity, and identity platforms for millions of customers at Walmart.
+        For the last two years almost all of my work has been <em>AI</em>: agents that investigate incidents, skills that turn a demonstration into a repeatable playbook, a runtime that shrinks what goes into a model’s context, and the <em>governance layer</em> that decides what an agent may do on a user’s behalf.
+        I also teach and write about it, at Walmart-wide forums, on LinkedIn, and in essays on Medium about agents, retrieval and what happens behind a model’s answers.
       </p>
     </section>
 
@@ -108,14 +121,14 @@
       <header class="sec-head">
         <span class="sec-no mono">01</span>
         <h2 id="agents-h" class="sec-title">Agents I built at <em>Walmart</em></h2>
-        <p class="sec-note mono">Built at Walmart. Rebuilt here as safe, interactive replicas — sample data, same architecture.</p>
+        <p class="sec-note mono">I built these at Walmart. The demos are interactive replicas with sample data and the same architecture.</p>
       </header>
       <div id="cases"></div>
       <article class="case case-mimo" id="case-mimo">
         <div class="cm-top">
           <div>
             <span class="case-no mono">case 04 / 04<span class="case-when">Walmart · 2026</span></span>
-            <h3 class="case-title"><span class="mm-logo" aria-hidden="true">m</span> mimo — record a task once, <span class="mm-grad">your agent runs it forever</span></h3>
+            <h3 class="case-title"><span class="mm-logo" aria-hidden="true">m</span> mimo, record a task once, <span class="mm-grad">your agent runs it forever</span></h3>
           </div>
           <div>
             <p class="case-line">Writing the perfect prompt is often slower than doing the task. So mimo lets you show it instead: demo the workflow, talk through it, and the agent you already use turns that into a skill you can review and reuse.</p>
@@ -133,12 +146,12 @@
             <div><span class="mono">04</span><h4>Reuse</h4><p>Approve once, run it forever</p></div>
           </div>
           <div class="loop-cols">
-            <div class="loop-col" data-h="01 · Capture — three channels, one clock">
+            <div class="loop-col" data-h="01 · Capture: three channels, one clock">
               <article class="lc c-act" data-w="act"><header><span class="lc-ic">↖</span><b>Actions</b><small class="mono">what</small></header><p>Every click and key, with a screenshot of each step.</p><code class="chip">click  Pull requests</code></article>
               <article class="lc c-say" data-w="say"><header><span class="lc-ic">◖</span><b>Narration</b><small class="mono">why</small></header><p>Your voice, turned into text on your Mac.</p><code class="chip"><span class="mm-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span> “open the pull requests tab”</code></article>
               <article class="lc c-ax" data-w="ax"><header><span class="lc-ic">▣</span><b>Accessibility</b><small class="mono">which</small></header><p>The name and role of every button or field you touched.</p><code class="chip">AXLink  Pull requests</code></article>
             </div>
-            <div class="loop-col" data-h="02 · Understand — mimo turns the tracks into steps">
+            <div class="loop-col" data-h="02 · Understand: mimo turns the tracks into steps">
               <article class="lc c-mimo" data-w="mimo"><header><span class="lc-ic mm-logo">m</span><b>mimo</b></header><p>Joins every click with what you said and what you touched at that moment.</p>
                 <code class="chip c-act" data-w="in-act">click  Pull requests</code>
                 <code class="chip c-say" data-w="in-say">say  “open the pull requests tab”</code>
@@ -148,18 +161,18 @@
               </article>
               <article class="lc c-agent" data-w="agent"><header><span class="lc-ic">◆</span><b>Your agent</b><small class="mono">bundle</small></header><p>mimo hands the redacted, enriched context to the agent you already use.</p><div class="lc-tags mono"><span>steps</span><span>screenshots</span><span>your words</span></div></article>
             </div>
-            <div class="loop-col" data-h="03 · Author — your agent writes the skill">
+            <div class="loop-col" data-h="03 · Author: your agent writes the skill">
               <article class="lc c-author" data-w="author"><header><span class="lc-ic">✎</span><b>Your agent writes SKILL.md</b></header><p>The agent reads the redacted bundle and writes the steps.</p>
                 <div class="lc-tags mono"><span>Claude</span><span>Copilot</span><span>Cursor</span><span>Codex</span></div>
                 <p class="lc-sub mono">picks the best tool, not the demo</p>
-                <ol class="lc-ladder mono"><li class="on">API, MCP or a skill <em>preferred</em></li><li>CLI — gh, bq, jira <em>good</em></li><li>Browser automation <em>fallback</em></li></ol>
+                <ol class="lc-ladder mono"><li class="on">API, MCP or a skill <em>preferred</em></li><li>CLI, gh, bq, jira <em>good</em></li><li>Browser automation <em>fallback</em></li></ol>
                 <pre class="lc-code mono" data-w="skill"><span class="d">my-open-prs / SKILL.md</span>
 1. gh pr list --author @me
 2. if not signed in: gh auth login
 3. fallback: github.com/pulls<i class="caret"></i></pre>
               </article>
             </div>
-            <div class="loop-col" data-h="04 · Reuse — approve once, run it forever">
+            <div class="loop-col" data-h="04 · Reuse: approve once, run it forever">
               <article class="lc c-ok" data-w="approve"><header><span class="lc-ic">✓</span><b>You review and approve</b></header><p>Checked against what you did and test-run first. Nothing is added without your OK.</p><div class="lc-btns"><span class="lc-btn y">Approve</span><span class="lc-btn">Discard</span></div></article>
               <span class="lc-arrow">↓</span>
               <article class="lc c-lib" data-w="lib"><header><span class="lc-ic">❖</span><b>Lives in your skill library</b></header><p>Ask for it next time, and it just runs.</p><div class="lc-chat"><span class="lc-bubble">show my open PRs</span><span class="lc-ran mono">✓ ran my-open-prs</span></div></article>
@@ -195,7 +208,7 @@
         <aside class="geo-panel" id="geo-panel" aria-live="polite"></aside>
       </div>
       <div class="eng-pin">
-        <p class="eng-sub mono">and across every market —</p>
+        <p class="eng-sub mono">and across every market </p>
         <div class="eng-track" id="eng-track"></div>
         <div class="eng-progress mono"><span id="eng-count">01</span> / 06<span class="eng-line"><i id="eng-bar"></i></span></div>
       </div>
@@ -206,44 +219,10 @@
       <ol class="pr-list" id="pr-list"></ol>
     </section>
 
-    <!-- ========== GIT LOG ========== -->
-    <section id="log" class="sec dark log" data-agent="log" aria-labelledby="log-h">
-      <header class="sec-head">
-        <span class="sec-no mono">04</span>
-        <h2 id="log-h" class="sec-title"><span class="mono">git log</span> <em>--career</em></h2>
-        <p class="sec-note mono">$ git log --graph --oneline hardik/main · 2014 → now</p>
-      </header>
-      <div class="gitlog" id="gitlog"></div>
-    </section>
-
-    <!-- ========== STACK ========== -->
-    <section id="stack" class="sec stack" data-agent="stack" aria-labelledby="st-h">
-      <header class="sec-head">
-        <span class="sec-no mono">05</span>
-        <h2 id="st-h" class="sec-title">The stack, <em>as elements</em></h2>
-        <p class="sec-note mono">Forty things I reach for, from agents to animation. Hover an element to see where it shows up in my work.</p>
-      </header>
-      <div class="pt" id="pt">
-        <div class="pt-key" id="pt-key" aria-live="polite"></div>
-        <ul class="pt-legend" id="pt-legend"></ul>
-      </div>
-    </section>
-
-    <!-- ========== WORK ========== -->
-    <section id="work" class="sec work" data-agent="work" aria-labelledby="work-h">
-      <header class="sec-head">
-        <span class="sec-no mono">06</span>
-        <h2 id="work-h" class="sec-title">After <em>hours</em></h2>
-        <p class="sec-note mono">Things I build for real people, on my own time.</p>
-      </header>
-      <ul class="proj-list" id="proj-list"></ul>
-      <div class="proj-float" id="proj-float" aria-hidden="true"><canvas width="360" height="240"></canvas><span></span></div>
-    </section>
-
     <!-- ========== WRITING ========== -->
     <section id="writing" class="sec writing" data-agent="writing" aria-labelledby="wr-h">
       <header class="sec-head">
-        <span class="sec-no mono">07</span>
+        <span class="sec-no mono">04</span>
         <h2 id="wr-h" class="sec-title">Writing</h2>
         <p class="sec-note mono">Essays on agents, retrieval, governance and what happens behind a model’s answers.</p>
       </header>
@@ -254,7 +233,7 @@
     <!-- ========== REVIEWS ========== -->
     <section id="reviews" class="sec dark reviews" data-agent="reviews" aria-labelledby="rv-h">
       <header class="sec-head">
-        <span class="sec-no mono">08</span>
+        <span class="sec-no mono">05</span>
         <h2 id="rv-h" class="sec-title">Kind <em>words</em></h2>
         <p class="sec-note mono">From managers and teammates at H&amp;M, Fidelity, Salesforce and Barclays.</p>
       </header>
@@ -269,6 +248,47 @@
         </figure>
         <div class="kw-people" id="kw-people" role="tablist" aria-label="Recommendations"></div>
       </div>
+    </section>
+
+    <!-- ========== FULL RECORD ========== -->
+    <section id="record" class="sec record-divider" aria-labelledby="rec-h">
+      <p class="mono rec-k">full record</p>
+      <h2 id="rec-h" class="rec-t">The long version</h2>
+      <p class="rec-s">Everything above is the short version. Below: the full career timeline, the whole stack, side projects, awards and certifications.</p>
+    </section>
+
+    <!-- ========== GIT LOG ========== -->
+    <section id="log" class="sec dark log" data-agent="log" aria-labelledby="log-h">
+      <header class="sec-head">
+        <span class="sec-no mono">06</span>
+        <h2 id="log-h" class="sec-title"><span class="mono">git log</span> <em>--career</em></h2>
+        <p class="sec-note mono">$ git log --graph --oneline hardik/main · 2014 → now</p>
+      </header>
+      <div class="gitlog" id="gitlog"></div>
+    </section>
+
+    <!-- ========== STACK ========== -->
+    <section id="stack" class="sec stack" data-agent="stack" aria-labelledby="st-h">
+      <header class="sec-head">
+        <span class="sec-no mono">07</span>
+        <h2 id="st-h" class="sec-title">The stack, <em>as elements</em></h2>
+        <p class="sec-note mono">Forty things I reach for, from agents to animation. Hover an element to see where it shows up in my work.</p>
+      </header>
+      <div class="pt" id="pt">
+        <div class="pt-key" id="pt-key" aria-live="polite"></div>
+        <ul class="pt-legend" id="pt-legend"></ul>
+      </div>
+    </section>
+
+    <!-- ========== WORK ========== -->
+    <section id="work" class="sec work" data-agent="work" aria-labelledby="work-h">
+      <header class="sec-head">
+        <span class="sec-no mono">08</span>
+        <h2 id="work-h" class="sec-title">After <em>hours</em></h2>
+        <p class="sec-note mono">Things I build for real people, on my own time.</p>
+      </header>
+      <ul class="proj-list" id="proj-list"></ul>
+      <div class="proj-float" id="proj-float" aria-hidden="true"><canvas width="360" height="240"></canvas><span></span></div>
     </section>
 
     <!-- ========== LEDGER ========== -->
@@ -286,7 +306,7 @@
 
     <!-- ========== CONTACT ========== -->
     <section id="contact" class="sec contact" data-agent="contact" aria-labelledby="ct-h">
-      <p class="ct-kicker mono" id="ct-kicker">// always up for a conversation about AI agents — what they can do today, and what we should let them do tomorrow</p>
+      <p class="ct-kicker mono" id="ct-kicker">// always up for a conversation about AI agents, what they can do today, and what we should let them do tomorrow</p>
       <h2 id="ct-h" class="ct-title"><span>Let's</span> <em>build.</em></h2>
       <div class="ct-row">
         <button class="ct-mail" id="copy-mail" data-cursor="copy">hardikverma22@gmail.com <span class="mono" id="copy-state">copy</span></button>
@@ -299,19 +319,19 @@
       <div class="revoke">
         <div>
           <p class="mono revoke-k">session control</p>
-          <p class="revoke-t">Done looking? Revoke this agent's access. <span class="muted">It's one switch — that's the whole point.</span></p>
+          <p class="revoke-t">Done looking? Revoke this agent's access. <span class="muted">It's one switch, that's the whole point.</span></p>
         </div>
         <button class="switch" id="revoke" role="switch" aria-checked="true" aria-label="Agent access" data-cursor="revoke"><span></span></button>
       </div>
       <footer class="foot mono">
         <span>Hardik Verma · Staff Software Engineer · © 2026</span>
-        <span>Built by hand: Three.js, GSAP, Lenis. No templates.</span>
+        <span>Built with Three.js, GSAP and Lenis</span>
       </footer>
     </section>
   </main>
 
   <!-- revoked overlay -->
-  <div id="revoked" aria-hidden="true">
+  <div id="revoked" aria-hidden="true" inert>
     <div class="rv-inner">
       <p class="mono">401 · invalid_grant · token revoked</p>
       <h2>The agent is cut off.</h2>

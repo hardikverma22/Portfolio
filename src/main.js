@@ -6,8 +6,6 @@ import {
   projects, writing, testimonials, awards, certs, identity, toolbox, toolboxGroups,
 } from './data.js';
 import { initMimo } from './mimo.js';
-import { initGeo } from './geo.js';
-import { initPortrait, initXray } from './hero.js';
 import { initFluid } from './fluid.js';
 import { mountTriage, mountDelegate, mountTokens } from './demos.js';
 
@@ -22,7 +20,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const rnd = (n) => { const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; let s = ''; for (let i = 0; i < n; i++) s += c[(Math.random() * c.length) | 0]; return s; };
 
 /* =========================================================
-   TRACE — every section is a sub-agent; the ticker shows its spans
+   TRACE, every section is a sub-agent; the ticker shows its spans
    ========================================================= */
 const traceEl = $('#trace');
 const traceList = $('#trace-list');
@@ -37,7 +35,7 @@ function trace(agent, msg, ok) {
 }
 
 /* =========================================================
-   RENDER — all content from data.js
+   RENDER, all content from data.js
    ========================================================= */
 function render() {
   $('#impact-grid').innerHTML = impact.map((i) => `
@@ -62,8 +60,9 @@ function render() {
         <span class="case-no mono">case ${c.no} / 04<span class="case-when">${c.when}</span></span>
         <h3 class="case-title">${c.title}</h3>
         <p class="case-line">${c.line}</p>
+        <dl class="case-ps"><div><dt class="mono">Problem</dt><dd>${c.problem}</dd></div><div><dt class="mono">My role</dt><dd>${c.role}</dd></div></dl>
         <ul class="case-pts">${c.points.map((p) => `<li>${p}</li>`).join('')}</ul>
-        <p class="case-res">${c.result}</p>
+        <p class="case-res"><span class="mono">Result</span>${c.result}</p>
         <ul class="chips">${c.stack.map((s) => `<li>${s}</li>`).join('')}</ul>
       </div>
       <div class="demo" data-demo="${c.id}"></div>
@@ -102,7 +101,7 @@ function render() {
       <h3>${w.title}</h3>
     </a>`).join('');
 
-  $('#awards').insertAdjacentHTML('beforeend', `<tbody>${awards.map(([y, a, s]) => `<tr><td>${y}</td><td>${a}</td><td>${s}</td></tr>`).join('')}</tbody>`);
+  $('#awards').insertAdjacentHTML('beforeend', `<tbody>${awards.map(([y, a, s]) => `<tr><th scope="row">${y}</th><td>${a}</td><td>${s}</td></tr>`).join('')}</tbody>`);
   $('#certs').innerHTML = certs.map((c) => `<li>${c}</li>`).join('');
 
   $$('.sec-title').forEach((el) => (el.innerHTML = `<span class="rv-line"><span>${el.innerHTML}</span></span>`));
@@ -176,7 +175,7 @@ function renderGitLog() {
 }
 
 /* =========================================================
-   GATE — token exchange, with a human in the loop
+   GATE, token exchange, with a human in the loop
    ========================================================= */
 async function runGate(onGrant) {
   const gate = $('#gate');
@@ -219,7 +218,7 @@ async function runGate(onGrant) {
     let done = false;
     const grant = async () => {
       if (done) return;
-      done = true;
+      done = true; clearInterval(tick);
       removeEventListener('keydown', onKey);
       gate.classList.add('is-done');
       try { sessionStorage.setItem('hv-granted', '1'); } catch (_) {}
@@ -232,9 +231,18 @@ async function runGate(onGrant) {
     const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); grant(); } };
     addEventListener('keydown', onKey);
     grantBtn.addEventListener('click', grant);
+    const AUTO = reduced ? 1500 : 3000;
+    gate.style.setProperty('--auto', AUTO + 'ms');
+    gate.classList.add('is-auto');
+    const count = $('#gate-count');
+    let left = Math.ceil(AUTO / 1000);
+    count.textContent = `Granting read access automatically in ${left}…`;
+    const tick = setInterval(() => { left--; if (left > 0) count.textContent = `Granting read access automatically in ${left}…`; }, 1000);
+    const auto = setTimeout(grant, AUTO);
     $('#gate-deny').addEventListener('click', () => {
-      $('.gate-q', gate).innerHTML = 'Denied. Fair — the agent respects that.<br /><em>The page is public anyway, though.</em>';
-      grantBtn.innerHTML = 'Grant anyway <kbd>↵</kbd>';
+      clearTimeout(auto); clearInterval(tick); gate.classList.remove('is-auto');
+      $('.gate-q', gate).innerHTML = 'Holding. Take your time.<br /><em>The page is public anyway.</em>';
+      grantBtn.innerHTML = 'Continue <kbd>↵</kbd>';
       $('#gate-deny').remove();
       grantBtn.focus();
     });
@@ -242,18 +250,8 @@ async function runGate(onGrant) {
 }
 
 /* =========================================================
-   HUD — token and ttl
+   HUD, token and ttl
    ========================================================= */
-function initHud(tok) {
-  $('#tok-id').textContent = tok.slice(0, 3) + '…' + tok.slice(-5);
-  let ttl = 900;
-  setInterval(() => {
-    ttl--;
-    if (ttl <= 0) { ttl = 900; trace('auth', 'token refreshed silently', true); }
-    $('#tok-ttl').textContent = `ttl ${Math.floor(ttl / 60)}:${String(ttl % 60).padStart(2, '0')}`;
-  }, 1000);
-}
-
 /* =========================================================
    CURSOR
    ========================================================= */
@@ -304,13 +302,14 @@ function initPalette(lenis, api) {
     ['Run the incident-triage agents', 'demo', () => { go('#case-triage')(); setTimeout(() => $('#case-triage [data-run]').click(), 1400); }],
     ['Give an agent a credit card (safely)', 'demo', go('#case-delegate')],
     ['Compress a context window', 'demo', () => { go('#case-tokens')(); setTimeout(() => $('#case-tokens [data-run]').click(), 1400); }],
-    ['Agents', 'section', go('#agents')],
-    ['mimo — record a task once', 'section', go('#case-mimo')],
+    ['Work, agents I built', 'section', go('#agents')],
+    ['mimo, record a task once', 'section', go('#case-mimo')],
     ['Identity in three countries', 'section', go('#engineering')],
-    ['git log --career', 'section', go('#log')],
+    ['Career timeline (git log)', 'section', go('#log')],
     ['The stack, as elements', 'section', go('#stack')],
     ['Side projects', 'section', go('#work')],
     ['Writing', 'section', go('#writing')],
+    ['Get in touch', 'section', go('#contact')],
     ['Kind words', 'section', go('#reviews')],
     ['Copy email', 'action', () => api.copyMail()],
     ['Open LinkedIn', 'link', () => open(identity.links.linkedin, '_blank', 'noopener')],
@@ -510,18 +509,16 @@ function initContact() {
   const revoke = () => {
     sw.setAttribute('aria-checked', 'false');
     document.body.classList.add('revoked');
-    ov.classList.add('on'); ov.setAttribute('aria-hidden', 'false');
+    ov.classList.add('on'); ov.setAttribute('aria-hidden', 'false'); ov.inert = false;
     gsap.fromTo(ov, { opacity: 0, backgroundColor: 'rgba(5,6,9,0)' }, { opacity: 1, backgroundColor: 'rgba(5,6,9,.82)', duration: reduced ? 0 : 0.6 });
     gsap.from('#revoked h2', { y: 40, opacity: 0, duration: reduced ? 0 : 0.8, ease: 'expo.out', delay: 0.15 });
     trace('gateway', 'token revoked by user');
-    $('#hud-token .dot').style.background = '#ff7a8a';
     $('#regrant').focus();
   };
   const regrant = () => {
     sw.setAttribute('aria-checked', 'true');
     document.body.classList.remove('revoked');
-    gsap.to(ov, { opacity: 0, duration: reduced ? 0 : 0.4, onComplete: () => { ov.classList.remove('on'); ov.setAttribute('aria-hidden', 'true'); } });
-    $('#hud-token .dot').style.background = '';
+    gsap.to(ov, { opacity: 0, duration: reduced ? 0 : 0.4, onComplete: () => { ov.classList.remove('on'); ov.setAttribute('aria-hidden', 'true'); ov.inert = true; } });
     trace('gateway', 'access re-granted', true);
   };
   sw.addEventListener('click', () => (sw.getAttribute('aria-checked') === 'true' ? revoke() : regrant()));
@@ -636,7 +633,12 @@ function initScroll(demos) {
   };
   initSkills();
   initMimo({ reduced });
-  initGeo({ reduced });
+  const geoEl = $('#geo');
+  const loadGeo = () => import('./geo.js').then((m) => { m.initGeo({ reduced }); ScrollTrigger.refresh(); });
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { io.disconnect(); loadGeo(); } }, { rootMargin: '900px 0px' });
+    io.observe(geoEl);
+  } else loadGeo();
   initProjectFloat();
   initKindWords();
   initToolbox();
@@ -669,13 +671,15 @@ function initScroll(demos) {
   });
   const fluid = (() => { try { return initFluid({ reduced }); } catch (e) { console.warn('fluid off', e); document.querySelector('.fx-fluid')?.remove(); return null; } })();
   if (import.meta.env.DEV) window.__fluid = fluid;
-  const portraitP = initPortrait({ wrap: $('#hero-photo'), canvas: $('#hero-photo-gl'), bwSrc: 'hero-bw.jpeg', colorSrc: 'hero-color.jpeg', reduced })
+  const heroMod = import('./hero.js');
+  const xray = () => heroMod.then((m) => m.initXray($$('.hc'))).catch(() => {});
+  const portraitP = heroMod.then((m) => m.initPortrait({ wrap: $('#hero-photo'), canvas: $('#hero-photo-gl'), bwSrc: 'hero-bw.jpeg', colorSrc: 'hero-color.jpeg', reduced }))
     .catch((e) => { console.warn('portrait off', e); $('#hero-photo-gl')?.remove(); return null; });
 
   const heroEntrance = () => {
     const hero = $('.hero');
     portraitP.then((p) => p?.reveal(0.1, 1.9));
-    if (reduced) { hero.classList.add('ready'); initXray($$('.hc')); return; }
+    if (reduced) { hero.classList.add('ready'); xray(); return; }
     const tl = gsap.timeline({ delay: 0.2, defaults: { ease: 'power3.out' }, onStart: () => hero.classList.add('ready') });
     tl.from('#hero-photo', { scale: 1.18, xPercent: -4, autoAlpha: 0, duration: 1.5, ease: 'expo.out' }, 0)
       .from('.hero-role', { autoAlpha: 0, x: 24, duration: 0.7 }, 0.25)
@@ -686,11 +690,10 @@ function initScroll(demos) {
       .from('.hero-cue', { y: 10, autoAlpha: 0, duration: 0.45 }, 0.95)
       .fromTo('.hero-avail', { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 0.95);
     setTimeout(() => fluid?.sweep($('.hero-name')), 250);
-    setTimeout(() => initXray($$('.hc')), 1500);
+    setTimeout(xray, 1500);
   };
 
   await runGate((tok) => {
-    initHud(tok);
     document.body.classList.remove('is-locked');
     lenis?.start();
     trace('auth', 'token exchanged · act=hardik.portfolio', true);
