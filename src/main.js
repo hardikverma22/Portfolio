@@ -6,10 +6,6 @@ import {
   projects, writing, testimonials, awards, certs, identity, toolbox, toolboxGroups, toolboxWhere, toolboxMeta,
 } from './data.js';
 import { initMimo } from './mimo.js';
-import { initFluid } from './fluid.js';
-import { mountTriage } from './anim/triage.js';
-import { mountDelegate } from './anim/delegate.js';
-import { mountTokens } from './anim/tokens.js';
 import './anim.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -21,6 +17,17 @@ const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const rnd = (n) => { const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; let s = ''; for (let i = 0; i < n; i++) s += c[(Math.random() * c.length) | 0]; return s; };
+
+const idle = (fn) => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1800 }) : setTimeout(fn, 400));
+// mounts a heavy section only when it is about to be seen, and loads its code on demand
+function mountWhenNear(sel, load, name, reduced) {
+  const el = $(sel);
+  if (!el) return;
+  const go = () => load().then((mod) => { mod[name](el, reduced); ScrollTrigger.refresh(); });
+  if (!('IntersectionObserver' in window)) { go(); return; }
+  const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '900px 0px' });
+  io.observe(el);
+}
 
 /* =========================================================
    TRACE, every section is a sub-agent; the ticker shows its spans
@@ -91,6 +98,7 @@ function render() {
       <p class="w">${p.what}<span>${p.stack}</span></p>
       <div class="lk">${p.live
         ? `<a href="${p.live}" target="_blank" rel="noopener">live ↗</a><a href="${p.code}" target="_blank" rel="noopener">code ↗</a>`
+        : p.code ? `<a href="${p.code}" target="_blank" rel="noopener">code ↗</a>`
         : `<span class="pj-status mono"><i></i>${p.status}</span>`}</div>
     </div></li>`).join('');
 
@@ -207,7 +215,7 @@ async function runGate(onGrant) {
     for (let i = 0; i < lines.length; i++) {
       log.innerHTML += (i ? '\n' : '') + lines[i];
       bar.style.width = ((i + 1) / lines.length) * 100 + '%';
-      await sleep(i === 5 || i === 6 ? 380 : 150);
+      await sleep(i === 5 || i === 6 ? 260 : 90);
     }
   }
   actions.classList.add('on');
@@ -475,7 +483,7 @@ function initToolbox() {
   whereEl.innerHTML = `<li class="pw-k mono">used at</li>` + toolboxWhere.map(([w, l]) => `<li><button data-w="${w}" aria-pressed="false">${l}</button></li>`).join('');
   pt.insertAdjacentHTML('beforeend', toolbox.map(([g, sym, name, use], n) => `
     <button class="el" data-g="${g}" data-n="${n}" style="--c:${color[g]}" aria-label="${name}: ${use}">
-      <span class="el-n mono">${n + 1}</span><span class="el-s">${sym}</span><span class="el-name">${name}</span>
+      <span class="el-n mono" data-t="${n + 1}" aria-hidden="true"></span><span class="el-s" data-t="${sym}" aria-hidden="true"></span><span class="el-name">${name}</span>
     </button>`).join(''));
   const els = $$('.el', pt);
   const st = { g: null, w: null, n: null };
@@ -684,7 +692,7 @@ function initScroll() {
   const words = $$('#about .w');
   ScrollTrigger.create({
     trigger: '#about', start: 'top 80%', end: 'bottom 45%', scrub: true,
-    onUpdate: (st) => { const n = Math.round(st.progress * words.length); words.forEach((w, i) => (w.style.opacity = i < n ? 1 : 0.14)); },
+    onUpdate: (st) => { const n = Math.round(st.progress * words.length); words.forEach((w, i) => (w.style.opacity = i < n ? 1 : 0.5)); },
   });
   if (reduced) words.forEach((w) => (w.style.opacity = 1));
 
@@ -732,9 +740,9 @@ function initScroll() {
   initSkills();
   initCareer();
   initMimo({ reduced });
-  mountTriage($('#anim-triage'), reduced);
-  mountDelegate($('#anim-delegate'), reduced);
-  mountTokens($('#anim-tokens'), reduced);
+  mountWhenNear('#anim-triage', () => import('./anim/triage.js'), 'mountTriage', reduced);
+  mountWhenNear('#anim-delegate', () => import('./anim/delegate.js'), 'mountDelegate', reduced);
+  mountWhenNear('#anim-tokens', () => import('./anim/tokens.js'), 'mountTokens', reduced);
   const geoEl = $('#geo');
   const loadGeo = () => import('./geo.js').then((m) => { m.initGeo({ reduced }); ScrollTrigger.refresh(); });
   if ('IntersectionObserver' in window) {
@@ -772,11 +780,17 @@ function initScroll() {
   $$('.hn-line').forEach((line) => {
     line.innerHTML = [...line.textContent.trim()].map((c) => `<span class="hc-mask"><span class="hc">${c}</span></span>`).join('');
   });
-  const fluid = (() => { try { return initFluid({ reduced }); } catch (e) { console.warn('fluid off', e); document.querySelector('.fx-fluid')?.remove(); return null; } })();
-  if (import.meta.env.DEV) window.__fluid = fluid;
-  const heroMod = import('./hero.js');
+  const fluidP = new Promise((res) => idle(() => {
+    import('./fluid.js').then(({ initFluid }) => {
+      let f = null;
+      try { f = initFluid({ reduced }); } catch (e) { console.warn('fluid off', e); document.querySelector('.fx-fluid')?.remove(); }
+      if (import.meta.env.DEV) window.__fluid = f;
+      res(f);
+    }).catch(() => res(null));
+  }));
+  const heroMod = new Promise((res, rej) => idle(() => import('./hero.js').then(res, rej)));
   const xray = () => heroMod.then((m) => m.initXray($$('.hc'))).catch(() => {});
-  const portraitP = heroMod.then((m) => m.initPortrait({ wrap: $('#hero-photo'), canvas: $('#hero-photo-gl'), bwSrc: 'hero-bw.jpeg', colorSrc: 'hero-color.jpeg', reduced }))
+  const portraitP = heroMod.then((m) => m.initPortrait({ wrap: $('#hero-photo'), canvas: $('#hero-photo-gl'), bwSrc: 'hero-bw.webp', colorSrc: 'hero-color.webp', reduced }))
     .catch((e) => { console.warn('portrait off', e); $('#hero-photo-gl')?.remove(); return null; });
 
   const heroEntrance = () => {
@@ -792,7 +806,7 @@ function initScroll() {
       .from('.hero-caps li', { y: 14, autoAlpha: 0, duration: 0.5, stagger: 0.08 }, 0.72)
       .from('.hero-cue', { y: 10, autoAlpha: 0, duration: 0.45 }, 0.95)
       .fromTo('.hero-avail', { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 0.95);
-    setTimeout(() => fluid?.sweep($('.hero-name')), 250);
+    fluidP.then((f) => f?.sweep($('.hero-name')));
     setTimeout(xray, 1500);
   };
 

@@ -50,7 +50,7 @@ export function renderTokenos(root) {
   const bench = T.bench;
   root.innerHTML = `
     <div class="tos-head">
-      <div><p class="tos-k mono">${T.intro.k}</p><h4 class="tos-t">${T.intro.t}</h4></div>
+      <div><p class="tos-k mono">${T.intro.k}</p><h3 class="tos-t">${T.intro.t}</h3></div>
       <div><p class="tos-d">${T.intro.d}</p><p class="tos-q">${T.intro.q}</p></div>
     </div>
 
@@ -58,7 +58,7 @@ export function renderTokenos(root) {
       ${T.axes.map((a) => `
         <article class="tos-axis">
           <span class="mono tos-n">${a.n}</span>
-          <h5>${a.t}</h5>
+          <h4>${a.t}</h4>
           <p>${a.d}</p>
           <div class="tos-v"><b>${a.v}</b><span>${a.vl}</span></div>
         </article>`).join('<div class="tos-x" aria-hidden="true">×</div>')}
@@ -69,7 +69,7 @@ export function renderTokenos(root) {
       ${T.caps.map((c, i) => `
         <article class="tc" style="--c:${c.c}">
           <header><span class="tc-n mono">${String(i + 1).padStart(2, '0')}</span><code class="tc-tool">${c.tool}</code></header>
-          <h5>${c.t}</h5>
+          <h4>${c.t}</h4>
           <p class="tc-human">${c.human}</p>
           <p class="tc-body">${c.body}</p>
           <div class="tc-viz">${capBody(c)}</div>
@@ -78,7 +78,7 @@ export function renderTokenos(root) {
     </div>
 
     <div class="tos-bench">
-      <header><h5>${bench.title}</h5><p class="mono">${bench.sub}</p></header>
+      <div class="tb-head"><h4>${bench.title}</h4><p class="mono">${bench.sub}</p></div>
       ${bench.groups.map(([g, rows]) => `
         <div class="tb-group">
           <p class="tb-g mono">${g}</p>
@@ -93,7 +93,7 @@ export function renderTokenos(root) {
 
     <div class="tos-ledger">
       <div class="tl-copy">
-        <h5>${T.ledger.t}</h5>
+        <h4>${T.ledger.t}</h4>
         <p>${T.ledger.d}</p>
         <div class="tl-cmds">${T.ledger.cmds.map((c) => `<code>${c}</code>`).join('')}</div>
       </div>

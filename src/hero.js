@@ -3,7 +3,8 @@
 //    follows the cursor and shows the colour photo through it; resting
 //    the cursor blooms colour across the frame.
 //  · x-ray name, letters hollow out / fill in near the cursor.
-import * as THREE from 'three';
+import { Vector2, Vector3, Color, WebGLRenderer, TextureLoader, ShaderMaterial, Scene, PlaneGeometry, OrthographicCamera, NormalBlending, NoColorSpace, NoBlending, Mesh, LinearFilter } from 'three';
+const THREE = { Vector2, Vector3, Color, WebGLRenderer, TextureLoader, ShaderMaterial, Scene, PlaneGeometry, OrthographicCamera, NormalBlending, NoColorSpace, NoBlending, Mesh, LinearFilter };
 
 const VERT = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 

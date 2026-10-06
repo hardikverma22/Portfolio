@@ -1,5 +1,5 @@
 /* ---------- bespoke agent animations ---------- */
-.anim { position: relative; border-radius: 22px; border: 1px solid var(--line); background: radial-gradient(90% 70% at 15% 0%, rgba(127,178,255,.07), transparent 60%), rgba(13,16,24,.72); padding: clamp(18px, 2.4vw, 34px); margin-bottom: clamp(36px, 5vw, 64px); overflow: hidden; }
+.anim { min-height: 480px; position: relative; border-radius: 22px; border: 1px solid var(--line); background: radial-gradient(90% 70% at 15% 0%, rgba(127,178,255,.07), transparent 60%), rgba(13,16,24,.72); padding: clamp(18px, 2.4vw, 34px); margin-bottom: clamp(36px, 5vw, 64px); overflow: hidden; }
 .anim .mono { font-family: var(--f-mono); }
 .anim-lab { margin: 0 0 12px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
 
