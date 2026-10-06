@@ -331,6 +331,12 @@ function initPalette(lenis, api) {
     shown = cmds.filter(([t, k]) => !q || (t + ' ' + k).toLowerCase().includes(q));
     sel = Math.min(sel, Math.max(0, shown.length - 1));
     list.innerHTML = shown.map(([t, k], i) => `<li role="option" aria-selected="${i === sel}" data-i="${i}">${t}<small>${k}</small></li>`).join('') || '<li>No matching agent.</li>';
+    const row = list.querySelector('[aria-selected="true"]');
+    if (row) {
+      const top = row.offsetTop, bottom = top + row.offsetHeight;
+      if (top < list.scrollTop) list.scrollTop = top - 6;
+      else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight + 6;
+    }
   };
   const openP = () => { pal.hidden = false; input.value = ''; sel = 0; draw(); input.focus(); lenis?.stop(); trace('palette', 'opened'); };
   const close = () => { pal.hidden = true; lenis?.start(); };
@@ -424,50 +430,61 @@ function initProjectFloat() {
 
 /* ---------- Kind words: one voice at a time, photo ringed by a timer ---------- */
 function initKindWords() {
-  const people = $('#kw-people'), img = $('#kw-img'), q = $('#kw-q'), who = $('#kw-who'), prog = $('#kw-prog');
-  const C = 2 * Math.PI * 56;
-  prog.style.strokeDasharray = C;
-  people.innerHTML = testimonials.map((t, i) => `
-    <button class="kw-p" role="tab" aria-selected="${i === 0}" data-i="${i}" aria-label="${t.who}">
-      <img src="${t.img}" alt="" width="48" height="48" loading="lazy" decoding="async" /><span>${t.who.split(' ')[0]}</span>
+  const stage = $('#kw-stage'), people = $('#kw-people'), kw = $('#kw');
+  const mono = (t, cls) => `<span class="kw-mono ${cls}" data-t="${t.initials}" aria-hidden="true"></span>`;
+  stage.innerHTML = testimonials.map((t, n) => `
+    <div class="kw-item" id="kw-p${n}" role="tabpanel" aria-labelledby="kw-t${n}">
+      <div class="kw-face">
+        <svg class="kw-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" class="kw-track"/></svg>
+        ${t.img ? `<img src="${t.img}" alt="${t.who}" width="118" height="118" loading="lazy" decoding="async" data-who="${n}" />` : mono(t, 'kw-mono-big')}
+      </div>
+      <blockquote class="kw-q">${t.pull.split(' ').map((w) => `<span class="kw-w">${esc(w)}</span>`).join(' ')}</blockquote>
+      <div class="kw-who"><b>${t.who}</b><span>${t.role}</span><small>${t.when} · ${t.rel}</small></div>
+      <div class="kw-full">${t.q.split('\n\n').map((p) => `<p>${esc(p)}</p>`).join('')}</div>
+    </div>`).join('');
+  people.innerHTML = testimonials.map((t, n) => `
+    <button class="kw-p" id="kw-t${n}" role="tab" aria-label="${t.who}" aria-selected="${n === 0}" aria-controls="kw-p${n}" tabindex="${n === 0 ? 0 : -1}" data-i="${n}">
+      ${t.img ? `<img src="${t.img}" alt="" width="34" height="34" loading="lazy" decoding="async" data-who="${n}" />` : mono(t, 'kw-mono-sm')}<span>${t.who.split(' ')[0]}</span>
     </button>`).join('');
-  const btns = $$('.kw-p', people);
-  let i = 0, t0 = performance.now(), paused = false, pausedAt = 0;
-  const DUR = 8000;
+  // a photo that is not there yet falls back to initials, so adding the file later just works
+  $$('img[data-who]', kw).forEach((img) => img.addEventListener('error', () => {
+    const t = testimonials[+img.dataset.who];
+    if (!t.initials) return;
+    const span = document.createElement('span');
+    span.className = `kw-mono ${img.closest('.kw-face') ? 'kw-mono-big' : 'kw-mono-sm'}`;
+    span.dataset.t = t.initials;
+    span.setAttribute('aria-hidden', 'true');
+    img.replaceWith(span);
+  }));
+
+  const items = $$('.kw-item', stage), btns = $$('.kw-p', people);
+  let i = 0, busy = false;
+  const fit = () => { if (!busy) stage.style.height = `${items[i].offsetHeight}px`; };
   const show = (n, animate = true) => {
+    const prev = items[i];
     i = (n + testimonials.length) % testimonials.length;
-    const t = testimonials[i];
-    btns.forEach((b, k) => b.setAttribute('aria-selected', k === i));
-    const set = () => {
-      img.src = t.img; img.alt = t.who;
-      q.innerHTML = t.q.split(' ').map((w) => `<span class="kw-w">${esc(w)}</span>`).join(' ');
-      who.innerHTML = `<b>${t.who}</b><span>${t.role}</span>`;
-    };
-    t0 = performance.now();
-    if (reduced || !animate) return set();
-    gsap.timeline()
-      .to([q, who, img], { opacity: 0, y: -10, duration: 0.25, ease: 'power2.in' })
-      .add(set)
-      .set([q, who, img], { opacity: 1, y: 0 })
-      .from('#kw-q .kw-w', { opacity: 0, y: 14, filter: 'blur(6px)', duration: 0.6, ease: 'expo.out', stagger: 0.018 })
-      .from(img, { scale: 0.85, duration: 0.6, ease: 'expo.out' }, '<')
-      .from(who, { opacity: 0, y: 8, duration: 0.4 }, '-=0.3');
+    const cur = items[i];
+    btns.forEach((b, k) => { b.setAttribute('aria-selected', k === i); b.tabIndex = k === i ? 0 : -1; });
+    if (reduced || !animate || prev === cur) { items.forEach((el) => el.classList.toggle('on', el === cur)); fit(); return; }
+    busy = true;
+    const from = stage.offsetHeight;
+    gsap.killTweensOf([stage, ...items, ...$$('.kw-w', stage)]);
+    cur.classList.add('on');
+    const to = cur.offsetHeight;
+    stage.style.overflow = 'hidden';
+    gsap.fromTo(stage, { height: from }, { height: to, duration: 0.5, ease: 'power3.inOut', onComplete: () => { busy = false; stage.style.overflow = ''; fit(); } });
+    gsap.to(prev, { opacity: 0, y: -10, duration: 0.25, ease: 'power2.in', onComplete: () => { prev.classList.remove('on'); gsap.set(prev, { clearProps: 'opacity,transform' }); } });
+    gsap.fromTo(cur, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out', delay: 0.2 });
+    gsap.from($$('.kw-w', cur), { opacity: 0, y: 14, filter: 'blur(6px)', duration: 0.6, ease: 'expo.out', stagger: 0.016, delay: 0.25 });
   };
   show(0, false);
+  new ResizeObserver(fit).observe(stage.parentElement);
+  addEventListener('load', fit);
   people.addEventListener('click', (e) => { const b = e.target.closest('.kw-p'); if (b) show(+b.dataset.i); });
-  const kw = $('#kw');
-  kw.addEventListener('pointerenter', () => { paused = true; pausedAt = performance.now(); });
-  kw.addEventListener('pointerleave', () => { paused = false; t0 += performance.now() - pausedAt; });
-  kw.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') show(i + 1); if (e.key === 'ArrowLeft') show(i - 1); });
-  let visible = false;
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !paused) t0 = performance.now() - ((performance.now() - t0) % DUR); }).observe(kw);
-  (function loop() {
-    requestAnimationFrame(loop);
-    if (!visible || paused || reduced) return;
-    const k = (performance.now() - t0) / DUR;
-    prog.style.strokeDashoffset = C * (1 - Math.min(1, k));
-    if (k >= 1) show(i + 1);
-  })();
+  kw.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(i + 1); btns[i].focus(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(i - 1); btns[i].focus(); }
+  });
 }
 
 /* ---------- The stack as a periodic table ---------- */
@@ -678,7 +695,7 @@ function initScroll() {
     gsap.to('.hero-cue span', { y: 6, duration: 1, ease: 'sine.inOut', yoyo: true, repeat: -1 });
 
     $$('.sec-title .rv-line > span').forEach((s) => {
-      gsap.from(s, { yPercent: 110, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: s, start: 'top 88%' } });
+      gsap.from(s, { yPercent: 110, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: s, start: 'top 94%' } });
     });
     $$('.imp, .pr-list li, .wr-card, .pj, .gl-row, .awards tr').forEach((el) => {
       gsap.from(el, { y: 40, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 92%' } });
@@ -822,4 +839,9 @@ function initScroll() {
     requestAnimationFrame(() => (lenis ? lenis.scrollTo(location.hash, { immediate: true }) : $(location.hash).scrollIntoView()));
   }
   addEventListener('load', () => ScrollTrigger.refresh());
+  // anything that changes the page height later (testimonial switches, fonts, lazy content) re-measures every scroll trigger
+  let rt = 0;
+  const remeasure = () => { clearTimeout(rt); rt = setTimeout(() => ScrollTrigger.refresh(), 150); };
+  new ResizeObserver(remeasure).observe($('main'));
+  document.fonts?.ready.then(remeasure);
 })();

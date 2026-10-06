@@ -278,18 +278,12 @@
       <header class="sec-head">
         <span class="sec-no mono">05</span>
         <h2 id="rv-h" class="sec-title">Kind <em>words</em></h2>
-        <p class="sec-note mono">From managers and teammates at H&amp;M, Fidelity, Salesforce and Barclays.</p>
+        <p class="sec-note mono">Eight recommendations from managers, clients and teammates at Fidelity, H&amp;M, Salesforce and Barclays, in full.</p>
       </header>
-      <div class="kw" id="kw">
-        <figure class="kw-stage">
-          <div class="kw-face">
-            <svg class="kw-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" class="kw-track"/><circle cx="60" cy="60" r="56" class="kw-prog" id="kw-prog"/></svg>
-            <img id="kw-img" alt="" width="96" height="96" />
-          </div>
-          <blockquote class="kw-q" id="kw-q"></blockquote>
-          <figcaption class="kw-who" id="kw-who"></figcaption>
-        </figure>
+      <div class="kw" id="kw" tabindex="0" aria-label="Recommendations. Use the left and right arrow keys to move between them.">
         <div class="kw-people" id="kw-people" role="tablist" aria-label="Recommendations"></div>
+        <div class="kw-stage" id="kw-stage"></div>
+        <a class="kw-more mono" id="kw-more" href="https://www.linkedin.com/in/hardikverma22/details/recommendations/" target="_blank" rel="noopener">All recommendations on LinkedIn ↗</a>
       </div>
     </section>
 
@@ -402,7 +396,7 @@
   <div id="palette" role="dialog" aria-modal="true" aria-label="Command palette" hidden>
     <div class="pal-box">
       <input id="pal-input" class="mono" placeholder="Dispatch a command…" autocomplete="off" aria-label="Command" />
-      <ul id="pal-list" role="listbox"></ul>
+      <ul id="pal-list" role="listbox" data-lenis-prevent></ul>
       <p class="pal-foot mono">↑↓ navigate · ↵ run · esc close</p>
     </div>
   </div>
