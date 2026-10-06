@@ -330,3 +330,16 @@ export const toolbox = [
   ['ship', 'Sf', 'SAFe', 'Certified practitioner; Scrum Master at TCS'],
 ];
 
+
+// Where each element shows up (w = Walmart, f = Fidelity, t = TCS, p = personal) and what it pairs with.
+export const toolboxWhere = [['w', 'Walmart'], ['f', 'Fidelity'], ['t', 'TCS'], ['p', 'Personal']];
+export const toolboxMeta = {
+  Lg: ['w', 'Mc Fa Rg Py'], Mc: ['w', 'Lg Cx Sk A2'], Fa: ['w', 'Py Lg'], Rg: ['w', 'Lg Cx'], Cx: ['w', 'Mc Rs Sk'],
+  Sk: ['w', 'Mc Cl Cx'], A2: ['w', 'Lg Mc Tx'], Cl: ['wp', 'Sk Cx'], Wh: ['wp', 'Sk'], Mp: ['p', 'Nx'],
+  Re: ['wfp', 'Ts Nx Fb'], Nx: ['p', 'Re Cv Ts'], Ts: ['wp', 'Re Nx No'], Ng: ['t', 'Re No Mg'], Tw: ['p', 'Re Nx'],
+  Th: ['p', 'Gs Re'], Gs: ['p', 'Th'], Py: ['w', 'Fa Lg'], Rs: ['w', 'Cx'], No: ['tfw', 'Ng Gq Ts'],
+  Gq: ['w', 'No Oa'], Kf: ['w', 'Gq'], Cs: ['f', 'Sq'], Rd: ['w', 'Oa'], Sq: ['f', 'Cs'],
+  Mg: ['t', 'Ng No'], Cv: ['p', 'Nx'], Fb: ['p', 'Re'], Aw: ['fp', 'Dk'], Dk: ['w', 'K8'],
+  K8: ['w', 'Dk Gf'], Gf: ['w', 'K8 Ff'], Oa: ['w', 'Tx Pk A2'], Tx: ['w', 'Oa Ce A2'], Pk: ['w', 'Oa'],
+  Ce: ['w', 'Tx Lg'], Pw: ['w', 'Lg Ci'], Ff: ['w', 'Ci Gf'], Ci: ['w', 'Ff Pw'], Sf: ['t', ''],
+};

@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   impact, caseStudies, skillsBuilt, engineering, principles, commits, lanes,
-  projects, writing, testimonials, awards, certs, identity, toolbox, toolboxGroups,
+  projects, writing, testimonials, awards, certs, identity, toolbox, toolboxGroups, toolboxWhere, toolboxMeta,
 } from './data.js';
 import { initMimo } from './mimo.js';
 import { initFluid } from './fluid.js';
@@ -464,30 +464,82 @@ function initKindWords() {
 
 /* ---------- The stack as a periodic table ---------- */
 function initToolbox() {
-  const pt = $('#pt'), key = $('#pt-key'), legend = $('#pt-legend');
+  const pt = $('#pt'), card = $('#pt-card'), legend = $('#pt-legend'), whereEl = $('#pt-where');
   const color = Object.fromEntries(toolboxGroups.map(([g, , c]) => [g, c]));
   const label = Object.fromEntries(toolboxGroups.map(([g, l]) => [g, l]));
-  legend.innerHTML = toolboxGroups.map(([g, l, c]) => `<li><button data-g="${g}" style="--c:${c}">${l}</button></li>`).join('');
+  const whereName = Object.fromEntries(toolboxWhere);
+  const bySym = Object.fromEntries(toolbox.map((t, n) => [t[1], n]));
+  const meta = (sym) => { const [at = '', rel = ''] = toolboxMeta[sym] || []; return { at: [...at], rel: rel.split(' ').filter(Boolean) }; };
+
+  legend.innerHTML = toolboxGroups.map(([g, l, c]) => `<li><button data-g="${g}" style="--c:${c}" aria-pressed="false">${l}</button></li>`).join('');
+  whereEl.innerHTML = `<li class="pw-k mono">used at</li>` + toolboxWhere.map(([w, l]) => `<li><button data-w="${w}" aria-pressed="false">${l}</button></li>`).join('');
   pt.insertAdjacentHTML('beforeend', toolbox.map(([g, sym, name, use], n) => `
     <button class="el" data-g="${g}" data-n="${n}" style="--c:${color[g]}" aria-label="${name}: ${use}">
       <span class="el-n mono">${n + 1}</span><span class="el-s">${sym}</span><span class="el-name">${name}</span>
     </button>`).join(''));
   const els = $$('.el', pt);
-  const showKey = (n) => {
-    const [g, sym, name, use] = toolbox[n];
-    key.style.setProperty('--c', color[g]);
-    key.innerHTML = `<span class="pk-n mono">${String(n + 1).padStart(2, '0')}</span><span class="pk-g mono">${label[g]}</span>
-      <span class="pk-s">${sym}</span><b class="pk-name">${name}</b><p class="pk-use">${use}</p>`;
-    els.forEach((e) => e.classList.toggle('on', +e.dataset.n === n));
+  const st = { g: null, w: null, n: null };
+
+  const paint = () => {
+    const act = st.n != null ? toolbox[st.n][1] : null;
+    const rel = act ? meta(act).rel : [];
+    els.forEach((e) => {
+      const n = +e.dataset.n, sym = toolbox[n][1];
+      const filtered = (st.g && e.dataset.g !== st.g) || (st.w && !meta(sym).at.includes(st.w));
+      const isAct = n === st.n, isRel = rel.includes(sym);
+      e.classList.toggle('on', isAct);
+      e.classList.toggle('rel', !isAct && isRel);
+      e.classList.toggle('dim', act ? !(isAct || isRel) : !!filtered);
+    });
   };
-  showKey(1);
-  els.forEach((e) => ['pointerenter', 'focus', 'click'].forEach((ev) => e.addEventListener(ev, () => showKey(+e.dataset.n))));
-  const dim = (g) => els.forEach((e) => e.classList.toggle('dim', !!g && e.dataset.g !== g));
-  legend.addEventListener('pointerover', (e) => { const b = e.target.closest('[data-g]'); dim(b?.dataset.g); });
-  legend.addEventListener('focusin', (e) => dim(e.target.dataset.g));
-  legend.addEventListener('pointerleave', () => dim(null));
-  legend.addEventListener('focusout', () => dim(null));
-  // a soft light follows the pointer across the table
+
+  const place = (e) => {
+    const pw = pt.clientWidth, cw = Math.min(300, pw - 8);
+    const cx = e.offsetLeft + e.offsetWidth / 2;
+    const left = Math.max(0, Math.min(pw - cw, cx - cw / 2));
+    const below = e.offsetTop + e.offsetHeight / 2 < pt.clientHeight / 2;
+    card.style.width = cw + 'px';
+    card.style.left = left + 'px';
+    card.style.setProperty('--ax', Math.max(18, Math.min(cw - 18, cx - left)) + 'px');
+    card.classList.toggle('up', !below);
+    card.style.top = below ? e.offsetTop + e.offsetHeight + 12 + 'px' : 'auto';
+    card.style.bottom = below ? 'auto' : pt.clientHeight - e.offsetTop + 12 + 'px';
+  };
+
+  const show = (e) => {
+    const n = +e.dataset.n, [g, sym, name, use] = toolbox[n], mt = meta(sym);
+    st.n = n;
+    card.style.setProperty('--c', color[g]);
+    card.innerHTML = `<div class="pc-top"><span class="pc-s">${sym}</span><div><b class="pc-name">${name}</b><small class="mono">${label[g]} · ${String(n + 1).padStart(2, '0')}</small></div></div>
+      <p class="pc-use">${use}</p>
+      ${mt.at.length ? `<div class="pc-at">${mt.at.map((a) => `<span>${whereName[a]}</span>`).join('')}</div>` : ''}
+      ${mt.rel.length ? `<p class="pc-rel mono">pairs with <b>${mt.rel.map((s) => toolbox[bySym[s]][2]).join(' · ')}</b></p>` : ''}`;
+    place(e);
+    card.classList.add('on');
+    paint();
+  };
+  const hide = () => { st.n = null; card.classList.remove('on'); paint(); };
+
+  els.forEach((e) => {
+    e.addEventListener('pointerenter', () => show(e));
+    e.addEventListener('focus', () => show(e));
+    e.addEventListener('click', () => show(e));
+    e.addEventListener('blur', hide);
+  });
+  pt.addEventListener('pointerleave', hide);
+  addEventListener('keydown', (ev) => { if (ev.key === 'Escape') hide(); });
+  addEventListener('resize', hide);
+
+  const toggle = (box, key, attr) => box.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return;
+    const v = b.dataset[attr];
+    st[key] = st[key] === v ? null : v;
+    $$('button', box).forEach((x) => { const on = x.dataset[attr] === st[key]; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+    paint();
+  });
+  toggle(legend, 'g', 'g');
+  toggle(whereEl, 'w', 'w');
+
   pt.addEventListener('pointermove', (e) => {
     const r = pt.getBoundingClientRect();
     pt.style.setProperty('--mx', `${e.clientX - r.left}px`);
