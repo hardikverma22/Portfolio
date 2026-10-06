@@ -1,0 +1,24 @@
+# Hardik Verma
+
+> Staff Software Engineer at Walmart Global Tech (Bengaluru). I build AI agents that do real engineering work: multi-agent systems, agent skills and tooling, and the guardrails that make them safe to trust. Ten years of shipping software across TCS, Fidelity Investments and Walmart.
+
+## About
+- [Portfolio](https://hardikverma22.github.io/Portfolio/): career, case studies, essays and projects.
+
+## Selected work
+- Multi-agent incident triage: a supervisor and five parallel specialist agents, each on its own MCP server, took manual incident investigation from about 60 minutes to about 3.
+- Delegated access for AI agents: RFC 8693 token exchange, a policy gateway (CEL) and human approval, so an agent never holds a user's credential.
+- tokenOs: a single Rust binary with 21 MCP tools that compresses and routes the context sent to a model, about 80% fewer tokens on repeated tasks. Global hackathon finalist, 2026.
+- mimo: record a task once, and the agent you already use turns it into a reusable skill.
+- Identity as a platform at Walmart: sign-up, sign-in, two-factor, recovery and fraud-detection support across four countries.
+
+## Career
+- Walmart Global Tech, July 2024 to now: Senior Software Engineer, promoted to Staff in September 2026.
+- Fidelity Investments, August 2019 to July 2024: Software Engineer, then Lead Software Engineer. Reusable client solutions cut time-to-market by about 90%.
+- Tata Consultancy Services, August 2016 to August 2019: System Engineer. Twelve full-stack applications, Scrum Master on a SAFe team.
+
+## Writing and contact
+- [Essays on Medium](https://medium.com/@hardikverma22)
+- [GitHub](https://github.com/hardikverma22)
+- [LinkedIn](https://www.linkedin.com/in/hardikverma22/)
+- Email: hardikverma22@gmail.com

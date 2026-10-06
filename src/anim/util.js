@@ -27,6 +27,8 @@ export function draw(tl, path, at, dur, ease = 'power2.inOut') {
   const len = path.getTotalLength();
   tl.fromTo(path, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease }, at);
 }
+export const motionOn = () => !document.documentElement.classList.contains('motion-off');
+
 // true while the visitor is scrolling fast: they want the result, not the show
 let _last = { y: 0, t: 0 }, _v = 0;
 if (typeof window !== 'undefined') {
@@ -37,12 +39,14 @@ if (typeof window !== 'undefined') {
     _last = { y: scrollY, t: now };
   }, { passive: true });
 }
-export const isFast = () => performance.now() - _last.t < 160 && _v > 1600;
+export const isFast = () => !motionOn() || (performance.now() - _last.t < 160 && _v > 1600);
 
-// Each stage opens on its finished, fully readable frame. It plays once as it scrolls in, never loops,
-// and a small control lets the visitor skip to the result or replay it. `make` builds a paused timeline.
-export function autoplay(root, make, reduced, { speed = 1 } = {}) {
-  let tl = null, rt = 0, state = 'done';
+// Each stage opens on its finished, fully readable frame. The intro plays once as it scrolls in (if intros are on),
+// with a control to skip or replay it. After that, an optional ambient loop keeps the finished frame alive
+// (pulses along connectors, traffic, glows) while the stage is on screen. `make` builds the paused intro timeline;
+// `ambient(tl)` builds a paused, endlessly repeating one.
+export function autoplay(root, make, reduced, { ambient = null } = {}) {
+  let tl = null, amb = null, rt = 0, state = 'done', inView = false, seen = false;
   const holder = root.parentElement && root.parentElement.classList.contains('anim-wrap') ? root.parentElement : root;
   let ctl = null;
   if (!reduced) {
@@ -52,41 +56,47 @@ export function autoplay(root, make, reduced, { speed = 1 } = {}) {
   }
   const label = () => {
     if (!ctl) return;
+    ctl.hidden = !motionOn() || state === 'idle';
     const playing = state === 'playing';
     ctl.textContent = playing ? 'skip to result ›' : '↻ replay';
     ctl.setAttribute('aria-label', playing ? 'Skip to the result' : 'Replay the animation');
   };
-  const finish = () => { if (!tl) return; tl.progress(1).pause(); state = 'done'; label(); };
-  const start = () => {
-    if (!tl) return;
-    tl.resetFn?.(); tl.timeScale(speed).restart(); state = 'playing'; label();
-  };
+  const sync = () => { if (amb) (inView && state === 'done' ? amb.play() : amb.pause()); };
+  const finish = () => { if (!tl) return; tl.progress(1).pause(); state = 'done'; label(); sync(); };
+  const start = () => { if (!tl) return; amb?.pause(); tl.resetFn?.(); tl.restart(); state = 'playing'; label(); };
   const build = () => {
-    tl?.kill();
+    tl?.kill(); amb?.kill();
     tl = make();
     tl.repeat(0).pause(0);
-    tl.eventCallback('onComplete', () => { state = 'done'; label(); });
-    tl.progress(1);
-    state = 'done'; label();
+    tl.eventCallback('onComplete', () => { state = 'done'; label(); sync(); });
+    // before the first play the stage waits on its empty first frame, so it never flashes finished and then restarts
+    const hold = !reduced && !seen && motionOn();
+    tl.progress(hold ? 0 : 1);
+    amb = ambient ? ambient(tl) : null;
+    state = hold ? 'idle' : 'done'; label(); sync();
   };
   build();
+  ScrollTrigger.create({ trigger: root, start: 'top 90%', end: 'bottom 5%', onToggle: (st) => { inView = st.isActive; sync(); } });
   if (!reduced) {
+    addEventListener('motionchange', (e) => { ctl.hidden = !e.detail; if (!e.detail && state !== 'done') { seen = true; finish(); } });
+    ctl.hidden = !motionOn() || state === 'idle';
     ctl.addEventListener('click', () => (state === 'playing' ? finish() : start()));
     ScrollTrigger.create({
-      trigger: root, start: 'top 75%', end: 'bottom 5%', once: false,
-      onEnter: () => { if (!tl.__seen) { tl.__seen = true; isFast() ? finish() : start(); } },
-      onLeave: () => { if (state === 'playing') finish(); },
+      trigger: root, start: 'top 75%', end: 'bottom 5%',
+      onEnter: () => { if (!seen) { seen = true; isFast() ? finish() : start(); } },
+      onLeave: () => { if (state !== 'done') { seen = true; finish(); } },
       onLeaveBack: () => { if (state === 'playing') finish(); },
+      onRefresh: (st) => { if (!seen && st.progress === 1) { seen = true; finish(); } },
     });
-    let lastW = root.clientWidth;
-    new ResizeObserver(() => {
-      if (Math.abs(root.clientWidth - lastW) < 3) return;
-      lastW = root.clientWidth;
-      clearTimeout(rt); rt = setTimeout(() => { const seen = tl.__seen; build(); tl.__seen = seen; }, 200);
-    }).observe(root);
-    addEventListener('load', () => { const seen = tl.__seen; build(); tl.__seen = seen; });
   }
-  if (import.meta.env.DEV) (window.__anim ||= {})[root.id] = { get tl() { return tl; }, finish, start };
+  let lastW = root.clientWidth;
+  new ResizeObserver(() => {
+    if (Math.abs(root.clientWidth - lastW) < 3) return;
+    lastW = root.clientWidth;
+    clearTimeout(rt); rt = setTimeout(build, 200);
+  }).observe(root);
+  addEventListener('load', build);
+  if (import.meta.env.DEV) (window.__anim ||= {})[root.id] = { get tl() { return tl; }, get amb() { return amb; }, finish, start };
   return () => tl;
 }
 // point of an element relative to a root, from one of its sides
@@ -95,6 +105,14 @@ export function pt(root, el, side = 'c') {
   const x = side === 'l' ? r.left : side === 'r' ? r.right : r.left + r.width / 2;
   const y = side === 't' ? r.top : side === 'b' ? r.bottom : r.top + r.height / 2;
   return [x - b.left, y - b.top];
+}
+// like pt, but from layout offsets, so animation transforms (a card sliding in) never skew the result
+export function ptL(root, el, side = 'c') {
+  let x = 0, y = 0, n = el;
+  while (n && n !== root) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+  if (n !== root) return pt(root, el, side);
+  const w = el.offsetWidth, h = el.offsetHeight;
+  return [x + (side === 'r' ? w : side === 'l' ? 0 : w / 2), y + (side === 't' ? 0 : side === 'b' ? h : h / 2)];
 }
 export const curve = ([x1, y1], [x2, y2], k = 0.5) => { const mx = x1 + (x2 - x1) * k; return `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`; };
 export { gsap };

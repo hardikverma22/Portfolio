@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hardikverma22.github.io/Portfolio/sitemap.xml

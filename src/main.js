@@ -6,14 +6,20 @@ import {
   projects, writing, testimonials, awards, certs, identity, toolbox, toolboxGroups, toolboxWhere, toolboxMeta,
 } from './data.js';
 import { initMimo } from './mimo.js';
-import { isFast } from './anim/util.js';
+import { isFast, motionOn } from './anim/util.js';
 import './anim.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let storedMotion = null;
+try { storedMotion = localStorage.getItem('hv-motion'); } catch (_) {}
+// the visitor's own choice wins; otherwise follow the system setting
+const reduced = storedMotion ? storedMotion === 'off' : prefersReduced;
+// the system "reduce motion" setting stops everything; the visitor's own Off switch only stops the intros
+const ambientOn = !(prefersReduced && storedMotion !== 'on');
 const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -24,7 +30,7 @@ const idle = (fn) => ('requestIdleCallback' in window ? requestIdleCallback(fn, 
 function mountWhenNear(sel, load, name, reduced) {
   const el = $(sel);
   if (!el) return;
-  const go = () => load().then((mod) => { mod[name](el, reduced); ScrollTrigger.refresh(); });
+  const go = () => load().then((mod) => { mod[name](el, reduced, ambientOn); ScrollTrigger.refresh(); });
   if (!('IntersectionObserver' in window)) { go(); return; }
   const io = new IntersectionObserver((e) => { if (e[0].isIntersecting) { io.disconnect(); go(); } }, { rootMargin: '900px 0px' });
   io.observe(el);
@@ -181,6 +187,81 @@ function renderGitLog() {
   };
   requestAnimationFrame(draw);
   new ResizeObserver(() => draw()).observe(root);
+}
+
+/* =========================================================
+   GATE, token exchange, with a human in the loop
+   ========================================================= */
+async function runGate(onGrant) {
+  const gate = $('#gate');
+  const log = $('#gate-log');
+  const bar = $('#gate-bar');
+  const actions = $('#gate-actions');
+  const tok = 'eyJhbGciOiJFUzI1NiJ9.' + rnd(18);
+
+  let remembered = false;
+  try { remembered = sessionStorage.getItem('hv-granted') === '1'; } catch (_) {}
+  if (reduced || remembered || location.hash.length > 1 || new URLSearchParams(location.search).has('skip')) {
+    gate.remove();
+    onGrant(tok);
+    return;
+  }
+
+  const lines = [
+    '<b>→ POST</b> /oauth/token',
+    '  grant_type      = urn:ietf:params:oauth:grant-type:<i>token-exchange</i>',
+    '  subject_token   = &lt;visitor:anonymous&gt;',
+    '  actor_token     = &lt;agent:hardik.portfolio&gt;',
+    '  scope           = read:agents read:identity read:career contact',
+    '<b>→</b> verifying actor signature … <u>ok</u>',
+    '<b>→</b> evaluating policy (CEL) … <u>allow</u>',
+    `<b>← 200 OK</b>  { "access_token": "<i>${tok.slice(0, 26)}…</i>", "expires_in": 900 }`,
+  ];
+  if (reduced) { log.innerHTML = lines.join('\n'); bar.style.width = '100%'; }
+  else {
+    for (let i = 0; i < lines.length; i++) {
+      log.innerHTML += (i ? '\n' : '') + lines[i];
+      bar.style.width = ((i + 1) / lines.length) * 100 + '%';
+      await sleep(i === 5 || i === 6 ? 260 : 90);
+    }
+  }
+  actions.classList.add('on');
+  const grantBtn = $('#gate-grant');
+  grantBtn.focus({ preventScroll: true });
+
+  return new Promise((resolve) => {
+    let done = false;
+    const grant = async () => {
+      if (done) return;
+      done = true; clearInterval(tick);
+      removeEventListener('keydown', onKey);
+      gate.classList.add('is-done');
+      try { sessionStorage.setItem('hv-granted', '1'); } catch (_) {}
+      onGrant(tok);
+      if (reduced) { gate.remove(); return resolve(); }
+      await gsap.to(gate, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' });
+      gate.remove();
+      resolve();
+    };
+    const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); grant(); } };
+    addEventListener('keydown', onKey);
+    grantBtn.addEventListener('click', grant);
+    const AUTO = 10000;
+    gate.style.setProperty('--auto', AUTO + 'ms');
+    gate.classList.add('is-auto');
+    const count = $('#gate-count');
+    let left = Math.ceil(AUTO / 1000);
+    count.textContent = `Granting read access automatically in ${left}…`;
+    const tick = setInterval(() => { left--; if (left > 0) count.textContent = `Granting read access automatically in ${left}…`; }, 1000);
+    const auto = setTimeout(grant, AUTO);
+    $('#gate-deny').addEventListener('click', () => {
+      clearTimeout(auto); clearInterval(tick); gate.classList.remove('is-auto');
+      $('.gate-q', gate).innerHTML = 'Holding. Take your time.<br /><em>The page is public anyway.</em>';
+      grantBtn.innerHTML = 'Continue <kbd>↵</kbd>';
+      $('#gate-deny').remove();
+      grantBtn.focus();
+    });
+  });
 }
 
 /* =========================================================
@@ -391,7 +472,7 @@ function initKindWords() {
     i = (n + testimonials.length) % testimonials.length;
     const cur = items[i];
     btns.forEach((b, k) => { b.setAttribute('aria-selected', k === i); b.tabIndex = k === i ? 0 : -1; });
-    if (reduced || !animate || prev === cur) { items.forEach((el) => el.classList.toggle('on', el === cur)); fit(); return; }
+    if (!motionOn() || !animate || prev === cur) { items.forEach((el) => el.classList.toggle('on', el === cur)); fit(); return; }
     busy = true;
     const from = stage.offsetHeight;
     gsap.killTweensOf([stage, ...items, ...$$('.kw-w', stage)]);
@@ -519,7 +600,7 @@ function initCareer() {
       <ul class="cr-caps">${c.caps.map(([t, d], i) => `<li><span class="n mono">${String(i + 1).padStart(2, '0')}</span><h4>${t}</h4><p>${d}</p></li>`).join('')}</ul>`;
     geo.hidden = c.id !== 'walmart';
     if (c.id === 'walmart') window.dispatchEvent(new Event('resize'));
-    if (animate && !reduced) gsap.from(panel.querySelectorAll('.cr-side > *, .cr-caps li'), { y: 14, opacity: 0, duration: 0.5, ease: 'expo.out', stagger: 0.03 });
+    if (animate && motionOn()) gsap.from(panel.querySelectorAll('.cr-side > *, .cr-caps li'), { y: 14, opacity: 0, duration: 0.5, ease: 'expo.out', stagger: 0.03 });
     ScrollTrigger.refresh();
     trace('career', c.short);
   };
@@ -568,6 +649,28 @@ function initTokenosModal(lenis) {
     const first = f[0], last = f[f.length - 1];
     if (e.shiftKey && (document.activeElement === first || document.activeElement === sheet)) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+}
+
+/* ---------- motion switch ---------- */
+function initMotion() {
+  const btn = $('#motion-toggle');
+  if (!btn) return;
+  const apply = (on) => {
+    document.documentElement.classList.toggle('motion-off', !on);
+    btn.setAttribute('aria-checked', String(on));
+    // intros stop and everything already waiting to reveal appears in place; ambient motion keeps running
+    if (!on) ScrollTrigger.getAll().forEach((st) => { if (st.animation && !st.vars.scrub) st.animation.progress(1); });
+    dispatchEvent(new CustomEvent('motionchange', { detail: on }));
+  };
+  if (reduced) apply(false);
+  btn.addEventListener('click', () => {
+    const on = btn.getAttribute('aria-checked') !== 'true';
+    try { localStorage.setItem('hv-motion', on ? 'on' : 'off'); } catch (_) {}
+    // smooth scroll, the WebGL smoke, cursor effects and scroll-scrubbed choreography are set up (or not) at load: reload to switch them
+    if (on === reduced) { try { sessionStorage.setItem('hv-y', String(scrollY)); } catch (_) {} location.reload(); return; }
+    apply(on);
+    trace('motion', on ? 'on' : 'off');
   });
 }
 
@@ -635,7 +738,7 @@ function initScroll() {
   const words = $$('#about .w');
   ScrollTrigger.create({
     trigger: '#about', start: 'top 80%', end: 'bottom 45%', scrub: true,
-    onUpdate: (st) => { const n = Math.round(st.progress * words.length); words.forEach((w, i) => (w.style.opacity = i < n ? 1 : 0.5)); },
+    onUpdate: (st) => { if (reduced) return; const n = Math.round(st.progress * words.length); words.forEach((w, i) => (w.style.opacity = i < n ? 1 : 0.5)); },
   });
   if (reduced) words.forEach((w) => (w.style.opacity = 1));
 
@@ -645,7 +748,7 @@ function initScroll() {
     onUpdate: (st) => $$('#gitlog .gl-path').forEach((p) => {
       const L = p.getTotalLength();
       p.style.strokeDasharray = L;
-      p.style.strokeDashoffset = L * (1 - st.progress);
+      p.style.strokeDashoffset = reduced ? 0 : L * (1 - st.progress);
     }),
   });
 
@@ -705,6 +808,7 @@ function initScroll() {
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
+    lenis.stop();
     if (import.meta.env.DEV) { window.__lenis = lenis; window.__ST = ScrollTrigger; }
   }
   $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
@@ -715,6 +819,7 @@ function initScroll() {
   }));
   initPalette(lenis, api);
   initTokenosModal(lenis);
+  initMotion();
 
   // hero: split the name into masked characters, start the FX in parallel with the gate
   history.scrollRestoration = 'manual';
@@ -739,8 +844,7 @@ function initScroll() {
     const hero = $('.hero');
     portraitP.then((p) => p?.reveal(0.1, 1.9));
     if (reduced) { hero.classList.add('ready'); xray(); return; }
-    const tl = gsap.timeline({ delay: 0.05, defaults: { ease: 'power3.out' }, onStart: () => hero.classList.add('ready') });
-    tl.timeScale(1.8);
+    const tl = gsap.timeline({ delay: 0.2, defaults: { ease: 'power3.out' }, onStart: () => hero.classList.add('ready') });
     tl.from('#hero-photo', { scale: 1.18, xPercent: -4, autoAlpha: 0, duration: 1.5, ease: 'expo.out' }, 0)
       .from('.hero-role', { autoAlpha: 0, x: 24, duration: 0.7 }, 0.25)
       .from($$('.hn-line')[0].querySelectorAll('.hc'), { yPercent: 120, rotationX: 35, duration: 0.95, ease: 'expo.out', stagger: 0.03 }, 0.22)
@@ -750,18 +854,22 @@ function initScroll() {
       .from('.hero-cue', { y: 10, autoAlpha: 0, duration: 0.45 }, 0.95)
       .fromTo('.hero-avail', { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 0.95);
     fluidP.then((f) => f?.sweep($('.hero-name')));
-    setTimeout(xray, 900);
+    setTimeout(xray, 1500);
   };
 
-  lenis?.start();
-  trace('auth', 'token exchanged · act=hardik.portfolio', true);
-  heroEntrance();
+  await runGate((tok) => {
+    document.body.classList.remove('is-locked');
+    lenis?.start();
+    trace('auth', 'token exchanged · act=hardik.portfolio', true);
+    heroEntrance();
+  });
   initScroll();
   ScrollTrigger.refresh();
   if (location.hash.length > 1 && $(location.hash)) {
     requestAnimationFrame(() => (lenis ? lenis.scrollTo(location.hash, { immediate: true }) : $(location.hash).scrollIntoView()));
   }
   addEventListener('load', () => ScrollTrigger.refresh());
+  try { const y = sessionStorage.getItem('hv-y'); if (y) { sessionStorage.removeItem('hv-y'); setTimeout(() => (lenis ? lenis.scrollTo(+y, { immediate: true }) : scrollTo(0, +y)), 400); } } catch (_) {}
   // anything that changes the page height later (testimonial switches, fonts, lazy content) re-measures every scroll trigger
   let rt = 0;
   const remeasure = () => { clearTimeout(rt); rt = setTimeout(() => ScrollTrigger.refresh(), 150); };

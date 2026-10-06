@@ -40,7 +40,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Space+Grotesk:wght@500;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
-<body>
+<body class="is-locked">
   <noscript>
     <main style="max-width:46rem;margin:0 auto;padding:2rem 1.25rem;font:16px/1.6 system-ui,sans-serif;color:#e8ecf2;background:#0b0d12">
       <h1>Hardik Verma</h1>
@@ -70,6 +70,25 @@
   </noscript>
   <a class="skip" href="#main">Skip to content</a>
 
+  <!-- ========== GATE: token exchange preloader ========== -->
+  <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+    <div class="gate-inner">
+      <p class="gate-kicker mono">POST /oauth/token · RFC 8693</p>
+      <p id="gate-title" class="sr-only">Grant access to Hardik Verma's portfolio</p>
+      <pre class="gate-log mono" id="gate-log" aria-live="polite"></pre>
+      <div class="gate-bar"><span id="gate-bar"></span></div>
+      <div class="gate-actions" id="gate-actions">
+        <p class="gate-q">An agent wants to show you ten years of work.<br /><em id="gate-count">Granting read access automatically…</em></p>
+        <div class="gate-btns">
+          <button class="btn btn-solid" id="gate-grant" data-cursor="grant">Enter now <kbd>↵</kbd></button>
+          <button class="btn btn-ghost" id="gate-deny" data-cursor="deny">Wait</button>
+        </div>
+        <div class="gate-auto" aria-hidden="true"><i></i></div>
+      </div>
+    </div>
+    <p class="gate-foot mono">human-in-the-loop · you can revoke at any time</p>
+  </div>
+
   <!-- ========== CHROME ========== -->
   <header class="hud" id="hud">
     <a href="#top" class="hud-logo" aria-label="hv, back to top" data-cursor="top">hv<span>/</span></a>
@@ -78,6 +97,7 @@
     </nav>
     <div class="hud-right mono">
       <a class="hud-cta" href="#contact">Get in touch</a>
+      <button class="hud-motion" id="motion-toggle" role="switch" aria-checked="true" aria-label="Motion" data-cursor="motion"><i aria-hidden="true"></i></button>
       <button class="hud-k" id="open-palette" aria-label="⌘K, open command palette" data-cursor="⌘K">⌘K</button>
     </div>
   </header>

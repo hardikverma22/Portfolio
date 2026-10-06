@@ -41,7 +41,7 @@ const html = `
       <section class="cw-route">
         <p class="cw-lab mono">each turn goes to the cheapest model that can do it</p>
         <div class="cw-lanes">
-          <span class="cw-hub"><b>◇</b></span>
+          <span class="cw-hub" role="img" aria-label="router"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h5l3-6h8M9 12l3 6h8"/><path d="M17 3l3 3-3 3M17 15l3 3-3 3"/></svg></span>
           ${[['Haiku', 'lookups', 'where is the auth file?'], ['Sonnet', 'everyday dev work', 'add a request handler'], ['Opus', 'refactor · debug · plan', 'refactor this service']].map(([m, w, p], i) => `
           <div class="cw-lane" data-m="${i}"><span class="cw-ln mono"><b>${m}</b><small>${w}</small></span><i></i><b class="cw-prompt mono">${p}</b></div>`).join('')}
         </div>
@@ -60,7 +60,7 @@ const html = `
     </aside>
   </div>`;
 
-export function mountTokens(root, reduced) {
+export function mountTokens(root, reduced, ambientOn = true) {
   root.innerHTML = html;
   const st = $('.cw', root), grid = $('.cw-grid', st);
   const kinds = shuffled();
@@ -153,5 +153,22 @@ export function mountTokens(root, reduced) {
     return tl;
   };
 
-  autoplay(root, make, reduced, { speed: 1.7 });
+  // the finished frame keeps routing: a prompt lands in a lane every couple of seconds
+  const ambient = () => {
+    const lanes = $$('.cw-lane', st);
+    const a = gsap.timeline({ repeat: -1, paused: true });
+    lanes.forEach((l, i) => {
+      const p = $('.cw-prompt', l), at = i * 2.5;
+      a.fromTo(p, { opacity: 0, left: '0%', xPercent: 0 }, { opacity: 1, duration: 0.2, immediateRender: false }, at);
+      a.fromTo(p, { left: '0%', xPercent: 0 }, { left: '100%', xPercent: -100, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, at + 0.1);
+      a.fromTo(l, { '--hot': 0 }, { '--hot': 1, duration: 0.3, immediateRender: false }, at + 1.2);
+      a.to(p, { opacity: 0, duration: 0.3 }, at + 2.0);
+      a.to(l, { '--hot': 0, duration: 0.4 }, at + 2.1);
+    });
+    a.to({}, { duration: 7.6 }, 0);
+    return a;
+  };
+
+  autoplay(root, make, reduced, { ambient: ambientOn ? ambient : null });
+
 }

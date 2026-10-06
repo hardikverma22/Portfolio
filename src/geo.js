@@ -6,6 +6,7 @@ import world from 'world-atlas/countries-110m.json';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { markets, origin } from './data.js';
+import { motionOn } from './anim/util.js';
 
 const LIT = { Chile: '152', Mexico: '484', Canada: '124', SouthAfrica: '710', India: '356' };
 
@@ -32,18 +33,23 @@ export function initGeo({ reduced }) {
 
   const showPanel = (m) => {
     panel.innerHTML = panelHtml(m);
-    if (!reduced) gsap.from(panel.children, { y: 14, opacity: 0, duration: 0.5, ease: 'expo.out', stagger: 0.05 });
+    if (motionOn() && !reduced) gsap.from(panel.children, { y: 14, opacity: 0, duration: 0.5, ease: 'expo.out', stagger: 0.05 });
   };
 
-  // keep the row as tall as the tallest card so the section does not jump between pins
+  // keep the row as tall as the tallest card so the section does not jump between pins.
+  // Measured in a hidden copy, so the live panel (and any tween running on it) is never touched.
   const lockHeight = () => {
     const geo = map.parentElement;
     geo.style.minHeight = '';
     if (matchMedia('(max-width: 960px)').matches) return;
-    const keep = panel.innerHTML;
+    const probe = panel.cloneNode(false);
+    probe.removeAttribute('id');
+    probe.setAttribute('aria-hidden', 'true');
+    probe.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;left:0;top:0;width:${panel.getBoundingClientRect().width}px;height:auto`;
+    geo.append(probe);
     let max = 0;
-    markets.forEach((m) => { panel.innerHTML = panelHtml(m); max = Math.max(max, panel.scrollHeight); });
-    panel.innerHTML = keep;
+    markets.forEach((m) => { probe.innerHTML = panelHtml(m); max = Math.max(max, probe.offsetHeight); });
+    probe.remove();
     geo.style.minHeight = max + 'px';
   };
 

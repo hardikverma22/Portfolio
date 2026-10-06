@@ -1,6 +1,8 @@
 // Multi-agent incident triage: an incident lands, a supervisor wakes five specialists in parallel,
 // their findings converge into one verdict, and a human approves. A race bar shows 60 minutes against 3.
-import { gsap, $, $$, type, count, travel, draw, autoplay, pt, curve } from './util.js';
+import { gsap, $, $$, type, count, travel, draw, autoplay, ptL as pt, curve } from './util.js';
+
+const HUB = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="18" r="2.4"/><path d="M12 8.4v3.2M12 11.6 6.2 16M12 11.6 17.8 16"/></svg>';
 
 const AGENTS = [
   { k: 'logs', n: 'Logs & traces', m: 'mcp://logs', cap: '412 errors, 96% from one upstream',
@@ -31,10 +33,16 @@ const html = `
 
       <section class="tz-col tz-sup">
         <p class="tz-lab mono">supervisor</p>
-        <div class="tz-orb" data-n="orb"><i></i><i></i><i></i><b>◆</b></div>
-        <ul class="tz-plan mono">
-          <li><em></em></li><li><em></em></li><li><em></em></li>
-        </ul>
+        <div class="tz-node" data-n="orb">
+          <header>
+            <span class="tz-ic" aria-hidden="true">${HUB}</span>
+            <div><b>Supervisor</b><small class="mono">plans and dispatches</small></div>
+          </header>
+          <span class="tz-status mono" data-s="idle"><i></i><em>idle</em></span>
+          <ul class="tz-plan mono">
+            <li><em></em></li><li><em></em></li><li><em></em></li>
+          </ul>
+        </div>
       </section>
 
       <section class="tz-col tz-agents">
@@ -71,7 +79,7 @@ const html = `
 
 const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
-export function mountTriage(root, reduced) {
+export function mountTriage(root, reduced, ambientOn = true) {
   root.innerHTML = html;
   const stage = $('.tz', root), svg = $('.tz-wires', root);
   const q = (s) => $(s, stage);
@@ -92,10 +100,13 @@ export function mountTriage(root, reduced) {
     const dFan = wide ? agents.map(() => dot('tz-d tz-d-fan')) : [];
     const dMerge = wide ? agents.map(() => dot('tz-d tz-d-merge')) : [];
 
+    tl.paths = { wIn, wFan, wMerge };
+
     // ---------- reset ----------
     const reset = () => {
       $$('.tz-plan em, .tz-cap em, .tz-v1 em', stage).forEach((e) => { e.textContent = ''; });
       q('.tz-lane[data-l="hand"] b').textContent = '00:00'; q('.tz-lane[data-l="agents"] b').textContent = '00:00';
+      const st = q('.tz-status'); st.dataset.s = 'idle'; $('em', st).textContent = 'idle';
     };
     tl.resetFn = reset; reset();
 
@@ -107,7 +118,9 @@ export function mountTriage(root, reduced) {
     // ---------- 2. the supervisor wakes and plans ----------
     tl.fromTo('.tz-sup > *', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'expo.out' }, 1.2);
     if (wIn) { draw(tl, wIn, 1.3, 0.7); travel(tl, dIn, wIn, 1.5, 0.8); }
-    tl.fromTo(orb, { scale: 0.85 }, { scale: 1, duration: 0.7, ease: 'back.out(2)' }, 1.9);
+    const setStatus = (s, txt, at) => tl.call(() => { const el = q('.tz-status'); el.dataset.s = s; $('em', el).textContent = txt; }, null, at);
+    setStatus('run', 'planning', 1.9);
+    setStatus('done', 'dispatched', 3.5);
     const plan = ['classify the incident', 'recall 2 similar incidents', 'fan out to 5 specialists'];
     $$('.tz-plan li', stage).forEach((li, i) => {
       tl.fromTo(li, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3 }, 2.1 + i * 0.6);
@@ -178,5 +191,19 @@ export function mountTriage(root, reduced) {
     return tl;
   };
 
-  autoplay(root, make, reduced, { speed: 2 });
+  // once the story is told, data keeps moving along the edges: that is the only thing that moves in the finished frame
+  const ambient = (tl) => {
+    const P = tl.paths;
+    if (!P || !P.wIn) return null;
+    const a = gsap.timeline({ repeat: -1, paused: true });
+    const dot = (cls) => { const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('r', 3.2); c.setAttribute('class', `${cls} tz-amb`); svg.append(c); return c; };
+    travel(a, dot('tz-d tz-d-in'), P.wIn, 0, 1.3);
+    P.wFan.forEach((w, i) => travel(a, dot('tz-d tz-d-fan'), w, 1.2 + i * 0.28, 1.5));
+    P.wMerge.forEach((w, i) => travel(a, dot('tz-d tz-d-merge'), w, 3.6 + i * 0.26, 1.5));
+    a.to({}, { duration: 6.2 }, 0);
+    return a;
+  };
+
+  autoplay(root, make, reduced, { ambient: ambientOn ? ambient : null });
+
 }

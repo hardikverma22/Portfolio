@@ -1,9 +1,10 @@
 // Delegated access: you set limits, two tokens are forged into one scoped token, and every request the agent
 // makes travels a track through five checkpoints. Some pass, some are stopped, one waits for a human,
 // and a single switch cuts the agent off.
-import { gsap, $, $$, type, count, autoplay } from './util.js';
+import { gsap, $, $$, type, count, autoplay, draw, travel, ptL } from './util.js';
 
 const LOCK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+const BOT = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V5M9.5 13.5h.01M14.5 13.5h.01M2.5 12.5v3M21.5 12.5v3"/><circle cx="12" cy="4" r="1"/></svg>';
 const LAYERS = ['agent identity', 'user consent', 'token exchange', 'tool scope', 'payload rules'];
 const BARS = [36, 47, 58, 69, 80];
 const START = 17, END = 95;
@@ -11,6 +12,7 @@ const START = 17, END = 95;
 const html = `
   <div class="dg">
     <div class="dg-a">
+      <svg class="dg-wires" aria-hidden="true"></svg>
       <section class="dg-you">
         <p class="dg-lab mono">you set the limits</p>
         <div class="dg-cap"><span>spend cap</span><b class="mono" data-n="cap">$0</b></div>
@@ -31,16 +33,21 @@ const html = `
           <div class="dg-vault"><span>${LOCK}</span><div><b>your credential</b><small>never leaves the vault</small></div></div>
           <b class="tk tk-sub mono">subject · you</b>
           <b class="tk tk-act mono">actor · the agent</b>
-          <i class="dg-ring"></i>
           <div class="tk tk-del"><b>delegated token</b><span class="mono">scoped · revocable</span></div>
         </div>
       </section>
 
       <section class="dg-agent">
         <p class="dg-lab mono">the agent</p>
-        <div class="dg-orb"><i></i><b>▸</b></div>
-        <div class="dg-slot"><span class="mono">no token yet</span><div class="tk tk-held"><b>delegated token</b><span class="mono">acting for you</span></div></div>
-        <p class="dg-note mono"></p>
+        <div class="dg-node" data-n="agent">
+          <header>
+            <span class="dg-ic" aria-hidden="true">${BOT}</span>
+            <div><b>Shopping agent</b><small class="mono">acts on your behalf</small></div>
+            <span class="dg-status mono" data-s="idle"><i></i><em>no token</em></span>
+          </header>
+          <div class="dg-slot"><span class="mono">waiting for a delegated token</span><div class="tk tk-held"><b>delegated token</b><span class="mono">scoped · revocable</span></div></div>
+          <p class="dg-note mono"></p>
+        </div>
       </section>
     </div>
 
@@ -56,6 +63,10 @@ const html = `
           <b class="dg-pk mono" data-p="4">add_to_cart · $100</b>
           <b class="dg-pk mono" data-p="5">place_order · $24</b>
           <b class="dg-pk mono" data-p="6">search_products</b>
+          <b class="dg-pk mono" data-p="7">search_products</b>
+          <b class="dg-pk dg-amb mono" data-amb="1">search_products</b>
+          <b class="dg-pk dg-amb mono" data-amb="2">add_to_cart · $24</b>
+          <b class="dg-pk dg-amb mono" data-amb="3">add_to_cart · $180</b>
           <span class="dg-why mono" data-w="3" style="left:80%">over the $150 cap</span>
           <span class="dg-why mono" data-w="4" style="left:80%">blocked category</span>
           <span class="dg-why hold mono" data-w="5" style="left:69%">needs approval</span>
@@ -69,6 +80,7 @@ const html = `
       <li data-l="4"><i class="n">✕</i><span>add_to_cart · gift card · $100</span><em>stopped at payload rules: blocked category</em></li>
       <li data-l="5"><i class="h">⏸</i><span>place_order · $24</span><em class="e5">held at tool scope: needs approval</em></li>
       <li data-l="6"><i class="n">✕</i><span>search_products</span><em>stopped at token exchange: 401, token revoked</em></li>
+      <li data-l="7"><i class="y">✓</i><span>search_products</span><em>allowed again after you re-grant access</em></li>
         </ul>
       </section>
       <section class="dg-store">
@@ -80,7 +92,7 @@ const html = `
 
   </div>`;
 
-export function mountDelegate(root, reduced) {
+export function mountDelegate(root, reduced, ambientOn = true) {
   root.innerHTML = html;
   const st = $('.dg', root);
   const bars = $$('.dg-bar', st);
@@ -91,7 +103,21 @@ export function mountDelegate(root, reduced) {
 
   const make = () => {
     const tl = gsap.timeline();
+    const edgeEl = $('.dg-wires', st);
+    edgeEl.innerHTML = '';
+    let edge = null;
+    if (innerWidth >= 960) {
+      const s = $('.dg-a', st), [x1, y1] = ptL(s, $('.dg-you', st), 'r'), [x2, y2] = ptL(s, $('.dg-node', st), 'l');
+      edge = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const mx = (x1 + x2) / 2;
+      edge.setAttribute('d', `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+      edge.setAttribute('class', 'dg-edge');
+      edgeEl.append(edge);
+    }
+    tl.edge = edge;
+    const setStatus = (s, txt, at) => tl.call(() => { const el = $('.dg-status', st); el.dataset.s = s; $('em', el).textContent = txt; }, null, at);
     const reset = () => {
+      const sEl = $('.dg-status', st); sEl.dataset.s = 'idle'; $('em', sEl).textContent = 'no token';
       $('[data-n="cap"]', st).textContent = '$0'; $('[data-n="total"]', st).textContent = '0';
       $('.e5', st).textContent = 'held at tool scope: needs approval';
       $('.dg-note', st).textContent = '';
@@ -145,18 +171,19 @@ export function mountDelegate(root, reduced) {
     tl.fromTo($('.tg-main', st), { '--on': 0 }, { '--on': 1, duration: 0.3, immediateRender: false }, 3.0);
 
     // ---------- 2. the exchange ----------
+    if (edge) { draw(tl, edge, 2.8, 0.9); }
     tl.fromTo($('.dg-vault', st), { opacity: 0.5, y: 6 }, { opacity: 1, y: 0, duration: 0.5 }, 1.0);
     tl.fromTo('.tk-sub', { opacity: 0, left: '0%', top: '30%', xPercent: 0, yPercent: -50, scale: 1 }, { opacity: 1, duration: 0.4 }, 3.1);
     tl.fromTo('.tk-act', { opacity: 0, left: '0%', top: '66%', xPercent: 0, yPercent: -50, scale: 1 }, { opacity: 1, duration: 0.4 }, 3.3);
     tl.to('.tk-sub', { left: '50%', top: '48%', xPercent: -50, scale: 0.7, duration: 0.8, ease: 'power3.inOut' }, 3.9);
     tl.to('.tk-act', { left: '50%', top: '48%', xPercent: -50, scale: 0.7, duration: 0.8, ease: 'power3.inOut' }, 3.9);
-    tl.fromTo('.dg-ring', { scale: 0.2, opacity: 0.9 }, { scale: 2.4, opacity: 0, duration: 0.8, ease: 'power2.out' }, 4.6);
+    tl.fromTo('.tk-del', { boxShadow: '0 0 0 0 rgba(192,132,252,.0)' }, { boxShadow: '0 0 36px -4px rgba(192,132,252,.9)', duration: 0.5, yoyo: true, repeat: 1, immediateRender: false }, 4.8);
     tl.to('.tk-sub, .tk-act', { opacity: 0, duration: 0.2 }, 4.65);
     tl.fromTo('.tk-del', { opacity: 0, scale: 0.4, left: '50%', top: '48%', xPercent: -50, yPercent: -50 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2.2)' }, 4.65);
     tl.to('.tk-del', { left: '108%', opacity: 0, duration: 0.7, ease: 'power2.in' }, 5.7);
     tl.fromTo('.dg-slot > span', { opacity: 0.7 }, { opacity: 0, duration: 0.3 }, 6.2);
     tl.fromTo('.tk-held', { opacity: 0, scale: 0.6, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'back.out(2)' }, 6.2);
-    tl.fromTo('.dg-orb', { '--glow': 0 }, { '--glow': 1, duration: 0.6 }, 6.2);
+    setStatus('live', 'acting for you', 6.2);
     type(tl, $('.dg-note', st), 'acting for you, never holding your credential', 6.4, 1.1);
 
     // ---------- 3. request one: search ----------
@@ -208,12 +235,63 @@ export function mountDelegate(root, reduced) {
     const V = end + 0.4;
     tl.to($('.tg-main', st), { '--on': 0, duration: 0.3 }, V);
     tl.fromTo('.tk-held', { filter: 'grayscale(0)' }, { opacity: 0.25, filter: 'grayscale(1)', scale: 0.92, duration: 0.5, immediateRender: false }, V + 0.2);
-    tl.to('.dg-orb', { '--glow': 0, duration: 0.5 }, V + 0.2);
+    setStatus('off', 'cut off', V + 0.2);
     r = through(pk(6), V + 1.0, 2); stopAt(pk(6), { t: r.t + 0.26 }, 2, '#ff6b8a', 6, 6);
     tl.fromTo(pk(6), { left: `${BARS[1]}%` }, { left: `${BARS[2]}%`, duration: 0.26, ease: 'none', immediateRender: false }, r.t);
     bounce(pk(6), r.t + 1.5, 6);
+
+    // ---------- 9. re-grant: one switch back on, and traffic flows again ----------
+    const G = r.t + 2.3;
+    tl.to($('.tg-main', st), { '--on': 1, duration: 0.3 }, G);
+    tl.to('.tk-held', { opacity: 1, filter: 'grayscale(0)', scale: 1, duration: 0.5 }, G + 0.1);
+    setStatus('live', 'acting for you', G + 0.1);
+    const r7 = through(pk(7), G + 0.9, 5); finish(pk(7), r7, 1);
+    tl.fromTo(log(7), { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.35, ease: 'power3.out' }, r7.t + 0.2);
     return tl;
   };
 
-  autoplay(root, make, reduced, { speed: 2.2 });
+  // the finished frame stays alive: requests keep crossing the gateway, one is always stopped, and tokens ride the edge
+  const ambient = (tl) => {
+    const a = gsap.timeline({ repeat: -1, paused: true });
+    const pks = $$('[data-amb]', st), bars = $$('.dg-bar', st);
+    gsap.set(pks, { xPercent: -50, yPercent: -50, opacity: 0, left: `${START}%` });
+    const flash = (bar, at, c) => {
+      a.fromTo(bar, { backgroundColor: 'rgba(232,236,242,.2)', boxShadow: '0 0 0 transparent', scaleY: 1 }, { backgroundColor: c, boxShadow: `0 0 22px ${c}`, scaleY: 1.3, duration: 0.1, immediateRender: false }, at);
+      a.to(bar, { backgroundColor: 'rgba(232,236,242,.2)', boxShadow: '0 0 0 transparent', scaleY: 1, duration: 0.55 }, at + 0.1);
+    };
+    const run = (p, at, stop, row) => {
+      a.fromTo(p, { left: `${START}%`, opacity: 0, scale: 0.9, x: 0, borderColor: '#6ea8ff', boxShadow: '0 0 18px -4px #6ea8ff' }, { opacity: 1, scale: 1, duration: 0.2, immediateRender: false }, at);
+      let t = at + 0.2, prev = START;
+      const n = stop < 0 ? 5 : stop;
+      for (let i = 0; i < n; i++) {
+        a.fromTo(p, { left: `${prev}%` }, { left: `${BARS[i]}%`, duration: 0.5, ease: 'none', immediateRender: false }, t);
+        t += 0.5; prev = BARS[i]; flash(bars[i], t, '#6ad19a');
+      }
+      if (stop < 0) {
+        a.fromTo(p, { left: `${prev}%` }, { left: `${END - 6}%`, duration: 0.6, ease: 'power1.out', immediateRender: false }, t);
+        a.fromTo(store(row), { backgroundColor: 'rgba(95,212,160,0)' }, { backgroundColor: 'rgba(95,212,160,.28)', duration: 0.2, yoyo: true, repeat: 1, immediateRender: false }, t + 0.5);
+        a.to(p, { opacity: 0, duration: 0.25 }, t + 0.8);
+      } else {
+        a.fromTo(p, { left: `${prev}%` }, { left: `${BARS[stop]}%`, duration: 0.5, ease: 'none', immediateRender: false }, t);
+        t += 0.5; flash(bars[stop], t, '#ff6b8a');
+        a.to(p, { borderColor: '#ff6b8a', boxShadow: '0 0 22px -2px #ff6b8a', x: 4, duration: 0.06, yoyo: true, repeat: 5 }, t);
+        a.to(p, { left: `${START}%`, opacity: 0, duration: 0.6, ease: 'power2.in' }, t + 0.8);
+      }
+    };
+    run(pks[0], 0, -1, 1);
+    run(pks[1], 3.8, -1, 2);
+    run(pks[2], 7.6, 4, 2);
+    if (tl.edge) {
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('r', 3.4); dot.setAttribute('class', 'dg-edge-dot');
+      $('.dg-wires', st).append(dot);
+      travel(a, dot, tl.edge, 0.5, 2.2, 'power1.inOut');
+      travel(a, dot.cloneNode(), tl.edge, 6.2, 2.2, 'power1.inOut');
+    }
+    a.to({}, { duration: 11.6 }, 0);
+    return a;
+  };
+
+  autoplay(root, make, reduced, { ambient: ambientOn ? ambient : null });
+
 }
