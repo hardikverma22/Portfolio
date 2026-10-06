@@ -20,127 +20,44 @@ export const identity = {
 export const impact = [
   { k: '60 → 3 min', big: true, v: 'Incident investigation, by hand vs. with the triage agent', r: 'About 60 minutes to find and correlate information across many sources and reach a decision, down to about 3 minutes when the agent does it with its memory and context.', d: '2025', go: ['See the triage agent', '#case-triage'] },
   { k: '~80%', big: true, v: 'Fewer tokens on tasks developers repeat', r: 'Tokens spent on tasks a developer repeats every day, measured with and without tokenOs. Global hackathon finalist.', d: '2026', go: ['See tokenOs', '#case-tokens'] },
-  { k: '3', v: 'Countries with identity platforms I built and launched', r: 'Sign-in and account security for millions of users.', d: '2024–26', countries: ['Chile', 'Mexico', 'Canada'], link: '#engineering' },
-  { k: '10 yrs', v: 'From enterprise apps to AI agents', r: 'TCS, Fidelity, Walmart. Promoted to Staff Software Engineer in Sep 2026.', d: '2016–26', go: ['See the timeline', '#log'] },
+  { k: '~90%', v: 'Faster time-to-market for enterprise client solutions', r: 'Generic, reusable solutions replaced per-client custom work at Fidelity, for clients such as Wells Fargo and PNC.', d: '2022–24', go: ['See the Fidelity years', '#engineering'], tab: 'fidelity' },
+  { k: '4', v: 'Countries running the identity platform I help build', r: 'Sign-up, sign-in, two-factor, recovery and fraud-detection support for millions of customers, plus partner brands.', d: '2024–26', countries: ['Mexico', 'Chile', 'Canada', 'South Africa'], link: '#engineering' },
 ];
-
-export const triage = {
-  incident: {
-    id: 'INC-0417',
-    sev: 'SEV-2',
-    title: 'Spike in 5xx on OTP verification, one market',
-    source: 'chat · ticketing · email → one pipeline',
-  },
-  agents: [
-    {
-      id: 'logs', name: 'Logs & traces', mcp: 'mcp://logs',
-      lines: [
-        'query error_rate{route="/otp/verify"} last 30m',
-        '412 errors · 96% from one upstream',
-        'trace 7f3a… → timeout at messaging client (2.8s)',
-        'pattern matches 2 past incidents in KB',
-      ],
-    },
-    {
-      id: 'code', name: 'Code search', mcp: 'mcp://code',
-      lines: [
-        'grep retry policy in verification client',
-        'found: retries=0 since last config change',
-        'diff touches timeout + retry defaults',
-      ],
-    },
-    {
-      id: 'browser', name: 'Browser repro', mcp: 'mcp://playwright',
-      lines: [
-        'launch → sign-in → request OTP',
-        'OTP sent ✓ · verify → 504 after 3.0s',
-        'screenshot + HAR attached',
-      ],
-    },
-    {
-      id: 'health', name: 'Service health', mcp: 'mcp://health',
-      lines: [
-        'messaging upstream p99: 2.9s (baseline 0.4s)',
-        'pods healthy · no deploys in window',
-        'upstream degraded, our timeout too tight',
-      ],
-    },
-    {
-      id: 'comms', name: 'Stakeholder updates', mcp: 'mcp://comms',
-      lines: [
-        'drafted status update for incident channel',
-        'awaiting human approval before send',
-      ],
-    },
-  ],
-  verdict:
-    'Root cause: upstream messaging latency + a config change that removed retries. Suggested fix: restore retry policy (2×, jittered) and raise client timeout to 4s behind a flag.',
-};
-
-export const delegate = {
-  tools: [
-    { id: 'search', label: 'search_products', risk: 'low' },
-    { id: 'cart', label: 'add_to_cart', risk: 'low' },
-    { id: 'order', label: 'place_order', risk: 'high' },
-  ],
-  categories: ['Electronics', 'Alcohol', 'Gift cards', 'Groceries'],
-  layers: ['Agent identity', 'User consent', 'Token exchange', 'Tool scope', 'Payload rules'],
-  script: [
-    { tool: 'search', say: 'Find a 2L stainless steel water bottle', amount: 0, cat: 'Groceries' },
-    { tool: 'cart', say: 'Add bottle to cart', amount: 24, cat: 'Groceries' },
-    { tool: 'cart', say: 'Add noise-cancelling headphones', amount: 180, cat: 'Electronics' },
-    { tool: 'cart', say: 'Add $100 gift card', amount: 100, cat: 'Gift cards' },
-    { tool: 'order', say: 'Place the order', amount: 24, cat: 'Groceries' },
-  ],
-};
 
 export const caseStudies = [
   {
     id: 'triage',
+    alt: 'An incident lands, a supervisor wakes five specialist agents in parallel, their findings merge into one verdict, and an engineer approves. Manual triage takes about 60 minutes; the agents take about 3.',
     no: '01',
     when: 'Walmart · 2025',
     title: 'Multi-agent incident triage',
     line: 'An on-call assistant that investigates production incidents the way a senior engineer would.',
     problem: 'On-call engineers spent about an hour per incident moving between logs, code, dashboards and chat before they could even propose a fix.',
     role: 'I built it, including the log and trace MCP server, written from scratch.',
-    points: [
-      'A supervisor turns an incident into a plan and dispatches specialised sub-agents in parallel.',
-      'Each sub-agent talks to its own MCP server.',
-      'Grounded in past incidents and runbooks, so it does not hallucinate on rare failures.',
-      'A human-in-the-loop UI streams every step; engineers approve, redirect or take over.',
-    ],
     result: 'Manual investigation dropped from about an hour to a few minutes. Demoed to senior leadership.',
     stack: ['Python', 'LangGraph', 'FastAPI', 'MCP', 'Vector search', 'Playwright', 'React'],
   },
   {
     id: 'delegate',
+    alt: 'An agent works through a gateway with a delegated token. Allowed calls pass five checkpoints, over-limit and blocked-category calls are stopped, ordering waits for human approval, and revoking cuts the agent off.',
     no: '02',
     when: 'Walmart · 2026',
     title: 'Delegated access for AI agents',
     line: 'A trust layer that lets you give an AI agent scoped, instantly revocable permission to act for you.',
     problem: 'Giving an agent your credentials is unsafe. Giving it nothing makes it useless.',
     role: 'I built the gateway, the token-exchange flow and the approval graph.',
-    points: [
-      'RFC 8693 token exchange (subject, actor and delegated tokens), so the agent never holds your credential.',
-      'Spend caps, blocked categories and per-tool consent, enforced by a gateway on every request.',
-      'Revocation is one switch: the next exchange fails and the agent is cut off.',
-      'Risky actions need a human approval enforced in the graph, which the model cannot bypass. A2UI and A2A are integrated.',
-    ],
     result: 'Policy lives as data (CEL), not code. Written up as “Agent Gateways and the Missing Governance Layer”.',
     stack: ['Python', 'LangGraph', 'MCP', 'OAuth 2.0', 'RFC 8693', 'CEL', 'A2UI', 'React'],
   },
   {
     id: 'tokens',
+    alt: 'A context window full of duplicate, verbose and irrelevant tokens is compressed from about 48,000 to under 10,000, each prompt is routed to the cheapest capable model, and every saving is recorded in a hash-chained ledger.',
     no: '03',
     when: 'Walmart · 2026 hackathon',
     title: 'tokenOs: a token-efficiency layer for AI coding assistants',
     line: 'A layer that compresses, routes and explains what goes into an LLM’s context before every call.',
     problem: 'Coding assistants spend much of their context window on duplicate, irrelevant and noisy input, which costs tokens and hurts answers.',
     role: 'I built it in hack week as a single Rust binary, then published it internally as a plugin.',
-    points: [
-      'Ships as an MCP server, a CLI and editor hooks.',
-      'Dedupes, summarises and routes context, and shows you exactly what was cut and why.',
-    ],
     result: 'About 80% fewer tokens on tasks developers repeat. Finalist out of thousands of entries in a company-wide global hackathon (2026).',
     stack: ['Rust', 'MCP', 'CLI', 'Editor hooks'],
   },
@@ -150,41 +67,94 @@ export const skillsBuilt = [
   ['Skill miner', 'Scans session history across AI tools, finds the workflows you keep repeating, and offers to turn them into reusable skills.'],
   ['Headless scheduler', 'Runs any agent skill on a schedule with no open session. launchd-based, survives reboots.'],
   ['PR analytics', 'DORA benchmarks, cycle-time breakdowns and per-developer coaching notes, generated on demand.'],
-  ['Parallel-agent pipeline', 'A spreadsheet of support cases in, validated ready-to-run fixes out, one agent per case, in parallel.'],
+  ['Incident-to-fix pipeline', 'Works a ServiceNow queue end to end: a sub-agent per incident, a second wave to verify, a data lake check, a scripted fix, then an Excel report, a ServiceNow update over MCP and a stakeholder email through Microsoft Graph.'],
 ];
 
-export const engineering = [
-  ['One verification component for every market', 'Replaced per-market implementations with a shared phone-verification wrapper, the foundation for every later verification feature.', 'Mobile verification with phone step-up, reused across Canada, Mexico and the unified profile; legacy migrated with zero regressions.'],
-  ['Closing a security gap nobody owned', 'Enforced password policy on the server, not just the UI.', 'Picked it up after a security flag, aligned two orgs, shipped in two staged phases, config-driven for every market.'],
-  ['Checkout verification, de-risked', 'Caught a config risk that would have silently switched off a mandatory checkout step during rollout.', 'End-to-end validation of every journey and a clear reuse path to the shared component.'],
-  ['Passkeys for third-party clients', 'Brought passkey sign-in to third-party client flows.', 'Account page and side-panel work for passkey registration and authentication.'],
-  ['Reliability by default', 'Raised the quality bar across several backend modules.', 'Expanded automated tests and found critical gaps before production did.'],
-  ['Leading across three countries', 'Kept a team across Mexico, India and the US moving in one direction.', 'Design docs, cross-team execution plans and a recurring cross-timezone sync.'],
+// Three chapters, newest first. Every chapter has 3 stats and 6 capability cards so the layout stays even.
+export const careers = [
+  {
+    id: 'walmart', short: 'Walmart', name: 'Walmart Global Tech', color: '#7fb2ff',
+    title: 'Staff Software Engineer', when: 'Jul 2024 to now', place: 'Bengaluru',
+    headline: 'Accounts and identity, at platform scale',
+    line: 'From the international profile and account platform to the identity platform behind sign-up, sign-in, two-factor, recovery and fraud-detection support, serving millions of customers in four countries and a growing list of partner brands.',
+    stats: [['4', 'countries live'], ['1,000+', 'Canada incidents a week, worked through a skill I built'], ['3 months', 'from zero to production in Chile']],
+    caps: [
+      ['Identity platform', 'Sign-up, sign-in with passwordless OTP and passkeys, and account recovery, shared by every market and partner.'],
+      ['Two-factor and fraud detection', 'One shared verification component and fraud-detection support built into the sign-up, sign-in and checkout flows.'],
+      ['Identity for partners', 'Third-party brands, including a digital pharmacy, plug into the platform instead of building their own sign-in.'],
+      ['Walmart Commerce Platform', 'Part of the initiative that unified code bases and databases across the international markets: credit cards, addresses, address unification and payment methods.'],
+      ['Incident-to-fix pipeline', 'A skill I built that works a ServiceNow queue end to end: sub-agents analyze each incident, a second wave verifies them, the data lake confirms, and a script applies the fix. It then writes the Excel report, updates ServiceNow through MCP and emails the stakeholder.'],
+      ['Launches that stay quiet', 'New markets go live behind flags with a rollback ready, without disturbing the markets already running.'],
+    ],
+  },
+  {
+    id: 'fidelity', short: 'Fidelity', name: 'Fidelity Investments', color: '#6ad19a',
+    title: 'Lead Software Engineer', when: 'Aug 2019 to Jul 2024', place: 'Chennai',
+    headline: 'Reusable platforms for enterprise clients',
+    line: 'Cut time-to-market by about 90% for enterprise clients such as Wells Fargo and PNC by turning one-off client work into reusable platforms.',
+    stats: [['~90%', 'lower SDLC time-to-market'], ['12+', 'initiatives led'], ['1,000+', 'customers a day on features I designed']],
+    caps: [
+      ['Reusable client solutions', 'Generic building blocks that replaced per-client custom work and cut time-to-market by about 90%.'],
+      ['Third-party integrations', 'Multiple integrations into the eMoney Advisor financial-planning platform.'],
+      ['Accessible reporting', 'Report families rebuilt with web components and documents, and made ADA compliant. Eureka Award, 2020.'],
+      ['AI support bot', 'A bot on AWS Lex and Kendra that answers support questions from the product’s own documentation.'],
+      ['Architecture and leadership', 'Designed product features used by 1,000+ customers a day and led 12+ initiatives as Lead Engineer.'],
+      ['Mentoring', 'Tech talks to 100+ engineers. Impact Awards in 2021 for tech culture and 2023 for delivery speed.'],
+    ],
+  },
+  {
+    id: 'tcs', short: 'TCS', name: 'Tata Consultancy Services', color: '#c9b6ff',
+    title: 'System Engineer', when: 'Aug 2016 to Aug 2019', place: 'Chennai',
+    headline: 'Full-stack foundations',
+    line: 'Shipped twelve full-stack applications in three years, built a tool a thousand colleagues used, and ran a SAFe team on-site in Stockholm.',
+    stats: [['12', 'full-stack apps shipped'], ['1,000+', 'colleagues using the tracking tool'], ['3 yrs', 'from UI to SQL']],
+    caps: [
+      ['Full-stack delivery', 'Angular, Node, .NET Core and SQL Server, from schema to screen.'],
+      ['Internal tracking tool', 'A MEAN-stack tool used by more than a thousand colleagues.'],
+      ['Agile leadership', 'Scrum Master for a SAFe team, on-site in Stockholm for H&M.'],
+      ['Client feedback', 'H&M product owners and managers described quick learning, thorough work and fast delivery.'],
+      ['Recognition', 'Star of the Month several times, and an On the Spot award for innovation.'],
+      ['Where it began', 'Six weeks of Java in 2014, then an internship in AngularJS, PHP and JSON.'],
+    ],
+  },
 ];
 
 // Countries on the identity map. lat/lon place the pin; ox nudges stacked pins.
 export const markets = [
-  { id: 'cl', country: 'Chile', name: 'Chile', lat: -33.45, lon: -70.67, when: 'Feb–Apr 2026', title: 'Zero to production in ~3 months',
-    line: 'Launched identity for a brand-new market with passwordless sign-in, without a single regression in the path every other market depends on.',
-    did: ['Email/phone OTP sign-in with user choice', 'Found the hidden blocker, a missing national-ID field, that stopped every Chilean sign-up', 'Flags, gated rollout, 98% coverage on new code, clean canary'] },
+  { id: 'cl', country: 'Chile', name: 'Chile', lat: -33.45, lon: -70.67, when: 'Feb–Apr 2026', title: 'A new country, live in about 3 months',
+    line: 'Took identity for a brand-new market from zero to production, with passwordless sign-in, while every other market kept running on the same platform.',
+    stats: [['~3 mo', 'zero to production'], ['0', 'regressions in other markets'], ['2', 'ways in: email or phone OTP']],
+    shipped: ['Sign-up', 'Passwordless sign-in', 'National ID', 'Safe rollout'],
+    did: ['A brand-new market stood up on the shared platform', 'Customers choose email or phone to sign in', 'Local requirements, such as national ID, handled inside the flow'] },
   { id: 'mx', country: 'Mexico', name: 'Mexico', lat: 19.43, lon: -99.13, ox: -9, when: '2024–26', title: 'Two storefronts, one platform',
-    line: 'Helped unify two storefronts into one omnichannel platform serving millions, with the account and profile domain validated before every ramp.',
-    did: ['Owned profile-domain integration, traffic segmentation and the monitoring dashboard', 'Caught a critical preference bug during early ramp', 'Privacy-first suggested phone numbers across sign-in, account and post-order'] },
-  { id: 'sams', country: 'Mexico', name: 'Sam\u2019s Club Mexico', lat: 19.43, lon: -99.13, ox: 9, when: 'Apr 2026 – now', title: 'A new brand, built from scratch',
-    line: 'Leading identity onboarding for a separate brand with its own tenant, where every layer had to be set up independently.',
-    did: ['Ran the full discovery first', 'Routing, tenant config, client registration and messaging across seven-plus services', 'Traced production auth failures across services to unblock launch'] },
-  { id: 'ca', country: 'Canada', name: 'Canada', lat: 43.65, lon: -79.38, when: '2024–25', title: 'Safe rollouts, measured from day one',
-    line: 'Card-security validation to 100% of Canadian traffic with zero rollbacks, and analytics the business could trust from day one.',
-    did: ['Progressive ramp with monitoring and rollback playbooks at every stage', 'End-to-end event tracking across the identity flow', 'First home of the shared verification component'] },
+    line: 'Helped merge two storefronts into one omnichannel platform serving millions of customers, with accounts and profiles ready before every traffic ramp.',
+    stats: [['2 → 1', 'storefronts on one platform'], ['Millions', 'of customers served'], ['3', 'places phone suggestions appear']],
+    shipped: ['Profile and accounts', 'Account unification', 'Sign-in', 'Phone suggestions', 'Monitoring', 'Safe rollout'],
+    did: ['Owned the profile domain behind the unified storefront', 'Segmented traffic and built the dashboard that tracked every ramp', 'Privacy-first suggested phone numbers across sign-in, account and post-order'] },
+  { id: 'sams', country: 'Mexico', name: 'Sam’s Club Mexico', lat: 19.43, lon: -99.13, ox: 9, when: 'Apr 2026 – now', title: 'A new brand, built from scratch',
+    line: 'Leading identity for a separate brand with its own tenant, where every layer had to be stood up on its own.',
+    stats: [['7+', 'services onboarded'], ['1', 'separate tenant, built from scratch'], ['Apr 2026', 'started, still in flight']],
+    shipped: ['Tenant config', 'Routing', 'Client registration', 'Messaging', 'Discovery first'],
+    did: ['Leading the onboarding end to end, starting with full discovery', 'Routing, tenant setup, client registration and messaging across the stack', 'Unblocked launch by tracing production auth failures across services'] },
+  { id: 'ca', country: 'Canada', name: 'Canada', lat: 43.65, lon: -79.38, when: '2024 – now', title: 'On the commerce platform, then supporting it',
+    line: 'Joined through the profile and account team on the Walmart Commerce Platform (WCP) initiative, which unified code bases and databases for the international markets and onboarded Canada. Now I support Canada from the identity side too.',
+    stats: [['1,000+', 'incidents a week worked'], ['100%', 'card-security traffic, zero rollbacks'], ['WCP', 'one platform for all international clients']],
+    shipped: ['Profile and accounts', 'Credit cards', 'Addresses', 'Payment methods', 'Customer data changes', 'Incident support'],
+    did: ['WCP: one code base and one database model across the international clients', 'Address unification and payment-method work on the profile and account side', 'A skill I built works the incident queue, alongside customer data changes and everyday identity operations'] },
+  { id: 'za', country: 'South Africa', name: 'South Africa', lat: -26.2, lon: 28.05, when: 'Walmart · Africa', title: 'The same platform, one more market',
+    line: 'Sign-up, sign-in and account security delivered to another market from the shared identity platform.',
+    stats: [],
+    shipped: ['Sign-up', 'Sign-in', 'Two-factor', 'Recovery', 'Fraud checks'],
+    did: ['Another market on the shared identity platform', 'Fraud-detection support in the same flows'] },
 ];
 export const origin = { name: 'Bengaluru', lat: 12.97, lon: 77.59 };
 
 export const principles = [
   ['Discovery first', 'Map dependencies and risks before writing code.'],
-  ['Ship behind flags', 'Ramp gradually. Watch production. Keep a rollback ready.'],
-  ['Own the unassigned', 'Security gaps, config risks, analytics holes, someone has to.'],
-  ['Align across time zones', 'Three countries, one direction.'],
-  ['Zero-regression bar', 'High coverage, canaries, migrations nobody notices.'],
+  ['Ship behind flags', 'Ramp gradually, watch production, keep a rollback ready. High coverage and canaries.'],
+  ['Own the unassigned', 'Security gaps, config risks, accessibility debt, analytics holes. Someone has to.'],
+  ['Build once, reuse everywhere', 'Shared components and generic solutions beat per-market and per-client rebuilds.'],
+  ['Teach what you learn', 'Tech talks, walkthroughs and essays, so the whole team gets faster.'],
 ];
 
 // Git-log timeline. lane: 0 = education, 1 = TCS, 2 = Fidelity, 3 = Walmart, 4 = personal
@@ -342,4 +312,58 @@ export const toolboxMeta = {
   Mg: ['t', 'Ng No'], Cv: ['p', 'Nx'], Fb: ['p', 'Re'], Aw: ['fp', 'Dk'], Dk: ['w', 'K8'],
   K8: ['w', 'Dk Gf'], Gf: ['w', 'K8 Ff'], Oa: ['w', 'Tx Pk A2'], Tx: ['w', 'Oa Ce A2'], Pk: ['w', 'Oa'],
   Ce: ['w', 'Tx Lg'], Pw: ['w', 'Lg Ci'], Ff: ['w', 'Ci Gf'], Ci: ['w', 'Ff Pw'], Sf: ['t', ''],
+};
+
+// tokenOs deep dive. Sample ledger entries use numbers from the benchmark runs; hashes are computed in the browser.
+export const tokenos = {
+  intro: {
+    k: 'under the hood',
+    t: 'Six things an agent could not ask for',
+    d: 'A developer skims a table of contents, searches by meaning, and remembers last week. An AI agent had no way to do any of it, so these had to be built underneath the agent as primitives.',
+    q: 'Under any token quota, waste is a throughput problem, not just a cost problem. Every token saved is a token spent on real work.',
+  },
+  axes: [
+    { n: 'Axis 1', t: 'Fewer tokens per operation', d: '21 MCP tools: cached reads, ranked search, shell compression, persistent memory and a whole-codebase graph.', v: '50–99%', vl: 'fewer tokens per call' },
+    { n: 'Axis 2', t: 'A cheaper model per turn', d: 'A local classifier routes every turn to Haiku, Sonnet or Opus, at zero API cost for the decision.', v: '−73%', vl: 'cost on the same workload' },
+  ],
+  axisNote: 'The two axes are independent, so the savings multiply instead of adding.',
+  caps: [
+    { id: 'read', c: '#7fb2ff', t: 'Selective reads', tool: 'ctx_read', human: 'A developer skims the table of contents, not the whole book.',
+      body: '11 read modes built on tree-sitter: signatures only, a line range, the diff since the last read, one symbol, or the full file, cached after the first read.',
+      bars: [['Signatures only', 2500, 80], ['Re-read, file unchanged', 2500, 13]], note: 'An agent that reads a file 10 times pays 2,617 tokens instead of 25,000.' },
+    { id: 'search', c: '#a78bfa', t: 'Ranked search', tool: 'ctx_search', human: 'Search by meaning, instead of dumping every match.',
+      body: 'BM25 keywords and semantic embeddings, fused with reciprocal rank fusion. Five ranked results, each with an exact file and line anchor.',
+      bars: [['grep for a request handler', 3000, 200]], note: '93% fewer tokens, and the right code on top.' },
+    { id: 'shell', c: '#f5c451', t: 'Shell compression', tool: 'ctx_shell', human: 'Pass or fail plus the failures, not 800 tokens of green dots.',
+      body: '20 dedicated compressors for the noisiest commands: cargo, npm, git, kubectl, docker and terraform.',
+      bars: [['cargo test', 800, 60]], note: '92% on cargo test, and 50–95% across commands.' },
+    { id: 'graph', c: '#5eead4', t: 'Codebase graph', tool: 'ctx_graph_*', human: 'Ask what breaks if I change this, instead of reading the repo.',
+      body: 'A queryable graph in SQLite: tree-sitter across about 14 languages, cross-file symbol resolution for 8, Leiden clustering and a Cypher engine. Twelve tools, including impact, dead code, trace and hot paths.',
+      compare: [['“What calls charge_card?”', '15+ file reads'], ['with the graph', 'one query, ~50 tokens']] },
+    { id: 'memory', c: '#6ad19a', t: 'Memory that survives', tool: 'ctx_session · ctx_knowledge', human: 'Agents forget everything when the context window runs out.',
+      body: 'Two layers keep the agent warm after the window is exhausted.',
+      layers: [['Short-term', 'The current task, findings, decisions and files. Survives restarts.'], ['Long-term', 'Conventions, gotchas and architecture decisions, with PII redaction and contradiction detection.']] },
+    { id: 'route', c: '#ff8b99', t: 'Per-turn model routing', tool: 'per-turn router', human: 'A throwaway question should not cost what a refactor costs.',
+      body: 'A local classifier picks the cheapest model that can do the turn well, and only switches when the savings beat the prompt cache the switch would throw away.',
+      tiers: [['Haiku', 'qna_local · tooling'], ['Sonnet', 'code_write · code_review · devops'], ['Opus', 'code_refactor · debug · plan']] },
+  ],
+  bench: {
+    title: 'Measured, not projected',
+    sub: 'Same 21-prompt workload, Claude Sonnet 4.6, benchmarked on 11 June 2026.',
+    groups: [
+      ['MCP tools alone', [['Cost per session', '$1.347', '$0.963', 28.5, 0.715], ['Output tokens', '13,063', '9,106', 30.3, 0.697], ['Session time', '22m 40s', '16m 55s', 25.4, 0.746], ['Peak single call', '10,434 tokens', '90 tokens', 99.1, 0.02]]],
+      ['With per-turn routing', [['Total cost', '$1.37', '$0.36', 73, 0.263]]],
+    ],
+  },
+  ledger: {
+    t: 'Receipts, not projections',
+    d: 'Every saving is written to a SHA-256 hash-chained ledger: tool, baseline tokens, actual tokens, tokens saved, and a hash chained to the previous row. Alter any past entry and every later hash breaks. Judges at the hackathon ran the verify command, and the numbers held.',
+    cmds: ['token-os ledger summary', 'token-os ledger verify', 'token-os ledger tail'],
+    entries: [['ctx_read · signatures', 2500, 80], ['ctx_read · unchanged', 2500, 13], ['ctx_search', 3000, 200], ['ctx_shell · cargo test', 800, 60], ['ctx_read · peak call', 10434, 90]],
+  },
+  ships: ['Single Rust binary, ~35 MB', 'macOS and Linux', 'MCP over stdio', '21 tools', 'Background daemon keeps caches warm', '3D code graph UI', 'One-command plugin install', 'Hooks intercept native Read, Grep and Bash', '~140 tests, zero clippy warnings', 'p50 / p95 / p99 benchmarks'],
+  tools: {
+    core: ['ctx_read', 'ctx_search', 'ctx_shell', 'ctx_session', 'ctx_knowledge', 'ctx_metrics', 'ctx_ledger', 'ctx_tree', 'ctx_overview'],
+    graph: ['ctx_graph_index', 'ctx_graph_query', 'ctx_graph_schema', 'ctx_semantic_search', 'ctx_impact', 'ctx_hotpath', 'ctx_dead_code', 'ctx_trace', 'ctx_traces', 'ctx_diff_query', 'ctx_tools_called', 'ctx_health'],
+  },
 };

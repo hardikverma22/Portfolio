@@ -5,78 +5,69 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const NS = 'http://www.w3.org/2000/svg';
-const COL = { act: '#6ea8ff', say: '#f5c451', ax: '#ff6b8a', mm: '#a78bfa', agent: '#5fd4a0', author: '#c084fc', ok: '#6ad19a', lib: '#5eead4' };
+const COL = { act: '#6ea8ff', say: '#f5c451', ax: '#ff6b8a', agent: '#5fd4a0', author: '#c084fc' };
 
-/* ---------- when an element is on screen ---------- */
 function onView(el, enter, leave, margin = '0px') {
   new IntersectionObserver(([e]) => (e.isIntersecting ? enter() : leave?.()), { rootMargin: margin }).observe(el);
 }
 
-/* ---------- the loop ---------- */
 function loop(reduced) {
   const root = $('#loop'), svg = $('#loop-wires');
   const el = (w) => $(`[data-w="${w}"]`, root);
-  // wires: [from, to, colour, kind]
+  const box = (n) => { const r = n.getBoundingClientRect(), b = root.getBoundingClientRect(); return { l: r.left - b.left, r: r.right - b.left, t: r.top - b.top, b: r.bottom - b.top, cy: r.top - b.top + r.height / 2 }; };
+
+  // One connector per hand-off, left to right. Nothing loops back.
+  // dx staggers the vertical runs so connectors that share a gutter never cross.
   const WIRES = [
-    ['act', 'in-act', COL.act], ['say', 'in-say', COL.say], ['ax', 'in-ax', COL.ax],
-    ['agent', 'author', COL.agent, 'bundle'],
-    ['skill', 'approve', COL.author, 'draft'],
-    ['lib', 'act', COL.lib, 'return'],
+    { keys: ['act', 'in-act'], color: COL.act, dx: 0, from: () => { const a = box(el('act')), c = box($('.chip', el('act'))); return [a.r, c.cy]; }, to: () => [box(el('mimo')).l, box(el('in-act')).cy] },
+    { keys: ['say', 'in-say'], color: COL.say, dx: -9, from: () => { const a = box(el('say')), c = box($('.chip', el('say'))); return [a.r, c.cy]; }, to: () => [box(el('mimo')).l, box(el('in-say')).cy] },
+    { keys: ['ax', 'in-ax'], color: COL.ax, dx: 9, from: () => { const a = box(el('ax')), c = box($('.chip', el('ax'))); return [a.r, c.cy]; }, to: () => [box(el('mimo')).l, box(el('in-ax')).cy] },
+    { keys: ['agent', 'author'], color: COL.agent, dx: 0, from: () => [box(el('agent')).r, box(el('agent')).cy], to: () => [box(el('author')).l, box(el('author')).t + 34] },
+    { keys: ['skill', 'approve'], color: COL.author, dx: 0, from: () => [box(el('author')).r, box(el('skill')).cy], to: () => [box(el('approve')).l, box(el('approve')).t + 34] },
   ];
   let paths = [];
 
-  const anchor = (node, side) => {
-    const r = node.getBoundingClientRect(), b = root.getBoundingClientRect();
-    const x = side === 'l' ? r.left - b.left : side === 'r' ? r.right - b.left : r.left - b.left + r.width / 2;
-    const y = side === 'b' ? r.bottom - b.top : side === 't' ? r.top - b.top : r.top - b.top + r.height / 2;
-    return [x, y];
+  const elbow = (x1, y1, x2, y2, dx) => {
+    const xm = (x1 + x2) / 2 + dx, dy = y2 - y1, r = Math.min(10, Math.abs(dy) / 2);
+    if (Math.abs(dy) < 3) return `M${x1},${y1} L${x2 - 9},${y2}`;
+    const s = Math.sign(dy);
+    return `M${x1},${y1} H${xm - r} Q${xm},${y1} ${xm},${y1 + s * r} V${y2 - s * r} Q${xm},${y2} ${xm + r},${y2} H${x2 - 9}`;
   };
+  const mk = (tag, attrs) => { const n = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); svg.append(n); return n; };
+
   const build = () => {
-    svg.innerHTML = `<defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+    svg.innerHTML = '';
     if (innerWidth < 960) { paths = []; return; }
-    paths = WIRES.map(([a, b, color, kind]) => {
-      const A = el(a), B = el(b);
-      let d;
-      if (kind === 'return') {
-        const [x1, y1] = anchor(A, 'b');
-        const [x2, y2] = anchor(B, 'l');
-        const yb = root.clientHeight - 14, xl = 8;
-        d = `M${x1},${y1} L${x1},${yb - 10} Q${x1},${yb} ${x1 - 10},${yb} L${xl + 10},${yb} Q${xl},${yb} ${xl},${yb - 10} L${xl},${y2 + 10} Q${xl},${y2} ${xl + 10},${y2} L${x2},${y2}`;
-      } else {
-        const [x1, y1] = anchor(A, 'r');
-        const [x2, y2] = anchor(B, 'l');
-        const mx = (x1 + x2) / 2;
-        d = `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
-      }
-      const base = document.createElementNS(NS, 'path');
-      base.setAttribute('d', d); base.setAttribute('stroke', color); base.setAttribute('opacity', '.28');
-      const flow = document.createElementNS(NS, 'path');
-      flow.setAttribute('d', d); flow.setAttribute('stroke', color); flow.setAttribute('class', 'dash');
-      svg.append(base, flow);
-      const dots = [0, 0.33, 0.66].map((o) => {
-        const c = document.createElementNS(NS, 'circle');
-        c.setAttribute('r', '3'); c.setAttribute('fill', color); c.setAttribute('filter', 'url(#glow)');
-        svg.append(c);
-        return { c, o };
-      });
-      const len = flow.getTotalLength();
-      if (!root.classList.contains('built')) { [base, flow].forEach((p) => { p.style.strokeDasharray = `${len}`; p.style.strokeDashoffset = `${len}`; }); dots.forEach((d0) => (d0.c.style.opacity = 0)); }
-      return { base, flow, dots, len, kind };
+    paths = WIRES.map((w) => {
+      const [x1, y1] = w.from(), [x2, y2] = w.to();
+      const line = mk('path', { d: elbow(x1, y1, x2, y2, w.dx), stroke: w.color, class: 'w' });
+      mk('circle', { cx: x1, cy: y1, r: 2.6, fill: w.color, class: 'tip' });
+      mk('path', { d: `M${x2},${y2} L${x2 - 10},${y2 - 5.5} L${x2 - 10},${y2 + 5.5} Z`, fill: w.color, class: 'tip' });
+      const dot = mk('circle', { r: 3, fill: w.color, class: 'dot' });
+      return { line, dot, len: line.getTotalLength(), keys: w.keys, tips: $$('.tip', svg).slice(-2) };
     });
+    paths.forEach((p) => { p.on = false; });
+    mark();
   };
 
-  // particles travel along every wire
-  let raf = 0, visible = false, t0 = performance.now();
+  const mark = () => paths.forEach((p) => {
+    const on = !!p.on;
+    p.line.classList.toggle('on', on);
+    p.tips.forEach((t) => t.classList.toggle('on', on));
+    p.dot.classList.toggle('on', on && !reduced);
+  });
+
+  // a pulse travels along whichever connector is carrying data right now
+  let raf = 0, visible = false;
+  const t0 = performance.now();
   const animate = () => {
     raf = requestAnimationFrame(animate);
-    if (!visible || !root.classList.contains('built')) return;
+    if (!visible || reduced) return;
     const t = (performance.now() - t0) / 1000;
-    paths.forEach(({ flow, dots, len, kind }) => {
-      const speed = kind === 'return' ? 0.12 : 0.35;
-      dots.forEach(({ c, o }) => {
-        const p = flow.getPointAtLength(((t * speed + o) % 1) * len);
-        c.setAttribute('cx', p.x); c.setAttribute('cy', p.y);
-      });
+    paths.forEach((p) => {
+      if (!p.on) return;
+      const pt = p.line.getPointAtLength(((t * 0.45) % 1) * p.len);
+      p.dot.setAttribute('cx', pt.x); p.dot.setAttribute('cy', pt.y);
     });
   };
 
@@ -99,6 +90,9 @@ function loop(reduced) {
     b.lit.forEach((w) => el(w)?.classList.add('lit'));
     nodes.forEach((n, i) => n.classList.toggle('on', i <= b.col));
     gsap.to(fill, { width: `${(b.col / 3) * 100}%`, duration: 0.6, ease: 'power2.out' });
+    // the connector that leaves a card lights while that card is the active one
+    paths.forEach((p) => { p.on = b.lit.includes(p.keys[0]) || b.lit.includes(p.keys[1]) || (p.keys[0] === 'agent' && b.lit.includes('author')) ; });
+    mark();
     beat = (beat + 1) % beats.length;
   };
 
@@ -112,12 +106,7 @@ function loop(reduced) {
     const cols = $$('.loop-col', root);
     const tl = gsap.timeline({ onComplete: () => root.classList.add('built') });
     cols.forEach((c, i) => tl.to($$('.lc, .lc-arrow', c), { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out', stagger: 0.08 }, i * 0.35));
-    tl.add(() => {
-      paths.forEach((p, i) => {
-        gsap.to([p.base, p.flow], { strokeDashoffset: 0, duration: 0.9, delay: i * 0.12, ease: 'power2.inOut', onComplete: () => { p.flow.style.strokeDasharray = ''; p.flow.style.strokeDashoffset = ''; } });
-        gsap.to(p.dots.map((d) => d.c), { opacity: 1, duration: 0.4, delay: 0.6 + i * 0.12 });
-      });
-    }, 0.6);
+    tl.fromTo(svg, { opacity: 0 }, { opacity: 1, duration: 0.8 }, 1.1);
   };
   ScrollTrigger.create({ trigger: root, start: 'top 70%', once: true, onEnter: reveal });
   onView(root, () => {

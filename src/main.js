@@ -2,12 +2,15 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  impact, caseStudies, skillsBuilt, engineering, principles, commits, lanes,
+  impact, caseStudies, skillsBuilt, careers, principles, commits, lanes,
   projects, writing, testimonials, awards, certs, identity, toolbox, toolboxGroups, toolboxWhere, toolboxMeta,
 } from './data.js';
 import { initMimo } from './mimo.js';
 import { initFluid } from './fluid.js';
-import { mountTriage, mountDelegate, mountTokens } from './demos.js';
+import { mountTriage } from './anim/triage.js';
+import { mountDelegate } from './anim/delegate.js';
+import { mountTokens } from './anim/tokens.js';
+import './anim.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,7 +42,7 @@ function trace(agent, msg, ok) {
    ========================================================= */
 function render() {
   $('#impact-grid').innerHTML = impact.map((i) => `
-    <div class="imp${i.big ? ' imp-big' : ''}"><span class="imp-d mono">${i.d}</span><span class="imp-k">${i.k}</span><span class="imp-v">${i.v}</span>${i.countries ? `<span class="imp-cty">${i.countries.map((c) => `<a href="${i.link}">${c}</a>`).join('')}</span>` : ''}<p class="imp-r">${i.r}</p>${i.go ? `<a class="imp-go mono" href="${i.go[1]}">${i.go[0]} →</a>` : ''}</div>`).join('');
+    <div class="imp${i.big ? ' imp-big' : ''}"><span class="imp-d mono">${i.d}</span><span class="imp-k">${i.k}</span><span class="imp-v">${i.v}</span>${i.countries ? `<span class="imp-cty">${i.countries.map((c) => `<a href="${i.link}">${c}</a>`).join('')}</span>` : ''}<p class="imp-r">${i.r}</p>${i.go ? `<a class="imp-go mono" href="${i.go[1]}"${i.tab ? ` data-tab="${i.tab}"` : ''}>${i.go[0]} →</a>` : ''}</div>`).join('');
 
   // about → words for scroll-scrubbed reading
   const walk = (node) => [...node.childNodes].forEach((n) => {
@@ -56,28 +59,25 @@ function render() {
 
   $('#cases').innerHTML = caseStudies.map((c) => `
     <article class="case" id="case-${c.id}">
-      <div class="case-info">
-        <span class="case-no mono">case ${c.no} / 04<span class="case-when">${c.when}</span></span>
-        <h3 class="case-title">${c.title}</h3>
-        <p class="case-line">${c.line}</p>
-        <dl class="case-ps"><div><dt class="mono">Problem</dt><dd>${c.problem}</dd></div><div><dt class="mono">My role</dt><dd>${c.role}</dd></div></dl>
-        <ul class="case-pts">${c.points.map((p) => `<li>${p}</li>`).join('')}</ul>
-        <p class="case-res"><span class="mono">Result</span>${c.result}</p>
-        <ul class="chips">${c.stack.map((s) => `<li>${s}</li>`).join('')}</ul>
-      </div>
-      <div class="demo" data-demo="${c.id}"></div>
+      <header class="case-top">
+        <div>
+          <span class="case-no mono">case ${c.no} / 04<span class="case-when">${c.when}</span></span>
+          <h3 class="case-title">${c.title}</h3>
+          <p class="case-line">${c.line}</p>
+          <ul class="chips">${c.stack.map((s) => `<li>${s}</li>`).join('')}</ul>
+        </div>
+        <dl class="case-ps">
+          <div><dt class="mono">Problem</dt><dd>${c.problem}</dd></div>
+          <div><dt class="mono">My role</dt><dd>${c.role}</dd></div>
+          <div class="res"><dt class="mono">Result</dt><dd>${c.result}</dd></div>
+        </dl>
+      </header>
+      <div class="anim" id="anim-${c.id}" role="img" aria-label="${c.alt}"></div>
+      ${c.id === 'tokens' ? '<button class="story-cta" id="open-tokenos" type="button" aria-haspopup="dialog"><span><b>See tokenOs in depth</b>Six capabilities, measured benchmarks, a hash-chained ledger you can tamper with, and all 21 tools.</span><i aria-hidden="true">+</i></button>' : ''}
     </article>`).join('');
 
   $('#skills-list').innerHTML = skillsBuilt.map(([t, d], i) => `
     <li><button class="sk${i === 0 ? ' on' : ''}" data-i="${i}"><span class="n mono">${String(i + 1).padStart(2, '0')}</span><span class="t">${t}</span><span class="d">${d}</span></button></li>`).join('');
-
-  $('#eng-track').innerHTML = engineering.map(([t, imp, did], i) => `
-    <article class="ec">
-      <div class="ec-top"><span class="ec-no">${String(i + 1).padStart(2, '0')}</span><span class="ec-tag mono">identity · intl</span></div>
-      <h3>${t}</h3>
-      <p class="imp-line">${imp}</p>
-      <p class="did">${did}</p>
-    </article>`).join('');
 
   $('#pr-list').innerHTML = principles.map(([t, d], i) => `
     <li><span class="n mono">rule.${i + 1}</span><h3>${t}</h3><p>${d}</p></li>`).join('');
@@ -299,12 +299,12 @@ function initPalette(lenis, api) {
   const pal = $('#palette'), input = $('#pal-input'), list = $('#pal-list');
   const go = (sel) => () => (lenis ? lenis.scrollTo(sel, { duration: 1.6 }) : $(sel).scrollIntoView());
   const cmds = [
-    ['Run the incident-triage agents', 'demo', () => { go('#case-triage')(); setTimeout(() => $('#case-triage [data-run]').click(), 1400); }],
-    ['Give an agent a credit card (safely)', 'demo', go('#case-delegate')],
-    ['Compress a context window', 'demo', () => { go('#case-tokens')(); setTimeout(() => $('#case-tokens [data-run]').click(), 1400); }],
+    ['Incident-triage agents', 'section', go('#case-triage')],
+    ['Delegated access for agents', 'section', go('#case-delegate')],
+    ['tokenOs: fewer tokens, same work', 'section', go('#case-tokens')],
     ['Work, agents I built', 'section', go('#agents')],
     ['mimo, record a task once', 'section', go('#case-mimo')],
-    ['Identity in three countries', 'section', go('#engineering')],
+    ['Career: TCS, Fidelity, Walmart', 'section', go('#engineering')],
     ['Career timeline (git log)', 'section', go('#log')],
     ['The stack, as elements', 'section', go('#stack')],
     ['Side projects', 'section', go('#work')],
@@ -547,6 +547,79 @@ function initToolbox() {
   });
 }
 
+/* ---------- career switcher ---------- */
+function initCareer() {
+  const bar = $('#cr-bar'), panel = $('#cr-panel'), geo = $('#cr-geo');
+  bar.innerHTML = careers.map((c) => `
+    <button class="cr-tab" role="tab" data-id="${c.id}" aria-selected="false" style="--c:${c.color}">
+      <span class="cr-tab-n">${c.short}</span><span class="cr-tab-r">${c.title}</span><span class="cr-tab-d mono">${c.when}</span>
+    </button>`).join('');
+  const select = (id, animate = true) => {
+    const c = careers.find((x) => x.id === id) || careers[0];
+    $$('.cr-tab', bar).forEach((b) => { const on = b.dataset.id === c.id; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+    panel.style.setProperty('--c', c.color);
+    panel.innerHTML = `
+      <div class="cr-side">
+        <p class="cr-meta mono">${c.name} · ${c.place}</p>
+        <h3 class="cr-h">${c.headline}</h3>
+        <p class="cr-line">${c.line}</p>
+        <ul class="cr-stats">${c.stats.map(([k, v]) => `<li><b>${k}</b><span>${v}</span></li>`).join('')}</ul>
+      </div>
+      <ul class="cr-caps">${c.caps.map(([t, d], i) => `<li><span class="n mono">${String(i + 1).padStart(2, '0')}</span><h4>${t}</h4><p>${d}</p></li>`).join('')}</ul>`;
+    geo.hidden = c.id !== 'walmart';
+    if (c.id === 'walmart') window.dispatchEvent(new Event('resize'));
+    if (animate && !reduced) gsap.from(panel.querySelectorAll('.cr-side > *, .cr-caps li'), { y: 14, opacity: 0, duration: 0.5, ease: 'expo.out', stagger: 0.03 });
+    ScrollTrigger.refresh();
+    trace('career', c.short);
+  };
+  bar.addEventListener('click', (e) => { const b = e.target.closest('.cr-tab'); if (b) select(b.dataset.id); });
+  bar.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const tabs = $$('.cr-tab', bar), i = tabs.findIndex((t) => t.classList.contains('on'));
+    const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+    n.focus(); select(n.dataset.id);
+  });
+  $$('[data-tab]').forEach((a) => a.addEventListener('click', () => select(a.dataset.tab)));
+  select('walmart', false);
+}
+
+/* ---------- tokenOs deep dive (modal) ---------- */
+function initTokenosModal(lenis) {
+  const modal = $('#tos-modal'), sheet = $('#tos-sheet'), btn = $('#open-tokenos');
+  if (!modal || !btn) return;
+  let rendered = false, opener = null, closing = 0;
+  const open = async () => {
+    opener = document.activeElement;
+    if (!rendered) { rendered = true; const { renderTokenos } = await import('./tokenos.js'); renderTokenos($('#tokenos')); }
+    clearTimeout(closing);
+    modal.hidden = false;
+    sheet.scrollTop = 0;
+    requestAnimationFrame(() => { modal.classList.add('on'); sheet.focus({ preventScroll: true }); });
+    lenis?.stop();
+    trace('tokenOs', 'opened the deep dive', true);
+  };
+  const close = () => {
+    if (modal.hidden) return;
+    modal.classList.remove('on');
+    closing = setTimeout(() => { modal.hidden = true; }, 320);
+    lenis?.start();
+    opener?.focus?.({ preventScroll: true });
+  };
+  btn.addEventListener('click', open);
+  $('#tos-close').addEventListener('click', close);
+  modal.addEventListener('pointerdown', (e) => { if (e.target === modal) close(); });
+  addEventListener('keydown', (e) => {
+    if (modal.hidden) return;
+    if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const f = $$('button, a[href], [tabindex="0"]', sheet).filter((n) => !n.disabled && n.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === sheet)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+}
+
 function initContact() {
   const btn = $('#copy-mail'), st = $('#copy-state');
   const copyMail = async () => {
@@ -582,7 +655,7 @@ function initContact() {
 /* =========================================================
    SCROLL CHOREOGRAPHY
    ========================================================= */
-function initScroll(demos) {
+function initScroll() {
   // hero exit: photo pushes in, copy drifts up and fades (desktop)
   if (!reduced) {
     gsap.matchMedia().add('(min-width: 769px)', () => {
@@ -615,23 +688,6 @@ function initScroll(demos) {
   });
   if (reduced) words.forEach((w) => (w.style.opacity = 1));
 
-  // engineering: horizontal on desktop
-  gsap.matchMedia().add('(min-width: 761px)', () => {
-    const track = $('#eng-track');
-    const dist = () => track.scrollWidth - innerWidth;
-    const tw = gsap.to(track, {
-      x: () => -dist(), ease: 'none',
-      scrollTrigger: {
-        trigger: '.eng-pin', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: reduced ? true : 0.6, invalidateOnRefresh: true,
-        onUpdate: (st) => {
-          $('#eng-count').textContent = String(Math.min(engineering.length, 1 + Math.floor(st.progress * engineering.length))).padStart(2, '0');
-          $('#eng-bar').style.width = st.progress * 100 + '%';
-        },
-      },
-    });
-    return () => tw.kill();
-  });
-
   // git log draws itself as you scroll
   ScrollTrigger.create({
     trigger: '#gitlog', start: 'top 70%', end: 'bottom 70%', scrub: true,
@@ -658,11 +714,6 @@ function initScroll(demos) {
     });
   });
 
-  // demos autoplay once on first view
-  [['triage', demos.triage], ['tokens', demos.tokens]].forEach(([id, d]) => {
-    ScrollTrigger.create({ trigger: `#case-${id} .demo`, start: 'top 65%', once: true, onEnter: () => !reduced && d.autoplay() });
-  });
-
   // nav state + scroll rail + trace visibility
   $$('.hud-nav a').forEach((a) => {
     ScrollTrigger.create({ trigger: a.getAttribute('href'), start: 'top 50%', end: 'bottom 50%', onToggle: (st) => a.classList.toggle('on', st.isActive) });
@@ -678,13 +729,12 @@ function initScroll(demos) {
    ========================================================= */
 (async function boot() {
   render();
-  const demos = {
-    triage: mountTriage($('[data-demo="triage"]'), trace),
-    delegate: mountDelegate($('[data-demo="delegate"]'), trace),
-    tokens: mountTokens($('[data-demo="tokens"]'), trace),
-  };
   initSkills();
+  initCareer();
   initMimo({ reduced });
+  mountTriage($('#anim-triage'), reduced);
+  mountDelegate($('#anim-delegate'), reduced);
+  mountTokens($('#anim-tokens'), reduced);
   const geoEl = $('#geo');
   const loadGeo = () => import('./geo.js').then((m) => { m.initGeo({ reduced }); ScrollTrigger.refresh(); });
   if ('IntersectionObserver' in window) {
@@ -714,6 +764,7 @@ function initScroll(demos) {
     lenis ? lenis.scrollTo(id, { duration: 1.6 }) : $(id).scrollIntoView();
   }));
   initPalette(lenis, api);
+  initTokenosModal(lenis);
 
   // hero: split the name into masked characters, start the FX in parallel with the gate
   history.scrollRestoration = 'manual';
@@ -751,7 +802,7 @@ function initScroll(demos) {
     trace('auth', 'token exchanged · act=hardik.portfolio', true);
     heroEntrance();
   });
-  initScroll(demos);
+  initScroll();
   ScrollTrigger.refresh();
   if (location.hash.length > 1 && $(location.hash)) {
     requestAnimationFrame(() => (lenis ? lenis.scrollTo(location.hash, { immediate: true }) : $(location.hash).scrollIntoView()));

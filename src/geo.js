@@ -7,7 +7,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { markets, origin } from './data.js';
 
-const LIT = { Chile: '152', Mexico: '484', Canada: '124', India: '356' };
+const LIT = { Chile: '152', Mexico: '484', Canada: '124', SouthAfrica: '710', India: '356' };
 
 export function initGeo({ reduced }) {
   const map = document.querySelector('.geo-map');
@@ -21,14 +21,30 @@ export function initGeo({ reduced }) {
 
   let selected = markets[0].id, proj, W = 0, H = 0;
 
-  const showPanel = (m) => {
-    panel.innerHTML = `
+  const panelHtml = (m) => `
       <span class="gp-k mono">${m.when}</span>
       <h3>${m.name}</h3>
       <p class="gp-t">${m.title}</p>
       <p class="gp-l">${m.line}</p>
+      ${m.stats?.length ? `<div class="gp-stats">${m.stats.map(([k, v]) => `<div><b>${k}</b><span>${v}</span></div>`).join('')}</div>` : ''}
+      ${m.shipped?.length ? `<div class="gp-chips" aria-label="What shipped">${m.shipped.map((s) => `<span>${s}</span>`).join('')}</div>` : ''}
       <ul>${m.did.map((d) => `<li>${d}</li>`).join('')}</ul>`;
+
+  const showPanel = (m) => {
+    panel.innerHTML = panelHtml(m);
     if (!reduced) gsap.from(panel.children, { y: 14, opacity: 0, duration: 0.5, ease: 'expo.out', stagger: 0.05 });
+  };
+
+  // keep the row as tall as the tallest card so the section does not jump between pins
+  const lockHeight = () => {
+    const geo = map.parentElement;
+    geo.style.minHeight = '';
+    if (matchMedia('(max-width: 960px)').matches) return;
+    const keep = panel.innerHTML;
+    let max = 0;
+    markets.forEach((m) => { panel.innerHTML = panelHtml(m); max = Math.max(max, panel.scrollHeight); });
+    panel.innerHTML = keep;
+    geo.style.minHeight = max + 'px';
   };
 
   const draw = () => {
@@ -111,9 +127,10 @@ export function initGeo({ reduced }) {
 
   let drawn = false, travellers = [];
   const redraw = () => { travellers = []; draw(); };
-  redraw();
   showPanel(markets[0]);
-  let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(redraw, 120); }).observe(map);
+  lockHeight();
+  redraw();
+  let rt; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => { lockHeight(); redraw(); }, 120); }).observe(map);
 
   ScrollTrigger.create({
     trigger: map, start: 'top 75%', once: true,

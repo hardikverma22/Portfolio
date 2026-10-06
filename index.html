@@ -51,7 +51,7 @@
   <header class="hud" id="hud">
     <a href="#top" class="hud-logo" aria-label="hv, back to top" data-cursor="top">hv<span>/</span></a>
     <nav class="hud-nav mono" aria-label="Sections">
-      <a href="#agents">work</a><a href="#engineering">identity</a><a href="#writing">writing</a><a href="#log">record</a><a href="#contact">contact</a>
+      <a href="#agents">work</a><a href="#engineering">career</a><a href="#writing">writing</a><a href="#log">record</a><a href="#contact">contact</a>
     </nav>
     <div class="hud-right mono">
       <a class="hud-cta" href="#contact">Get in touch</a>
@@ -159,6 +159,7 @@
                 <span class="lc-arrow">↓</span>
                 <div class="lc-step" data-w="step"><span class="mono">step 1</span><b>Open your pull requests</b></div>
               </article>
+              <span class="lc-arrow">↓</span>
               <article class="lc c-agent" data-w="agent"><header><span class="lc-ic">◆</span><b>Your agent</b><small class="mono">bundle</small></header><p>mimo hands the redacted, enriched context to the agent you already use.</p><div class="lc-tags mono"><span>steps</span><span>screenshots</span><span>your words</span></div></article>
             </div>
             <div class="loop-col" data-h="03 · Author: your agent writes the skill">
@@ -197,20 +198,20 @@
     </section>
 
     <!-- ========== ENGINEERING (horizontal) ========== -->
-    <section id="engineering" class="sec eng" data-agent="platform" aria-labelledby="eng-h">
+    <section id="engineering" class="sec career" data-agent="platform" aria-labelledby="eng-h">
       <header class="sec-head">
         <span class="sec-no mono">03</span>
-        <h2 id="eng-h" class="sec-title">Identity, <em>in three countries</em></h2>
-        <p class="sec-note mono">Sign-in, verification and account security for millions of users. Built from Bengaluru, launched across the Americas. Pick a country.</p>
+        <h2 id="eng-h" class="sec-title">Ten years, <em>three platforms</em></h2>
+        <p class="sec-note mono">From full-stack apps at TCS, to reusable enterprise platforms at Fidelity, to identity at scale at Walmart. Pick a chapter.</p>
       </header>
-      <div class="geo" id="geo">
-        <div class="geo-map"><canvas id="geo-canvas" aria-hidden="true"></canvas><svg class="geo-arcs" id="geo-arcs" aria-hidden="true"></svg><div class="geo-pins" id="geo-pins"></div></div>
-        <aside class="geo-panel" id="geo-panel" aria-live="polite"></aside>
-      </div>
-      <div class="eng-pin">
-        <p class="eng-sub mono">and across every market </p>
-        <div class="eng-track" id="eng-track"></div>
-        <div class="eng-progress mono"><span id="eng-count">01</span> / 06<span class="eng-line"><i id="eng-bar"></i></span></div>
+      <div class="cr-bar" id="cr-bar" role="tablist" aria-label="Companies"></div>
+      <div class="cr-panel" id="cr-panel" role="tabpanel" aria-live="polite"></div>
+      <div class="cr-geo" id="cr-geo">
+        <p class="eng-sub mono">where the Walmart identity platform runs · pick a country</p>
+        <div class="geo" id="geo">
+          <div class="geo-map"><canvas id="geo-canvas" aria-hidden="true"></canvas><svg class="geo-arcs" id="geo-arcs" aria-hidden="true"></svg><div class="geo-pins" id="geo-pins"></div></div>
+          <aside class="geo-panel" id="geo-panel" aria-live="polite"></aside>
+        </div>
       </div>
     </section>
 
@@ -341,6 +342,17 @@
         <a class="btn btn-solid" href="mailto:hardikverma22@gmail.com">Email Hardik</a>
         <button class="btn btn-ghost" id="regrant">Re-grant access</button>
       </div>
+    </div>
+  </div>
+
+  <!-- tokenOs deep dive -->
+  <div id="tos-modal" class="tos-modal" role="dialog" aria-modal="true" aria-labelledby="tos-modal-h" hidden>
+    <div class="tos-sheet" id="tos-sheet" data-lenis-prevent tabindex="-1">
+      <header class="tos-sheet-top">
+        <div><p class="mono">case 03 · tokenOs</p><h2 id="tos-modal-h">tokenOs, in depth</h2></div>
+        <button class="tos-close" id="tos-close" type="button" aria-label="Close">✕</button>
+      </header>
+      <div class="tos" id="tokenos"></div>
     </div>
   </div>
 
