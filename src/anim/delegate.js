@@ -215,5 +215,5 @@ export function mountDelegate(root, reduced) {
     return tl;
   };
 
-  autoplay(root, make, reduced);
+  autoplay(root, make, reduced, { speed: 2.2 });
 }

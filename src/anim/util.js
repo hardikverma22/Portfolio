@@ -27,33 +27,66 @@ export function draw(tl, path, at, dur, ease = 'power2.inOut') {
   const len = path.getTotalLength();
   tl.fromTo(path, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: dur, ease }, at);
 }
-// plays while the stage is on screen, pauses when it leaves. `make` builds a paused, looping timeline.
-export function autoplay(root, make, reduced) {
-  let tl = null, rt = 0, playing = false;
+// true while the visitor is scrolling fast: they want the result, not the show
+let _last = { y: 0, t: 0 }, _v = 0;
+if (typeof window !== 'undefined') {
+  _last = { y: scrollY, t: performance.now() };
+  addEventListener('scroll', () => {
+    const now = performance.now(), dt = now - _last.t;
+    if (dt > 0) _v = _v * 0.6 + (Math.abs(scrollY - _last.y) / dt) * 1000 * 0.4;
+    _last = { y: scrollY, t: now };
+  }, { passive: true });
+}
+export const isFast = () => performance.now() - _last.t < 160 && _v > 1600;
+
+// Each stage opens on its finished, fully readable frame. It plays once as it scrolls in, never loops,
+// and a small control lets the visitor skip to the result or replay it. `make` builds a paused timeline.
+export function autoplay(root, make, reduced, { speed = 1 } = {}) {
+  let tl = null, rt = 0, state = 'done';
+  const holder = root.parentElement && root.parentElement.classList.contains('anim-wrap') ? root.parentElement : root;
+  let ctl = null;
+  if (!reduced) {
+    ctl = document.createElement('button');
+    ctl.type = 'button'; ctl.className = 'anim-ctl mono';
+    holder.append(ctl);
+  }
+  const label = () => {
+    if (!ctl) return;
+    const playing = state === 'playing';
+    ctl.textContent = playing ? 'skip to result ›' : '↻ replay';
+    ctl.setAttribute('aria-label', playing ? 'Skip to the result' : 'Replay the animation');
+  };
+  const finish = () => { if (!tl) return; tl.progress(1).pause(); state = 'done'; label(); };
+  const start = () => {
+    if (!tl) return;
+    tl.resetFn?.(); tl.timeScale(speed).restart(); state = 'playing'; label();
+  };
   const build = () => {
     tl?.kill();
     tl = make();
-    tl.repeat(-1).repeatDelay(2.8).eventCallback('onRepeat', () => tl.resetFn?.());
-    tl.pause(0);
-    if (reduced) { tl.pause().progress(1); return; }
-    if (playing) tl.play();
+    tl.repeat(0).pause(0);
+    tl.eventCallback('onComplete', () => { state = 'done'; label(); });
+    tl.progress(1);
+    state = 'done'; label();
   };
   build();
   if (!reduced) {
+    ctl.addEventListener('click', () => (state === 'playing' ? finish() : start()));
     ScrollTrigger.create({
-      trigger: root, start: 'top 85%', end: 'bottom 5%',
-      onEnter: () => { playing = true; tl.play(); }, onEnterBack: () => { playing = true; tl.play(); },
-      onLeave: () => { playing = false; tl.pause(); }, onLeaveBack: () => { playing = false; tl.pause(); },
+      trigger: root, start: 'top 75%', end: 'bottom 5%', once: false,
+      onEnter: () => { if (!tl.__seen) { tl.__seen = true; isFast() ? finish() : start(); } },
+      onLeave: () => { if (state === 'playing') finish(); },
+      onLeaveBack: () => { if (state === 'playing') finish(); },
     });
     let lastW = root.clientWidth;
     new ResizeObserver(() => {
       if (Math.abs(root.clientWidth - lastW) < 3) return;
       lastW = root.clientWidth;
-      clearTimeout(rt); rt = setTimeout(build, 200);
+      clearTimeout(rt); rt = setTimeout(() => { const seen = tl.__seen; build(); tl.__seen = seen; }, 200);
     }).observe(root);
-    addEventListener('load', () => build());
+    addEventListener('load', () => { const seen = tl.__seen; build(); tl.__seen = seen; });
   }
-  if (import.meta.env.DEV) (window.__anim ||= {})[root.id] = { get tl() { return tl; } };
+  if (import.meta.env.DEV) (window.__anim ||= {})[root.id] = { get tl() { return tl; }, finish, start };
   return () => tl;
 }
 // point of an element relative to a root, from one of its sides

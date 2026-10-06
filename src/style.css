@@ -43,7 +43,6 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-body.is-locked { overflow: hidden; height: 100svh; }
 @media (hover: hover) and (pointer: fine) {
   body.has-cursor, body.has-cursor * { cursor: none !important; }
   /* over controls the custom cursor steps aside and the native hand returns */
@@ -76,33 +75,7 @@ kbd { font-family: var(--f-mono); font-size: 11px; padding: 1px 6px; border: 1px
 .btn-ghost { border: 1px solid var(--line-2); }
 .btn-ghost:hover { background: var(--fg); color: var(--bg); }
 
-/* =========================================================
-   GATE
-   ========================================================= */
-#gate {
-  position: fixed; inset: 0; z-index: 100;
-  background: radial-gradient(120% 80% at 50% 0%, #121726 0%, #07080b 60%);
-  display: grid; place-items: center;
-  padding: var(--gut);
-}
-#gate.is-done { pointer-events: none; }
-.gate-inner { width: min(720px, 100%); }
-.gate-kicker { color: var(--ice); margin: 0 0 18px; }
-.gate-log {
-  margin: 0; min-height: 13.5em; white-space: pre-wrap; word-break: break-all;
-  font-size: clamp(11px, 1.35vw, 14px); line-height: 1.65; color: var(--muted);
-}
-.gate-log b { color: var(--fg); font-weight: 500; }
-.gate-log i { color: var(--ice); font-style: normal; }
-.gate-log u { color: var(--ok); text-decoration: none; }
-.gate-bar { height: 1px; background: var(--line); margin: 22px 0 28px; overflow: hidden; }
-.gate-bar span { display: block; height: 100%; width: 0; background: var(--ice); box-shadow: 0 0 12px var(--ice); }
-.gate-btns, .gate-auto { opacity: 0; transform: translateY(12px); pointer-events: none; }
-.gate-actions.on .gate-btns, .gate-actions.on .gate-auto { opacity: 1; transform: none; pointer-events: auto; transition: opacity .6s var(--ease), transform .6s var(--ease); }
-.gate-q { font-size: clamp(22px, 3.4vw, 40px); line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 24px; font-weight: 500; }
-.gate-q em { color: var(--ice); }
 .gate-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-.gate-foot { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; opacity: .4; }
 
 /* =========================================================
    HUD
@@ -182,7 +155,6 @@ kbd { font-family: var(--f-mono); font-size: 11px; padding: 1px 6px; border: 1px
 .hero-orb-1 { width: 600px; height: 600px; background: #4f6ef7; top: -15%; right: 10%; }
 .hero-orb-2 { width: 500px; height: 500px; background: #7c4dff; bottom: -20%; right: -5%; }
 .fx-fluid { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
-body.is-locked .fx-fluid { visibility: hidden; }
 .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px); background-size: 60px 60px; -webkit-mask-image: radial-gradient(ellipse 80% 60% at 60% 50%, #000 30%, transparent 80%); mask-image: radial-gradient(ellipse 80% 60% at 60% 50%, #000 30%, transparent 80%); }
 .hero-split { position: relative; display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; min-height: 100dvh; opacity: 0; }
 .hero.ready .hero-split, .hero.ready .hero-avail { opacity: 1; }
@@ -964,3 +936,9 @@ body.has-cursor .cursor { display: grid; place-items: center; }
 button.story-cta { width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit; }
 
 .el-n::before, .el-s::before { content: attr(data-t); }
+
+/* ---------- animation controls: skip to the result, or replay ---------- */
+.anim-wrap { position: relative; margin-bottom: clamp(36px, 5vw, 64px); }
+.anim-wrap .anim { margin-bottom: 0; }
+.anim-ctl { position: absolute; top: 14px; right: 14px; z-index: 6; padding: 7px 14px; border-radius: 99px; border: 1px solid var(--line-2); background: rgba(13,16,24,.82); backdrop-filter: blur(6px); color: var(--fg); font-size: 11px; letter-spacing: .04em; cursor: pointer; transition: background .25s, color .25s, border-color .25s; }
+.anim-ctl:hover { background: var(--fg); color: var(--bg); border-color: var(--fg); }

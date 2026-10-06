@@ -6,6 +6,7 @@ import {
   projects, writing, testimonials, awards, certs, identity, toolbox, toolboxGroups, toolboxWhere, toolboxMeta,
 } from './data.js';
 import { initMimo } from './mimo.js';
+import { isFast } from './anim/util.js';
 import './anim.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -79,7 +80,7 @@ function render() {
           <div class="res"><dt class="mono">Result</dt><dd>${c.result}</dd></div>
         </dl>
       </header>
-      <div class="anim" id="anim-${c.id}" role="img" aria-label="${c.alt}"></div>
+      <div class="anim-wrap"><div class="anim" id="anim-${c.id}" role="img" aria-label="${c.alt}"></div></div>
       ${c.id === 'tokens' ? '<button class="story-cta" id="open-tokenos" type="button" aria-haspopup="dialog"><span><b>See tokenOs in depth</b>Six capabilities, measured benchmarks, a hash-chained ledger you can tamper with, and all 21 tools.</span><i aria-hidden="true">+</i></button>' : ''}
     </article>`).join('');
 
@@ -180,81 +181,6 @@ function renderGitLog() {
   };
   requestAnimationFrame(draw);
   new ResizeObserver(() => draw()).observe(root);
-}
-
-/* =========================================================
-   GATE, token exchange, with a human in the loop
-   ========================================================= */
-async function runGate(onGrant) {
-  const gate = $('#gate');
-  const log = $('#gate-log');
-  const bar = $('#gate-bar');
-  const actions = $('#gate-actions');
-  const tok = 'eyJhbGciOiJFUzI1NiJ9.' + rnd(18);
-
-  let remembered = false;
-  try { remembered = sessionStorage.getItem('hv-granted') === '1'; } catch (_) {}
-  if (remembered || location.hash.length > 1 || new URLSearchParams(location.search).has('skip')) {
-    gate.remove();
-    onGrant(tok);
-    return;
-  }
-
-  const lines = [
-    '<b>→ POST</b> /oauth/token',
-    '  grant_type      = urn:ietf:params:oauth:grant-type:<i>token-exchange</i>',
-    '  subject_token   = &lt;visitor:anonymous&gt;',
-    '  actor_token     = &lt;agent:hardik.portfolio&gt;',
-    '  scope           = read:agents read:identity read:career contact',
-    '<b>→</b> verifying actor signature … <u>ok</u>',
-    '<b>→</b> evaluating policy (CEL) … <u>allow</u>',
-    `<b>← 200 OK</b>  { "access_token": "<i>${tok.slice(0, 26)}…</i>", "expires_in": 900 }`,
-  ];
-  if (reduced) { log.innerHTML = lines.join('\n'); bar.style.width = '100%'; }
-  else {
-    for (let i = 0; i < lines.length; i++) {
-      log.innerHTML += (i ? '\n' : '') + lines[i];
-      bar.style.width = ((i + 1) / lines.length) * 100 + '%';
-      await sleep(i === 5 || i === 6 ? 260 : 90);
-    }
-  }
-  actions.classList.add('on');
-  const grantBtn = $('#gate-grant');
-  grantBtn.focus({ preventScroll: true });
-
-  return new Promise((resolve) => {
-    let done = false;
-    const grant = async () => {
-      if (done) return;
-      done = true; clearInterval(tick);
-      removeEventListener('keydown', onKey);
-      gate.classList.add('is-done');
-      try { sessionStorage.setItem('hv-granted', '1'); } catch (_) {}
-      onGrant(tok);
-      if (reduced) { gate.remove(); return resolve(); }
-      await gsap.to(gate, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' });
-      gate.remove();
-      resolve();
-    };
-    const onKey = (e) => { if (e.key === 'Enter') { e.preventDefault(); grant(); } };
-    addEventListener('keydown', onKey);
-    grantBtn.addEventListener('click', grant);
-    const AUTO = reduced ? 1500 : 3000;
-    gate.style.setProperty('--auto', AUTO + 'ms');
-    gate.classList.add('is-auto');
-    const count = $('#gate-count');
-    let left = Math.ceil(AUTO / 1000);
-    count.textContent = `Granting read access automatically in ${left}…`;
-    const tick = setInterval(() => { left--; if (left > 0) count.textContent = `Granting read access automatically in ${left}…`; }, 1000);
-    const auto = setTimeout(grant, AUTO);
-    $('#gate-deny').addEventListener('click', () => {
-      clearTimeout(auto); clearInterval(tick); gate.classList.remove('is-auto');
-      $('.gate-q', gate).innerHTML = 'Holding. Take your time.<br /><em>The page is public anyway.</em>';
-      grantBtn.innerHTML = 'Continue <kbd>↵</kbd>';
-      $('#gate-deny').remove();
-      grantBtn.focus();
-    });
-  });
 }
 
 /* =========================================================
@@ -695,14 +621,14 @@ function initScroll() {
     gsap.to('.hero-cue span', { y: 6, duration: 1, ease: 'sine.inOut', yoyo: true, repeat: -1 });
 
     $$('.sec-title .rv-line > span').forEach((s) => {
-      gsap.from(s, { yPercent: 110, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: s, start: 'top 94%' } });
+      gsap.from(s, { yPercent: 110, duration: 0.65, ease: 'expo.out', scrollTrigger: { trigger: s, start: 'top 94%', onEnter: (st) => isFast() && st.animation.progress(1) } });
     });
     $$('.imp, .pr-list li, .wr-card, .pj, .gl-row, .awards tr').forEach((el) => {
-      gsap.from(el, { y: 40, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 92%' } });
+      gsap.from(el, { y: 24, opacity: 0, duration: 0.55, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 94%', onEnter: (st) => isFast() && st.animation.progress(1) } });
     });
     // the periodic table settles in, tiles in random order
-    gsap.fromTo('.el', { opacity: 0, scale: 0.6, rotateX: -60 }, { opacity: 1, scale: 1, rotateX: 0, duration: 0.8, ease: 'expo.out', stagger: { each: 0.018, from: 'random' }, clearProps: 'transform,opacity,scale,rotate,translate', scrollTrigger: { trigger: '#pt', start: 'top 80%' } });
-    gsap.from('.imp-k', { yPercent: 60, opacity: 0, stagger: 0.08, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '#impact-grid', start: 'top 80%' } });
+    gsap.fromTo('.el', { opacity: 0, scale: 0.6, rotateX: -60 }, { opacity: 1, scale: 1, rotateX: 0, duration: 0.5, ease: 'expo.out', stagger: { each: 0.008, from: 'random' }, clearProps: 'transform,opacity,scale,rotate,translate', scrollTrigger: { trigger: '#pt', start: 'top 80%' } });
+    gsap.from('.imp-k', { yPercent: 60, opacity: 0, stagger: 0.05, duration: 0.7, ease: 'expo.out', scrollTrigger: { trigger: '#impact-grid', start: 'top 80%' } });
   }
 
   // about: words light up as you read
@@ -779,7 +705,6 @@ function initScroll() {
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
-    lenis.stop();
     if (import.meta.env.DEV) { window.__lenis = lenis; window.__ST = ScrollTrigger; }
   }
   $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
@@ -814,7 +739,8 @@ function initScroll() {
     const hero = $('.hero');
     portraitP.then((p) => p?.reveal(0.1, 1.9));
     if (reduced) { hero.classList.add('ready'); xray(); return; }
-    const tl = gsap.timeline({ delay: 0.2, defaults: { ease: 'power3.out' }, onStart: () => hero.classList.add('ready') });
+    const tl = gsap.timeline({ delay: 0.05, defaults: { ease: 'power3.out' }, onStart: () => hero.classList.add('ready') });
+    tl.timeScale(1.8);
     tl.from('#hero-photo', { scale: 1.18, xPercent: -4, autoAlpha: 0, duration: 1.5, ease: 'expo.out' }, 0)
       .from('.hero-role', { autoAlpha: 0, x: 24, duration: 0.7 }, 0.25)
       .from($$('.hn-line')[0].querySelectorAll('.hc'), { yPercent: 120, rotationX: 35, duration: 0.95, ease: 'expo.out', stagger: 0.03 }, 0.22)
@@ -824,15 +750,12 @@ function initScroll() {
       .from('.hero-cue', { y: 10, autoAlpha: 0, duration: 0.45 }, 0.95)
       .fromTo('.hero-avail', { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 0.95);
     fluidP.then((f) => f?.sweep($('.hero-name')));
-    setTimeout(xray, 1500);
+    setTimeout(xray, 900);
   };
 
-  await runGate((tok) => {
-    document.body.classList.remove('is-locked');
-    lenis?.start();
-    trace('auth', 'token exchanged · act=hardik.portfolio', true);
-    heroEntrance();
-  });
+  lenis?.start();
+  trace('auth', 'token exchanged · act=hardik.portfolio', true);
+  heroEntrance();
   initScroll();
   ScrollTrigger.refresh();
   if (location.hash.length > 1 && $(location.hash)) {

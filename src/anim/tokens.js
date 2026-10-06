@@ -153,5 +153,5 @@ export function mountTokens(root, reduced) {
     return tl;
   };
 
-  autoplay(root, make, reduced);
+  autoplay(root, make, reduced, { speed: 1.7 });
 }
