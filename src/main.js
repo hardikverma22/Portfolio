@@ -429,7 +429,7 @@ function initKindWords() {
   prog.style.strokeDasharray = C;
   people.innerHTML = testimonials.map((t, i) => `
     <button class="kw-p" role="tab" aria-selected="${i === 0}" data-i="${i}" aria-label="${t.who}">
-      <img src="${t.img}" alt="" width="48" height="48" /><span>${t.who.split(' ')[0]}</span>
+      <img src="${t.img}" alt="" width="48" height="48" loading="lazy" decoding="async" /><span>${t.who.split(' ')[0]}</span>
     </button>`).join('');
   const btns = $$('.kw-p', people);
   let i = 0, t0 = performance.now(), paused = false, pausedAt = 0;
