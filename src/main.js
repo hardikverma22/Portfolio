@@ -39,11 +39,12 @@ document.addEventListener('click', (e) => {
   scrollToEl(id === '#town' ? document.body : id);
 });
 
-/* ---------------- day / on-call mode + clock ---------------- */
+/* ---------------- day / night + clock ---------------- */
+// Night is revealed as a circle spreading from the switch (View Transitions). Browsers without it get the dusk fade.
 const modeBtn = $('#mode');
 let wantNight = root.dataset.mode === 'night';
 let modeTimer = 0;
-const syncMode = () => modeBtn.setAttribute('aria-checked', String(wantNight));
+const syncMode = () => modeBtn.setAttribute('aria-label', wantNight ? 'Switch to day' : 'Switch to night');
 syncMode();
 modeBtn.addEventListener('click', () => {
   wantNight = !wantNight;
@@ -52,8 +53,22 @@ modeBtn.addEventListener('click', () => {
   clearTimeout(modeTimer);
   const settle = () => { if (wantNight) root.dataset.mode = 'night'; else delete root.dataset.mode; };
   if (reduced) { settle(); return; }
-  root.dataset.mode = wantNight ? 'dusk' : 'dawn';
-  modeTimer = setTimeout(settle, wantNight ? 1100 : 900);
+  if (!document.startViewTransition) {
+    root.dataset.mode = wantNight ? 'dusk' : 'dawn';
+    modeTimer = setTimeout(settle, wantNight ? 1100 : 900);
+    return;
+  }
+  const r = modeBtn.getBoundingClientRect();
+  const x = r.left + r.width / 2, y = r.top + r.height / 2;
+  const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  // the new theme renders settled underneath; the circle is the only motion
+  root.classList.add('theme-snap');
+  const vt = document.startViewTransition(settle);
+  vt.ready.then(() => root.animate(
+    { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${R}px at ${x}px ${y}px)`] },
+    { duration: 1500, easing: 'cubic-bezier(.65, 0, .35, 1)', pseudoElement: '::view-transition-new(root)' },
+  )).catch(() => {}); // skipped transitions (hidden tab, rapid clicks) still switch the theme
+  vt.finished.finally(() => root.classList.remove('theme-snap'));
 });
 const clock = $('#clock');
 const tick = () => {
@@ -70,7 +85,7 @@ for (const k of Object.keys(layers)) $(`.ly-${k}`).insertAdjacentHTML('afterbegi
 const cam = $('#cam');
 const scene = $('#scene');
 const stage = $('#stage');
-const pinColours = { tcs: '#1b3f8f', fidelity: '#368727', lab: '#ffc220', tower: '#ffc220', press: '#ef6a5b', home: '#ef6a5b' };
+const pinColours = { tcs: '#EE3984', fidelity: '#368727', lab: '#0071CE', tower: '#0071CE', press: '#ef6a5b', home: '#ef6a5b' };
 const pinMarks = { tcs: 'tcs', fidelity: 'fidelity', lab: 'walmart', tower: 'walmart', press: 'medium', home: 'home' };
 $('#pins').innerHTML = buildings.map((b, i) => `
   <button class="pin" data-id="${b.id}" style="--x:${(b.x / 16).toFixed(2)};--y:${(b.y / 9).toFixed(2)};--c:${pinColours[b.id]};--pd:${(i * 0.37).toFixed(2)}s" aria-label="${esc(b.name)}, ${esc(b.when)}">
@@ -324,7 +339,7 @@ $('#jr-cities').innerHTML = cities.map((c) => `<div class="city" data-city="${c}
   $('#jr-hills').innerHTML = `<svg viewBox="0 0 6000 400" preserveAspectRatio="none"><path d="${d}" fill="var(--hill-near)" stroke="var(--ink)" stroke-width="3"/>${trees}</svg>`;
 })();
 // progress strip: one dot per stop, coloured by company
-const coColour = { tcs: '#1b3f8f', fidelity: '#368727', walmart: '#0071dc' };
+const coColour = { tcs: '#EE3984', hm: '#E50010', fidelity: '#368727', walmart: '#0071CE' };
 $('#jr-meter').innerHTML = `<span class="jm-y" id="jm-y"></span><span class="jm-dots">${milestones.map((m, i) => `<i style="--c:${coColour[m.co]}" data-i="${i}"></i>`).join('')}</span>`;
 const jCard = $('#jr-card'), stones = $$('.stone'), jDots = $$('#jr-meter i'), jWheels = $$('#jr-auto .wheel'), jAuto = $('#jr-auto');
 let jIdx = -1, jCity = '', moveT = 0;
@@ -592,7 +607,7 @@ $('#tiffin').addEventListener('click', (e) => {
 });
 const medalCo = { Walmart: 'walmart', Fidelity: 'fidelity', TCS: 'tcs' };
 $('#medals').innerHTML = awards.map(([y, t, w], i) => `<li style="--r:${[-3, 2, -1, 3, -2][i % 5]}deg">
-  <div class="md"><span class="md-rib" style="--c:${({ walmart: '#0071dc', fidelity: '#368727', tcs: '#1b3f8f' })[medalCo[w]]}"></span><span class="md-coin">${y === '·' ? '★' : esc(y)}</span></div>
+  <div class="md"><span class="md-rib" style="--c:${({ walmart: '#0071CE', fidelity: '#368727', tcs: '#EE3984' })[medalCo[w]]}"></span><span class="md-coin">${y === '·' ? '★' : esc(y)}</span></div>
   <p class="md-t">${esc(t)}</p><p class="md-w">${mark(medalCo[w], 'md-mk')}${esc(w)}</p></li>`).join('');
 
 /* =====================================================================

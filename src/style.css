@@ -135,11 +135,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .nav a:hover, .nav a.on { background: var(--sun); }
 .top-r { display: flex; align-items: center; gap: 10px; }
 .clock { font: 700 12px var(--f-mono); padding: 9px 12px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); white-space: nowrap; }
-.mode { display: flex; align-items: center; gap: 8px; padding: 5px 12px 5px 5px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-weight: 800; font-size: 13px; }
-.mode-k { width: 44px; height: 26px; border-radius: 99px; background: #9fd6ff; position: relative; transition: background .5s; border: 2px solid var(--ink); }
-.mode-k i { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--sun); border: 2px solid var(--ink); transition: transform .5s var(--spring), background .5s, box-shadow .5s; }
-[data-mode='night'] .mode-k { background: #2b2860; }
-[data-mode='night'] .mode-k i { transform: translateX(18px); background: #fff6d8; box-shadow: inset -5px -2px 0 #d9cfa8; }
 @media (max-width: 900px) { .nav, .clock { display: none; } }
 
 /* ---------------- town (hero) ---------------- */
@@ -992,3 +987,26 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pc-mark { margin-right: -12px; }
 .stamp-in b { white-space: nowrap; }
 .stamp.oval .stamp-in b { font-size: 15px; }
+.sticky small { text-transform: none; letter-spacing: .02em; font-size: 12px; }
+.ico + .ico { margin-left: .12em; }
+
+/* ---------- day / night switch, after jameschugh.com ---------- */
+.mode { display: flex; align-items: center; gap: 8px; height: 46px; padding: 0 16px 0 12px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-weight: 800; font-size: 14px; transition: transform .45s var(--spring); }
+.mode:hover { transform: rotate(-4deg) scale(1.04); }
+.mode-i { position: relative; width: 22px; height: 22px; overflow: hidden; display: block; }
+.mode-i svg { position: absolute; inset: 0; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .8s var(--spring), opacity .4s; }
+.mode-i .moon-i { transform: none; }
+.mode-i .sun-i { transform: translateY(26px) rotate(-90deg); opacity: 0; }
+.mode-l { position: relative; display: grid; height: 18px; overflow: hidden; line-height: 18px; }
+.mode-l b { grid-area: 1 / 1; transition: transform .6s var(--spring), opacity .3s; }
+.mode-l .ml-d { transform: translateY(100%); opacity: 0; }
+[data-mode='night'] .mode { background: #2a2a2a; color: #ffd86b; border-color: #ffd86b; box-shadow: 0 10px 30px -10px rgba(255, 196, 70, .55); }
+[data-mode='night'] .mode-i .moon-i { transform: translateY(-26px) rotate(90deg); opacity: 0; }
+[data-mode='night'] .mode-i .sun-i { transform: none; opacity: 1; }
+[data-mode='night'] .mode-l .ml-n { transform: translateY(-100%); opacity: 0; }
+[data-mode='night'] .mode-l .ml-d { transform: none; opacity: 1; }
+/* while the circle reveals the new theme, everything underneath is already settled */
+html.theme-snap, html.theme-snap * { transition: none !important; }
+html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .8s var(--spring), opacity .4s !important; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { z-index: 9999; }

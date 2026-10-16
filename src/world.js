@@ -59,18 +59,18 @@ export const buildings = [
 ];
 
 // The scroll-scrubbed story. [[text|doodle|tone]] marks a phrase that gets a hand-drawn mark.
-export const story = 'I started at TCS {{tcs}} in 2016, shipping twelve full-stack apps and running a team [[on-site for H&M in Stockholm|under|sun]] {{sweden}}. Then five years at Fidelity {{fidelity}}, turning one-off client work into [[reusable platforms|circle]]. Today I keep [[millions of people signed in|hilite|sky]] at Walmart {{walmart}}. Somewhere along the way I started teaching software to do [[the parts of the job nobody wants|strike]], and it became [[my favourite part.|under|rose]]';
+export const story = 'I started at TCS {{tcs}} in 2016, shipping twelve full-stack apps and running a team [[on-site for H&M in Stockholm|under|sun]] {{hm}}{{sweden}}. Then five years at Fidelity {{fidelity}}, turning one-off client work into [[reusable platforms|circle]]. Today I keep [[millions of people signed in|hilite|sky]] at Walmart {{walmart}}. Somewhere along the way I started teaching software to do [[the parts of the job nobody wants|strike]], and it became [[my favourite part.|under|rose]]';
 
 export const stickies = [
   { t: 'Staff Software Engineer, since Sep 2026.', s: 'promotion', c: 'sun', r: -5 },
   { t: 'Ten years shipping. Two of them teaching agents.', s: 'since 2016', c: 'rose', r: 4 },
-  { t: 'Global hackathon finalist, out of thousands.', s: 'tokenOs · 2026', c: 'sky', r: -2 },
+  { t: 'Finalist, Walmart’s global tech hackathon.', s: 'tokenOs · 2026', c: 'sky', r: -2 },
 ];
 
 // Highway milestones for the journey. km is just how far along the road the stone sits.
 export const milestones = [
   { co: 'tcs', y: '2016', place: 'Chennai', t: 'Joined TCS', d: 'System Engineer. Twelve full-stack apps in three years, and a tool more than a thousand colleagues used.' },
-  { co: 'tcs', y: '2018', place: 'Stockholm', t: 'Scrum Master, on-site', d: 'Ran a SAFe team on-site for H&M, the client side said “delivers fast”.' },
+  { co: 'hm', y: '2018', place: 'Stockholm', t: 'Scrum Master, on-site', d: 'Ran a SAFe team on-site for H&M, the client side said “delivers fast”.' },
   { co: 'fidelity', y: '2019', place: 'Chennai', t: 'Joined Fidelity', d: 'Third-party integrations into the eMoney Advisor platform.' },
   { co: 'fidelity', y: '2022', place: 'Chennai', t: 'Lead Software Engineer', d: 'Reusable client solutions, ~90% faster time-to-market.' },
   { co: 'walmart', y: '2024', place: 'Bengaluru', t: 'Joined Walmart', d: 'Accounts and identity, at platform scale.' },
@@ -109,7 +109,7 @@ export const tiffin = [
 export const botLines = [
   'psst. tap a building.',
   'I’m an incident-triage agent. Hardik built me.',
-  'try on-call mode, top right ☾',
+  'try night mode, top right ☾',
   'every building opens a chapter.',
   'the lab and the tower are both Walmart.',
 ];
