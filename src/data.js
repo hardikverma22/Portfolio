@@ -171,7 +171,6 @@ export const commits = [
   { lane: 3, date: 'Jun 2026', msg: 'feat(ai): token-efficiency runtime, hackathon finalist', body: 'tokenOs: a single Rust binary built in hack week; ~80% fewer tokens on repeated tasks.' },
   { lane: 3, date: '2026', msg: 'feat(mimo): record a task once, your agent runs it forever', body: 'A local-first skill recorder for macOS. Show the workflow, review the skill, reuse it.' },
   { lane: 3, date: 'May 2026', msg: 'feat(agents): delegated access with RFC 8693', body: 'User-granted, revocable agent permissions, end to end.' },
-  { lane: 4, date: '2026', msg: 'wip(nailoria): on-device nail try-on + booking', body: 'Hand tracking and a custom segmentation model in the browser; a full booking platform for one real studio.' },
   { lane: 3, date: 'Feb 2026', msg: 'feat(cl): Chile launch, passwordless sign-in', body: 'National-ID support, routing migration, launch.' },
   { lane: 3, date: 'Aug 2025', msg: 'feat(agents): multi-agent incident triage', body: 'Supervisor + specialised sub-agents; an hour of triage down to minutes.' },
   { lane: 3, date: 'Jul 2024', msg: 'init: join Walmart Global Tech', body: 'Senior Software Engineer, International Profile team.' },
@@ -196,7 +195,6 @@ export const commits = [
 
 
 export const projects = [
-  { name: 'Nailoria', status: 'in progress', what: 'A nail studio\u2019s own app: try a design on your hand before you book, hand tracking and nail segmentation run entirely on the phone.', stack: 'Next.js · MediaPipe · ONNX Runtime Web · Convex · Razorpay', hue: 340 },
   { name: 'Travel Planner AI', alias: 'Rutugo', what: 'Itineraries, packing lists and places to visit, tailored by AI.', stack: 'Next.js · OpenAI · Convex · Clerk', code: 'https://github.com/hardikverma22/travel-planner-ai', live: 'https://travel-plannerai.vercel.app/', hue: 18 },
   { name: 'Voice Wise AI', what: 'Record a voice note; get transcript, summary and action items.', stack: 'Next.js · Whisper · Together.ai · Convex', code: 'https://github.com/hardikverma22/VoiceWiseAI', hue: 200 },
   { name: 'Shoe Forge', what: 'Real-time 3D shoe configurator for textures and colours.', stack: 'Three.js · React · Valtio · Framer Motion', code: 'https://github.com/hardikverma22/shoe-forge', live: 'https://hardikverma22.github.io/shoe-forge', hue: 140 },
@@ -252,7 +250,7 @@ export const awards = [
   ['2026', 'Global tech hackathon finalist', 'Walmart'],
   ['2026', '“Making a Difference”, new market launch and AI initiatives', 'Walmart'],
   ['2025', '“Excellence”, platform migration, incident-triage agent, on-call', 'Walmart'],
-  ['·', 'Peer badges: Impact Driver, Fire Fighter, Market Launch Champion, Learning Champion; Spotlight ×2', 'Walmart'],
+  ['·', 'Six peer badges, incl. Impact Driver and Fire Fighter', 'Walmart'],
   ['2023', 'Impact Award, fastest delivery of a top product feature', 'Fidelity'],
   ['2021', 'Impact Award, building tech culture', 'Fidelity'],
   ['2020', 'Eureka Award, innovative ideas', 'Fidelity'],
@@ -286,9 +284,9 @@ export const toolbox = [
   ['ai', 'A2', 'A2A · A2UI', 'Agent-to-agent calls and agents that drive native UI'],
   ['ai', 'Cl', 'Claude / OpenAI', 'Daily drivers, via API and coding agents'],
   ['ai', 'Wh', 'Whisper · Speech', 'Voice notes to action items; on-device transcription in mimo'],
-  ['ai', 'Mp', 'MediaPipe · ONNX', 'On-device hand tracking and nail segmentation in Nailoria'],
+  ['ai', 'Mp', 'MediaPipe · ONNX', 'On-device hand tracking and segmentation, in the browser'],
   ['fe', 'Re', 'React', 'Ten years of interfaces, from Angular days to agent UIs'],
-  ['fe', 'Nx', 'Next.js', 'Travel Planner, Voice Wise, Nailoria'],
+  ['fe', 'Nx', 'Next.js', 'Travel Planner, Voice Wise'],
   ['fe', 'Ts', 'TypeScript', 'The default'],
   ['fe', 'Ng', 'Angular', '12 full-stack apps at TCS'],
   ['fe', 'Tw', 'Tailwind', 'Every side project'],
