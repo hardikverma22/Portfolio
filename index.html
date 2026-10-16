@@ -90,7 +90,6 @@
         </div>
         <nav class="street-nav" id="street-nav" aria-label="Buildings in the town"><button class="sn-arrow" data-step="-1" type="button" aria-label="Previous building">‹</button><button class="sn-now" id="sn-now" type="button"></button><button class="sn-arrow" data-step="1" type="button" aria-label="Next building">›</button><span class="sn-dots" id="sn-dots" aria-hidden="true"></span></nav>
         <button class="fly-cue" id="fly-cue" aria-label="Scroll to the story"><span class="fly-dot"></span>scroll down</button>
-        <button class="buddy" id="buddy" aria-label="Take the tour of the town with Hardik’s agent"><span class="buddy-say" id="buddy-say">I’m Hardik’s agent. <b>Tap me for a tour →</b></span><span class="buddy-bot" id="buddy-bot"></span></button>
         <aside class="tpanel" id="tpanel" aria-live="polite" aria-hidden="true" inert></aside>
       </div>
     </section>
@@ -241,6 +240,16 @@
   </main>
 
   <script type="module" src="/src/main.js"></script>
+  <aside class="guide" id="buddy" aria-label="Tour guide">
+    <div class="g-card" id="g-card">
+      <button class="g-min" id="g-min" type="button" aria-label="Hide the guide">–</button>
+      <p class="g-k"><span id="g-step"></span><b id="g-where"></b></p>
+      <p class="g-say" id="g-say" aria-live="polite"></p>
+      <div class="g-btns"><button class="g-back" id="g-back" type="button"></button><button class="g-next" id="g-next" type="button"></button></div>
+      <div class="g-dots" id="g-dots" aria-hidden="true"></div>
+    </div>
+    <button class="g-bot" id="g-bot" type="button" aria-label="Show the tour guide" aria-expanded="true"><span class="buddy-bot" id="buddy-bot"></span></button>
+  </aside>
   <div class="case" id="case" role="dialog" aria-modal="true" aria-labelledby="case-crumb" hidden>
     <div class="case-bar"><button class="case-back" type="button">← Back to the lab</button><span class="case-crumb" id="case-crumb"></span><span class="case-nav"><button type="button" data-step="-1" aria-label="Previous project">←</button><button type="button" data-step="1" aria-label="Next project">→</button></span></div>
     <div class="case-scroll" id="case-scroll" data-lenis-prevent><article class="case-body" id="case-body"></article></div>

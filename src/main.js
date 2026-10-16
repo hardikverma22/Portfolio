@@ -6,6 +6,7 @@ import { buildings, story, stickies, milestones, tiffin } from './world.js';
 import { townMarkup, buddySvg, autoRickshaw, skylines } from './town.js';
 import { mark } from './marks.js';
 import { initLab } from './lab.js';
+import { initGuide } from './guide.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -100,12 +101,9 @@ $('#buddy-bot').innerHTML = buddySvg();
 // the newsroom ticker loops by exactly one copy of its text
 const tick$ = $('.tick-t');
 if (tick$) $('.ticker').style.setProperty('--tw', (tick$.getComputedTextLength() / 2).toFixed(1));
-// the buddy is the town's guide: tap it and it walks you through the buildings in the order they happened
+// chapters link to each other in the order they happened
 const TOUR = ['tcs', 'fidelity', 'tower', 'lab', 'press', 'home'];
-$('#buddy').addEventListener('click', () => {
-  gsap.fromTo('#buddy-bot', { y: 0 }, { y: -26, duration: 0.25, yoyo: true, repeat: 1, ease: 'power2.out' });
-  setTimeout(() => openBuilding(TOUR[0]), 250);
-});
+
 
 // mouse parallax: each layer drifts by its depth
 const lys = $$('.ly');
@@ -647,10 +645,13 @@ const lift = () => {
     gsap.from('.ly-street', { scale: 1.12, duration: 2, ease: 'power3.out' });
     gsap.from('.hero-copy > *', { y: 40, autoAlpha: 0, stagger: 0.09, duration: 0.9, delay: 0.45, ease: 'power3.out' });
     gsap.from('.pin', { autoAlpha: 0, stagger: 0.1, duration: 0.5, delay: 0.9, clearProps: 'opacity,visibility' });
-    gsap.from('#buddy', { y: 120, duration: 0.9, delay: 1.2, ease: 'back.out(1.6)' });
+    gsap.from('#g-bot', { y: 140, duration: 0.9, delay: 1.2, ease: 'back.out(1.6)', clearProps: 'transform' });
   }
 };
 if (reduced) lift();
 else if (document.readyState === 'complete') setTimeout(lift, 500);
 else addEventListener('load', () => setTimeout(lift, 400));
 addEventListener('load', () => ScrollTrigger.refresh());
+
+/* ---------------- the guide: one bot that walks you through the whole page ---------------- */
+initGuide({ scrollToEl, reduced });
