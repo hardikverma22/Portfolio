@@ -954,10 +954,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 [data-mode='night'] .mode-l .ml-n { transform: translateY(-100%); opacity: 0; }
 [data-mode='night'] .mode-l .ml-d { transform: none; opacity: 1; }
 /* while the circle reveals the new theme, everything underneath is already settled */
-html.theme-snap, html.theme-snap * { transition: none !important; }
-html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .8s var(--spring), opacity .4s !important; }
-::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-new(root) { z-index: 9999; }
 
 /* =====================================================================
    LAB: the workbench

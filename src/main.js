@@ -41,7 +41,6 @@ document.addEventListener('click', (e) => {
 });
 
 /* ---------------- day / night + clock ---------------- */
-// Night is revealed as a circle spreading from the switch (View Transitions). Browsers without it get the dusk fade.
 const modeBtn = $('#mode');
 let wantNight = root.dataset.mode === 'night';
 let modeTimer = 0;
@@ -54,22 +53,9 @@ modeBtn.addEventListener('click', () => {
   clearTimeout(modeTimer);
   const settle = () => { if (wantNight) root.dataset.mode = 'night'; else delete root.dataset.mode; };
   if (reduced) { settle(); return; }
-  if (!document.startViewTransition) {
-    root.dataset.mode = wantNight ? 'dusk' : 'dawn';
-    modeTimer = setTimeout(settle, wantNight ? 1100 : 900);
-    return;
-  }
-  const r = modeBtn.getBoundingClientRect();
-  const x = r.left + r.width / 2, y = r.top + r.height / 2;
-  const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-  // the new theme renders settled underneath; the circle is the only motion
-  root.classList.add('theme-snap');
-  const vt = document.startViewTransition(settle);
-  vt.ready.then(() => root.animate(
-    { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${R}px at ${x}px ${y}px)`] },
-    { duration: 1500, easing: 'cubic-bezier(.65, 0, .35, 1)', pseudoElement: '::view-transition-new(root)' },
-  )).catch(() => {}); // skipped transitions (hidden tab, rapid clicks) still switch the theme
-  vt.finished.finally(() => root.classList.remove('theme-snap'));
+  // dusk (or dawn) first, so the sky, lights and paper fade through in stages
+  root.dataset.mode = wantNight ? 'dusk' : 'dawn';
+  modeTimer = setTimeout(settle, wantNight ? 1100 : 900);
 });
 const clock = $('#clock');
 const tick = () => {
