@@ -1293,3 +1293,9 @@ html.case-open { overflow: hidden; }
   .dg-out:empty { display: none; }
 }
 .lab, .passport, .writing, .words, .after, .stack, .contact { overflow-x: clip; }
+
+/* day / night below the hero: a circle spreading from the switch (View Transitions) */
+html.theme-snap, html.theme-snap * { transition: none !important; }
+html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .8s var(--spring), opacity .4s !important; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { z-index: 9999; }
