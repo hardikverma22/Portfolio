@@ -1302,3 +1302,27 @@ html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .
 .hm-sign { fill: #e50010; font: 900 italic 17px var(--f-display); letter-spacing: -.02em; }
 .fid-sign { fill: #368727; font: 800 17px var(--f-body); }
 .tk-glyph { fill: #fff; font: 900 13px var(--f-body); }
+
+/* town labels sit on the rooftops like little speech bubbles, no floating stems */
+.pin { padding: 0 0 .55em; font-size: clamp(9px, .82cqw, 14px); }
+.pin-tag { position: relative; animation: none; }
+.pin-tag::before, .pin-tag::after { content: ''; position: absolute; left: 50%; translate: -50% 0; width: 0; height: 0; border-style: solid; }
+.pin-tag::before { top: 100%; border-width: .62em .52em 0; border-color: var(--ink) transparent transparent; }
+.pin-tag::after { top: calc(100% - 3px); border-width: .5em .4em 0; border-color: #fffaf0 transparent transparent; }
+.pin:hover .pin-tag::after, .pin:focus-visible .pin-tag::after { border-top-color: var(--sun); }
+
+/* the buddy is the tour guide: big enough to notice, and it says what tapping does */
+.buddy { cursor: pointer; }
+.buddy-bot { width: clamp(76px, 15svh, 118px); height: clamp(90px, 18svh, 140px); }
+.buddy-say { margin-bottom: clamp(60px, 11svh, 96px); max-width: 230px; font-size: 21px; animation: saynudge 4s ease-in-out 2.5s infinite; }
+.buddy-say b { display: block; font: 800 14px/1.2 var(--f-body); color: var(--rose); margin-top: 3px; }
+.buddy:hover .buddy-say { background: var(--sun); }
+@keyframes saynudge { 0%, 86%, 100% { rotate: 0deg; } 90% { rotate: -3deg; } 94% { rotate: 2deg; } }
+.tp-go { display: flex; flex-wrap: wrap; gap: 10px; }
+.tp-go .btn { font-size: 14px; padding: 10px 16px; }
+@media (max-width: 760px) {
+  .buddy-say { display: block; font-size: 16px; padding: 7px 10px; max-width: 150px; margin-bottom: 64px; }
+  .buddy-say b { font-size: 12px; }
+  .buddy-bot { width: 70px; height: 84px; }
+}
+@media (prefers-reduced-motion: reduce) { .buddy-say { animation: none; } }

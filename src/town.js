@@ -64,8 +64,6 @@ function sky() {
   <g class="moon">
     <path d="M1320 118 A62 62 0 1 0 1340 222 A50 50 0 1 1 1320 118 Z" fill="#fffdf0" stroke="#fff3c4" stroke-width="3"/>
     <path d="M1300 124 A50 50 0 0 0 1306 214" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/><circle cx="1262" cy="168" r="6" fill="#e9dcb5"/><circle cx="1282" cy="200" r="4" fill="#e9dcb5"/><circle cx="1250" cy="196" r="3" fill="#e9dcb5"/></g>
-  <g class="dayonly"><g class="flock">${[[0, 0, 1], [34, -14, .85], [60, 6, .75], [-28, 12, .7]].map(([x, y, k], i) => `<g transform="translate(${x} ${y}) scale(${k})"><g class="bird-b" style="animation-delay:${-i * 0.18}s">
-      <path class="wing" d="M0 0 Q-9 -11 -20 -5 Q-9 -6 0 2 Z" fill="#3b3750"/><path class="wing" d="M0 0 Q9 -11 20 -5 Q9 -6 0 2 Z" fill="#3b3750"/><ellipse cx="0" cy="1" rx="5" ry="2.6" fill="#3b3750"/></g></g>`).join('')}</g></g>
   <g class="nightonly"><g class="plane"><path d="M-22 0 h40 l8 -3 l-8 -3 h-6 l-10 -10 h-6 l5 10 h-14 l-5 -5 h-4 l2 8 Z" fill="#3a3866"/>
     <circle class="nav-r" cx="-4" cy="-14" r="2.4" fill="#ff4d4d"/><circle class="nav-w" cx="-22" cy="-2" r="2" fill="#fff"/><circle class="nav-g" cx="2" cy="1" r="2" fill="#7dffb0"/></g></g>
   <g class="drift-a">${cloud(960, 60, 0.85)}${cloud(1440, 250, 1)}</g>
@@ -190,14 +188,11 @@ function fidelity() {
 }
 function lab() {
   const s = `<g class="bld" data-id="lab">
-    <g class="rings">${[0, 1, 2].map((i) => `<circle class="ring" style="--rd:${-i * 0.8}s" cx="830" cy="398" r="10" fill="none" stroke="var(--rose)" stroke-width="2.5"/>`).join('')}</g>
-    <path d="M830 450 V404" ${s2(4)}/><path d="M822 428 h16 M825 440 h10" ${s2(2.5)}/><circle class="beacon" cx="830" cy="398" r="8" fill="#ffc220" ${s2(2.5)}/>
     <path d="M720 562 A110 110 0 0 1 940 562 Z" fill="#7fa8f7" ${S}/>
     <path d="M760 476 Q790 520 786 562 M900 476 Q870 520 874 562" fill="none" stroke="#6a95ee" stroke-width="3"/>
     <path d="M808 456 A110 110 0 0 1 852 456 L846 562 H814 Z" fill="#3f63cf" ${s2(2.5)}/>
     <path d="M814 470 h32 M816 494 h28 M818 518 h24 M818 542 h24" stroke="#3355b8" stroke-width="2"/>
     <path d="M742 508 Q830 486 918 508" fill="none" ${s2(2.5)}/>
-    <g transform="translate(918 470)"><path d="M0 0 L14 30" ${s2(3)}/><g class="dish"><path d="M-22 -10 A26 26 0 0 0 20 -26 Z" fill="#fff8e6" ${s2(2.5)}/><path d="M-1 -18 l-10 -12" ${s2(2)}/><circle cx="-11" cy="-30" r="3" fill="${INK}"/></g></g>
     <rect x="706" y="560" width="248" height="140" fill="#eef3ff" ${S}/>
     <path d="M706 572 H954" stroke="#ffc220" stroke-width="5"/>
     <rect x="758" y="578" width="144" height="26" rx="4" fill="#0071dc" ${s2(2.5)}/><g transform="translate(772 591) scale(.62) translate(-12 -12)">${spark('#ffc220')}</g><text x="840" y="596" text-anchor="middle" class="sign">AGENT LAB</text>
@@ -218,12 +213,6 @@ function lab() {
 function tower() {
   const s = `<g class="bld" data-id="tower">
     <g><rect x="952" y="584" width="70" height="24" fill="#3f63cf" ${S}/>${[0, 1, 2].map((i) => `<rect x="${960 + i * 20}" y="590" width="14" height="12" rx="2" fill="var(--glass)" ${s2(2)}/>`).join('')}<path d="M952 608 H1022" stroke="#ffc220" stroke-width="4"/></g>
-    <g class="lock"><path d="M1074 168 V150 A16 16 0 0 1 1106 150 V168" fill="none" ${s2(9)}/><path d="M1074 168 V150 A16 16 0 0 1 1106 150 V168" fill="none" stroke="#ffe08a" stroke-width="3"/>
-      <defs><clipPath id="cp-lock"><rect x="1062" y="166" width="56" height="46" rx="9"/></clipPath></defs>
-      <rect x="1062" y="166" width="56" height="46" rx="9" fill="#ffd25e" ${S}/>
-      <g clip-path="url(#cp-lock)"><path class="glint" d="M1040 220 L1060 160 L1072 160 L1052 220 Z" fill="#fff" opacity=".7"/></g>
-      <rect x="1062" y="166" width="56" height="46" rx="9" fill="none" ${S}/>
-      <circle cx="1090" cy="184" r="6" fill="${INK}"/><path d="M1090 186 v14" ${s2(5)}/></g>
     <path d="M1136 212 V184" ${s2(2.5)}/><circle class="mast-led" cx="1136" cy="181" r="3.5" fill="var(--rose)" ${s2(1.5)}/>
     <rect x="1044" y="212" width="92" height="50" fill="#3f63cf" ${S}/>
     <g transform="translate(1090 237) scale(1.15) translate(-12 -12)">${spark('#ffc220')}</g>
@@ -296,13 +285,10 @@ function mid() {
   </g>
   <g class="lights">
     <defs><linearGradient id="g-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6cf" stop-opacity="1"/><stop offset=".55" stop-color="#fff6cf" stop-opacity=".35"/><stop offset="1" stop-color="#fff6cf" stop-opacity="0"/></linearGradient></defs>
-    <path class="beam" d="M1090 176 L990 -260 L1190 -260 Z" fill="url(#g-beam)"/>
     <rect class="lit sign-lit" style="--wd:.8s" x="1244" y="534" width="108" height="26" rx="3"/><text class="lit lit-text" style="--wd:.8s" x="1298" y="553" text-anchor="middle">THE PRESS</text>
     <text class="lit lit-agent" style="--wd:.3s" x="840" y="596" text-anchor="middle">AGENT LAB</text>
     ${[[1426, 611], [1438, 602], [1450, 593], [1462, 584], [1474, 575], [1486, 566], [1504, 566], [1516, 575], [1528, 584], [1540, 593], [1552, 602], [1564, 611]].map(([x, y], i) => `<circle class="lit fairy" style="--wd:${(1 + i * 0.06).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0', '#9fd0ff'][i % 4]};--fd:${(i * 0.23).toFixed(2)}s" cx="${x}" cy="${y + 3}" r="3"/>`).join('')}
     ${lights.join('')}
-    <circle class="lit halo" style="--wd:.2s" cx="830" cy="398" r="16"/>
-    <rect class="lit lock-lit" style="--wd:0s" x="1062" y="166" width="56" height="46" rx="9"/>
   </g>
 </svg>`;
 }
@@ -355,18 +341,6 @@ function scooter() {
     <circle class="tail" cx="-40" cy="-30" r="2.6" fill="#ff4d4d"/>
   </g></g>`;
 }
-// The one agent on the street with a job: it carries an alert from the lab to the identity tower and
-// comes back with it resolved. That is the whole story of the triage agent, told without a caption.
-function courier() {
-  const kt = '0;.36;.5;.86;1';
-  const ticket = `<g transform="translate(-11 -64)"><rect x="-1" y="-11" width="22" height="16" rx="3" fill="#ef6a5b" ${s2(2)}/><text x="10" y="1" text-anchor="middle" class="tk-glyph">!</text>
-      <animate attributeName="opacity" values="1;1;0;0;1" keyTimes="${kt}" dur="14s" calcMode="discrete" repeatCount="indefinite"/></g>`;
-  const done = `<g transform="translate(-11 -64)" opacity="0"><rect x="-1" y="-11" width="22" height="16" rx="3" fill="#2eb67d" ${s2(2)}/><path d="M4 -3 l4 4 l8 -8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="${kt}" dur="14s" calcMode="discrete" repeatCount="indefinite"/></g>`;
-  return `<g class="courier"><animateTransform attributeName="transform" type="translate" values="836 706;1078 706;1078 706;836 706;836 706" keyTimes="0;.36;.5;.86;1" dur="14s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .6 1;0 0 1 1;.4 0 .6 1;0 0 1 1"/>
-    <g><animateTransform attributeName="transform" type="scale" values="1 1;1 1;-1 1;-1 1" keyTimes="0;.43;.5;1" dur="14s" calcMode="discrete" repeatCount="indefinite"/>
-    ${bot('walking', '#7cc4a8', 'none')}</g>${ticket}${done}</g>`;
-}
 const LAMPS = [372, 1180, 1588];
 function street() {
   const poles = LAMPS.map((x) => `<g><path d="M${x} 712 V606 q0 -10 12 -10 h10" fill="none" ${s2(4)}/><path d="M${x - 6} 612 h12" ${s2(3)}/><path d="M${x + 16} 594 h20 l-4 10 h-12 Z" fill="#3b3750" ${s2(2.5)}/><circle class="bulb-day" cx="${x + 26}" cy="606" r="4" fill="#fff3c4" ${s2(1.5)}/></g>`).join('');
@@ -386,7 +360,6 @@ function street() {
   <defs><linearGradient id="g-cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".6" stop-color="#ffe9a8" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a8" stop-opacity=".08"/></linearGradient></defs>
   ${poles}
   <g fill="var(--lane)" opacity=".8">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="1398" y="${727 + i * 14}" width="58" height="8" rx="1"/>`).join('')}</g>
-  ${courier()}
   ${chaiCart()}
   <g transform="translate(0 764)">${scooter()}</g>
   <g transform="translate(0 810)">${autoRickshaw()}</g>

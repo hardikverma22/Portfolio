@@ -2,7 +2,7 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { skillsBuilt, markets, writing, testimonials, projects, toolbox, toolboxGroups, awards, identity } from './data.js';
-import { buildings, story, stickies, milestones, tiffin, botLines } from './world.js';
+import { buildings, story, stickies, milestones, tiffin } from './world.js';
 import { townMarkup, buddySvg, autoRickshaw, skylines } from './town.js';
 import { mark } from './marks.js';
 import { initLab } from './lab.js';
@@ -91,8 +91,8 @@ const stage = $('#stage');
 const pinColours = { tcs: '#EE3984', fidelity: '#368727', lab: '#0071CE', tower: '#0071CE', press: '#ef6a5b', home: '#ef6a5b' };
 const pinMarks = { tcs: 'tcs', fidelity: 'fidelity', lab: 'walmart', tower: 'walmart', press: 'medium', home: 'home' };
 $('#pins').innerHTML = buildings.map((b, i) => `
-  <button class="pin" data-id="${b.id}" style="--x:${(b.x / 16).toFixed(2)};--y:${(b.y / 9).toFixed(2)};--c:${pinColours[b.id]};--pd:${(i * 0.37).toFixed(2)}s" aria-label="${esc(b.name)}, ${esc(b.when)}">
-    <span class="pin-tag">${mark(pinMarks[b.id], 'pin-mk')}${esc(b.name)}<small>${esc(b.when)}</small></span><span class="pin-stem"></span><span class="pin-dot"></span>
+  <button class="pin" data-id="${b.id}" style="--x:${(b.x / 16).toFixed(2)};--y:${(b.y / 9).toFixed(2)};--c:${pinColours[b.id]};--pd:${(i * 0.37).toFixed(2)}s" aria-label="${esc(b.name)}${b.when ? `, ${esc(b.when)}` : ''}">
+    <span class="pin-tag">${mark(pinMarks[b.id], 'pin-mk')}${esc(b.name)}${b.when ? `<small>${esc(b.when)}</small>` : ''}</span>
   </button>`).join('') + '<p class="tap-hint hand" id="tap-hint" aria-hidden="true">tap a building <svg viewBox="0 0 40 40"><path d="M4 4 C14 10 24 20 30 34 M30 34 l-9 -3 M30 34 l3 -9"/></svg></p>';
 
 // buddy bot
@@ -100,19 +100,11 @@ $('#buddy-bot').innerHTML = buddySvg();
 // the newsroom ticker loops by exactly one copy of its text
 const tick$ = $('.tick-t');
 if (tick$) $('.ticker').style.setProperty('--tw', (tick$.getComputedTextLength() / 2).toFixed(1));
-const sayEl = $('#buddy-say');
-let line = 0;
-let sayHide = setTimeout(() => sayEl.classList.add('hide'), 6000);
-function say(text) {
-  clearTimeout(sayHide);
-  sayEl.classList.remove('hide');
-  sayHide = setTimeout(() => sayEl.classList.add('hide'), 4500);
-  sayEl.textContent = text;
-  sayEl.classList.remove('pop'); void sayEl.offsetWidth; sayEl.classList.add('pop');
-}
+// the buddy is the town's guide: tap it and it walks you through the buildings in the order they happened
+const TOUR = ['tcs', 'fidelity', 'tower', 'lab', 'press', 'home'];
 $('#buddy').addEventListener('click', () => {
-  say(botLines[++line % botLines.length]);
   gsap.fromTo('#buddy-bot', { y: 0 }, { y: -26, duration: 0.25, yoyo: true, repeat: 1, ease: 'power2.out' });
+  setTimeout(() => openBuilding(TOUR[0]), 250);
 });
 
 // mouse parallax: each layer drifts by its depth
@@ -157,6 +149,7 @@ function openBuilding(id) {
   const b = buildings.find((x) => x.id === id);
   if (!b) return;
   if (scrollY > 40) { scrollToEl(document.body); setTimeout(() => openBuilding(id), 900); return; }
+  const next = buildings.find((x) => x.id === TOUR[TOUR.indexOf(id) + 1]);
   townOpen = id;
   lenis?.stop();
   $('#tap-hint').style.opacity = 0;
@@ -173,16 +166,17 @@ function openBuilding(id) {
   panel.innerHTML = `
     <button class="tp-x" id="tp-x" aria-label="Back to town">✕</button>
     <p class="tp-k">${mark(pinMarks[b.id], 'tp-mk')}${esc(b.kicker)}</p>
-    <p class="tp-when">${esc(b.when)} · ${esc(b.place)}</p>
+    <p class="tp-when">${[b.when, b.place].filter(Boolean).map(esc).join(' · ')}</p>
     <h3 class="tp-t">${esc(b.title)}</h3>
     <p class="tp-b">${esc(b.body)}</p>
     <div class="tp-stats">${b.stats.map(([k, v]) => `<div><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join('')}</div>
     <div class="tp-notes">${b.notes.map((n) => `<span>${esc(n)}</span>`).join('')}</div>
-    <a class="btn btn-ink" href="${b.go[1]}">${esc(b.go[0])} →</a>`;
+    <div class="tp-go"><a class="btn btn-ink" href="${b.go[1]}">${esc(b.go[0])} →</a>${next ? `<button class="btn btn-paper tp-next" type="button" data-next="${next.id}">Next stop: ${esc(next.name)} →</button>` : ''}</div>`;
   panel.classList.add('open');
   panel.removeAttribute('inert');
   panel.setAttribute('aria-hidden', 'false');
   $('#tp-x').addEventListener('click', closeBuilding);
+  $('.tp-next', panel)?.addEventListener('click', (e) => openBuilding(e.currentTarget.dataset.next));
   setTimeout(() => $('#tp-x')?.focus({ preventScroll: true }), 500);
   gsap.from('.tp-stats div, .tp-notes span', { y: 20, autoAlpha: 0, stagger: 0.06, delay: 0.45, ease: 'back.out(2)' });
 }

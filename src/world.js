@@ -12,7 +12,7 @@ export const buildings = [
     go: ['Walk the full journey', '#journey'],
   },
   {
-    id: 'fidelity', name: 'Fidelity', when: '2019–24', place: 'Chennai', x: 540, y: 410,
+    id: 'fidelity', name: 'Fidelity', when: '2019–24', place: 'Chennai', x: 560, y: 408,
     kicker: 'Chapter 2 · the platform years',
     title: 'Turned one-off client work into platforms.',
     body: 'Lead Software Engineer on eMoney Advisor. Generic, reusable solutions replaced per-client custom work for clients such as Wells Fargo and PNC, which cut time-to-market by about 90%. Also: accessible report families, an AWS Lex + Kendra support bot, and tech talks to 100+ engineers.',
@@ -21,7 +21,7 @@ export const buildings = [
     go: ['Read what people said', '#words'],
   },
   {
-    id: 'lab', name: 'Walmart · AI agents', when: '2025–now', place: 'Walmart', x: 830, y: 398,
+    id: 'lab', name: 'Walmart · AI agents', when: '2025–now', place: 'Walmart', x: 830, y: 444,
     kicker: 'Walmart · the agent lab',
     title: 'Two agents, and the tooling around them.',
     body: 'The agents: Grid, a super agent that triages an incident right inside the Slack thread before an engineer joins, and Delegation Hub, so an agent can shop for you without your password. The tooling: tokenOs, a token-efficiency layer for AI coding assistants, and mimo, which turns a demonstration into a reusable skill.',
@@ -30,7 +30,7 @@ export const buildings = [
     go: ['Walk into the lab', '#lab'],
   },
   {
-    id: 'tower', name: 'Walmart · Identity', when: '2024–now', place: 'Walmart Global Tech', x: 1090, y: 130,
+    id: 'tower', name: 'Walmart · Identity', when: '2024–now', place: 'Walmart Global Tech', x: 1090, y: 204,
     kicker: 'Walmart · the tower with the lock',
     title: 'Keeping millions of customers signed in.',
     body: 'Staff Software Engineer at Walmart Global Tech. The identity platform behind sign-up, sign-in, two-factor, recovery and fraud-detection support, live in several countries and for partner brands. Chile went from zero to production in about three months.',
@@ -39,7 +39,7 @@ export const buildings = [
     go: ['Flip through the passport', '#passport'],
   },
   {
-    id: 'press', name: 'Writing', when: '2026', place: 'Medium', x: 1305, y: 512,
+    id: 'press', name: 'Writing', when: '2026', place: 'Medium', x: 1298, y: 522,
     kicker: 'After the day job · the press',
     title: 'I write down what the agents taught me.',
     body: 'Essays on agents, retrieval, governance and what happens behind a model’s answers, published on Medium and in Level Up Coding and AI in Plain English.',
@@ -48,7 +48,7 @@ export const buildings = [
     go: ['Read the paper', '#writing'],
   },
   {
-    id: 'home', name: 'After hours', when: 'nights', place: 'home, Bengaluru', x: 1478, y: 552,
+    id: 'home', name: 'After hours', when: '', place: 'home, Bengaluru', x: 1480, y: 552,
     kicker: 'After hours · home',
     title: 'Things I build for fun, after the day job.',
     body: 'Travel Planner AI for itineraries and packing lists, Voice Wise AI for turning voice notes into action items, a real-time 3D shoe configurator, collaborative docs and a few more. Small, shipped, and mostly live.',
