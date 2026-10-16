@@ -1,10 +1,11 @@
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { caseStudies, skillsBuilt, markets, writing, testimonials, projects, toolbox, toolboxGroups, awards, identity } from './data.js';
-import { buildings, story, stickies, milestones, snacks, mimoCase, tiffin, botLines } from './world.js';
+import { skillsBuilt, markets, writing, testimonials, projects, toolbox, toolboxGroups, awards, identity } from './data.js';
+import { buildings, story, stickies, milestones, tiffin, botLines } from './world.js';
 import { townMarkup, buddySvg, autoRickshaw, skylines } from './town.js';
 import { mark } from './marks.js';
+import { initLab } from './lab.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,7 +34,7 @@ document.addEventListener('click', (e) => {
   const a = e.target.closest('a[href^="#"]');
   if (!a) return;
   const id = a.getAttribute('href');
-  if (id.length < 2 || !$(id)) return;
+  if (id.length < 2 || id.startsWith('#/') || !$(id)) return;
   e.preventDefault();
   if (townOpen) closeBuilding();
   scrollToEl(id === '#town' ? document.body : id);
@@ -249,77 +250,10 @@ if (!reduced) gsap.fromTo('.pola, .sticky', { y: -70, rotation: 14, autoAlpha: 0
 gsap.to('.rd-bot', { x: () => $('.rd-road').offsetWidth - 64, ease: 'none', scrollTrigger: { trigger: '.road-div', start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
 
 /* =====================================================================
-   LAB: the vending machine
+   LAB: the workbench, and a case page per project (see lab.js)
    ===================================================================== */
-const icons = {
-  siren: '<svg viewBox="0 0 32 32"><path d="M8 24 V16 a8 8 0 0 1 16 0 V24 Z" fill="#fff" stroke="#211c33" stroke-width="2.5"/><rect x="5" y="24" width="22" height="5" rx="2" fill="#211c33"/><path d="M16 3 v4 M5 8 l3 3 M27 8 l-3 3" stroke="#211c33" stroke-width="2.5" stroke-linecap="round"/></svg>',
-  key: '<svg viewBox="0 0 32 32"><circle cx="11" cy="16" r="7" fill="#fff" stroke="#211c33" stroke-width="2.5"/><path d="M18 16 H29 M25 16 v5 M29 16 v4" stroke="#211c33" stroke-width="2.5" stroke-linecap="round"/></svg>',
-  chip: '<svg viewBox="0 0 32 32"><rect x="8" y="8" width="16" height="16" rx="3" fill="#fff" stroke="#211c33" stroke-width="2.5"/><path d="M12 4v4M20 4v4M12 24v4M20 24v4M4 12h4M4 20h4M24 12h4M24 20h4" stroke="#211c33" stroke-width="2.5" stroke-linecap="round"/></svg>',
-  rec: '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="#fff" stroke="#211c33" stroke-width="2.5"/><circle cx="16" cy="16" r="5" fill="#ef6a5b"/></svg>',
-};
-const totals = { triage: ['TIME SAVED', '~57 min'], delegate: ['PASSWORDS SHARED', '0'], tokens: ['TOKENS SAVED', '~80%'], mimo: ['PROMPTS WRITTEN', '0'] };
-const agents = [...caseStudies, mimoCase];
-$('#vm-glass').innerHTML = agents.map((a) => {
-  const s = snacks[a.id];
-  return `<div class="vm-slot" data-id="${a.id}">
-    <div class="snack" style="--h:${s.hue}" role="button" tabindex="-1" aria-hidden="true"><em class="kind kind-${s.kind}">${s.kind}</em>${icons[s.icon]}<b>${esc(s.name)}</b><span>${esc(s.flavour)}</span></div>
-    <div class="coil"><svg viewBox="0 0 120 22" preserveAspectRatio="none"><g class="coil-g"><path d="M-30 11 ${Array.from({ length: 10 }, (_, i) => `Q${-22 + i * 16} -2 ${-14 + i * 16} 11 T${2 + i * 16} 11`).join(' ')}"/></g></svg></div>
-    <span class="code">${s.code}</span></div>`;
-}).join('');
-$('#vm-glass').insertAdjacentHTML('afterbegin', '<span class="shelf-tag st-a">A · agents</span><span class="shelf-tag st-b">B · tooling</span>');
+initLab({ reduced, lenis });
 $('#mt-list').innerHTML = skillsBuilt.map(([t, d], i) => `<li style="--r:${[-1.5, 1, -0.5, 1.5][i % 4]}deg"><b>${esc(t)}</b><p>${esc(d)}</p></li>`).join('');
-$('#vm-keys').innerHTML = agents.map((a) => `<button data-id="${a.id}" aria-pressed="false" aria-label="${snacks[a.id].code}: ${esc(a.title)}">${snacks[a.id].code}</button>`).join('');
-const screen = $('#vm-screen');
-const out = $('#vm-out');
-out.innerHTML = '<div class="rc-empty">← press a button.<br/>it’s free.</div>';
-let vending = false;
-async function vend(id, quiet) {
-  if (vending) return;
-  vending = true;
-  const a = agents.find((x) => x.id === id), s = snacks[id];
-  const slot = $(`.vm-slot[data-id="${id}"]`), snack = $('.snack', slot), key = $(`#vm-keys [data-id="${id}"]`);
-  $$('#vm-keys button').forEach((b) => b.setAttribute('aria-pressed', String(b === key)));
-  key.classList.add('down'); setTimeout(() => key.classList.remove('down'), 160);
-  screen.textContent = `${s.code} · ${s.name.toUpperCase()}\nVENDING…`;
-  const tray = $('#vm-tray');
-  $$('.snack', tray).forEach((n) => gsap.to(n, { y: 90, autoAlpha: 0, duration: 0.3, onComplete: () => n.remove() }));
-  const glass = $('#vm-glass').getBoundingClientRect(), sr = snack.getBoundingClientRect();
-  const tl = gsap.timeline();
-  tl.to($('.coil-g', slot), { x: 16, duration: 0.5, ease: 'none', repeat: 1 }, 0)
-    .to(snack, { y: 8, scale: 1.06, duration: 0.6, ease: 'power1.inOut' }, 0)
-    .to(snack, { y: glass.bottom - sr.top + 40, rotation: 32, duration: 0.55, ease: 'power2.in' })
-    .set(snack, { autoAlpha: 0 });
-  if (quiet || reduced) tl.progress(1);
-  await tl.then();
-  const mini = document.createElement('div');
-  mini.className = 'snack';
-  mini.style.setProperty('--h', s.hue);
-  mini.innerHTML = `<b>${esc(s.name)}</b>`;
-  tray.appendChild(mini);
-  gsap.from(mini, { y: -90, duration: 0.8, ease: 'bounce.out' });
-  screen.textContent = `${s.code} · ${s.name.toUpperCase()}\nENJOY ✓`;
-  const [tk, tv] = totals[id];
-  out.innerHTML = `<div class="receipt" style="--h:${s.hue}">
-    <div class="rc-top"><span>${s.code} · ${s.kind === 'agent' ? 'Agent' : 'Tooling'} · ${esc(a.when)}</span><span>no. 00${a.no.slice(-1)}</span></div>
-    <h3 class="rc-t">${esc(a.title)}</h3>
-    <p class="rc-line">${esc(a.line)}</p>
-    <div class="rc-row"><b>Problem</b><p>${esc(a.problem)}</p></div>
-    <div class="rc-row"><b>My part</b><p>${esc(a.role)}</p></div>
-    <div class="rc-row"><b>Result</b><p>${esc(a.result)}</p></div>
-    <div class="rc-stack">${a.stack.map((t) => `<span>${esc(t)}</span>`).join('')}</div>
-    <div class="rc-total"><span>${tk}</span><strong>${tv}</strong></div>
-  </div>`;
-  if (!reduced) {
-    gsap.fromTo('.receipt', { clipPath: 'inset(0 0 100% 0)' }, { clipPath: 'inset(0 0 0% 0)', duration: 1.1, ease: 'steps(14)' });
-    gsap.from('.rc-row, .rc-stack, .rc-total', { autoAlpha: 0, x: -10, stagger: 0.08, delay: 0.3 });
-  }
-  gsap.set(snack, { y: 0, rotation: 0, scale: 0.6, autoAlpha: 0 });
-  gsap.to(snack, { scale: 1, autoAlpha: 1, delay: 0.5, duration: 0.5, ease: 'back.out(2)' });
-  vending = false;
-}
-$('#vm-keys').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) vend(b.dataset.id); });
-$('#vm-glass').addEventListener('click', (e) => { const s = e.target.closest('.vm-slot'); if (s) vend(s.dataset.id); });
-ScrollTrigger.create({ trigger: '#vm', start: 'top 60%', once: true, onEnter: () => setTimeout(() => { if (!$('.receipt')) vend('triage'); }, 700) });
 
 /* =====================================================================
    JOURNEY: the auto drives past highway milestones

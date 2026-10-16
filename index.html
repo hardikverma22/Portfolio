@@ -108,29 +108,15 @@
 
     <div class="road-div" aria-hidden="true"><div class="rd-road"><i class="rd-bot"></i></div></div>
 
-    <!-- ============ LAB: vending machine ============ -->
+    <!-- ============ LAB: the workbench ============ -->
     <section id="lab" class="lab paper" aria-labelledby="lab-h">
       <div class="wrap">
         <header class="sec-h">
-          <p class="kicker">Built at Walmart</p>
-          <h2 id="lab-h" class="h2">Two agents, and the tooling around them. <span class="mark">Pick one.</span></h2>
-          <p class="sub">Row A holds the agents, row B the tools that make agents cheaper and easier to teach. Each one solved a real problem at work. Press a button and the machine drops it into the tray with the story.</p>
+          <p class="kicker">Built at Walmart · 2025–26</p>
+          <h2 id="lab-h" class="h2">Inside the agent lab. <span class="mark">Everything’s still running.</span></h2>
+          <p class="sub">Two agents and two tools, each on the bench doing its job. Open any one to watch it work, see how it’s wired, and what it changed.</p>
         </header>
-        <div class="vm-wrap">
-          <div class="vm" id="vm">
-            <div class="vm-top"><span class="vm-brand">WALMART<small>agents &amp; tooling · 2025–26</small></span><span class="vm-bulb"></span></div>
-            <div class="vm-body">
-              <div class="vm-glass" id="vm-glass"></div>
-              <div class="vm-side">
-                <div class="vm-screen" id="vm-screen">PICK A1–B2</div>
-                <div class="vm-keys" id="vm-keys"></div>
-                <div class="vm-coin"><i></i><span>free for<br/>recruiters</span></div>
-              </div>
-            </div>
-            <div class="vm-tray" id="vm-tray"><span>push</span></div>
-          </div>
-          <article class="vm-out" id="vm-out" aria-live="polite"></article>
-        </div>
+        <div id="bench"></div>
         <div class="more-tools">
           <p class="kicker">More tooling</p>
           <p class="sub">Skills and tools I shipped for engineers across the org.</p>
@@ -254,5 +240,9 @@
   </main>
 
   <script type="module" src="/src/main.js"></script>
+  <div class="case" id="case" role="dialog" aria-modal="true" aria-labelledby="case-crumb" hidden>
+    <div class="case-bar"><button class="case-back" type="button">← Back to the lab</button><span class="case-crumb" id="case-crumb"></span><span class="case-nav"><button type="button" data-step="-1" aria-label="Previous project">←</button><button type="button" data-step="1" aria-label="Next project">→</button></span></div>
+    <div class="case-scroll" id="case-scroll" data-lenis-prevent><article class="case-body" id="case-body"></article></div>
+  </div>
 </body>
 </html>
