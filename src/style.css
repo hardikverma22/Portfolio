@@ -1326,3 +1326,5 @@ html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .
   .buddy-bot { width: 70px; height: 84px; }
 }
 @media (prefers-reduced-motion: reduce) { .buddy-say { animation: none; } }
+.wm-sign { font: 800 19px var(--f-body); fill: #fff; letter-spacing: -.01em; }
+[data-mode='night'] .wm-lit { filter: drop-shadow(0 0 5px rgba(255, 210, 90, .7)); }

@@ -48,7 +48,7 @@ export const buildings = [
     go: ['Read the paper', '#writing'],
   },
   {
-    id: 'home', name: 'After hours', when: '', place: 'home, Bengaluru', x: 1480, y: 552,
+    id: 'home', name: 'After hours', when: '', place: 'home, Bengaluru', x: 1466, y: 552,
     kicker: 'After hours · home',
     title: 'Things I build for fun, after the day job.',
     body: 'Travel Planner AI for itineraries and packing lists, Voice Wise AI for turning voice notes into action items, a real-time 3D shoe configurator, collaborative docs and a few more. Small, shipped, and mostly live.',

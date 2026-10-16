@@ -85,7 +85,7 @@ function far() {
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g class="art">
   <g>${city}
     <g fill="var(--city-far)"><path d="M1370 640 V560 H1440 V640 Z M1378 560 V528 H1432 V560 Z M1386 528 V500 H1424 V528 Z M1394 500 V476 H1416 V500 Z M1400 476 l5 -16 l5 16 Z"/>
-    <path d="M200 640 V552 Q240 500 280 552 V640 Z"/><rect x="232" y="496" width="16" height="12"/></g>
+    <path d="M200 640 V552 Q240 500 280 552 V640 Z"/></g>
     <g fill="var(--city-far)"><path d="M520 640 Q522 560 530 520" stroke="var(--city-far)" stroke-width="6" fill="none"/><path d="M530 520 q-30 -4 -44 10 q24 -16 44 -10 q-20 -24 -42 -24 q28 -2 42 24 q8 -26 34 -30 q-24 12 -34 30 q30 -10 46 4 q-30 -8 -46 -4Z"/></g>
   </g>
   <defs><linearGradient id="g-haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--haze)" stop-opacity="0"/><stop offset="1" style="stop-color:var(--haze)" stop-opacity=".75"/></linearGradient></defs>
@@ -203,7 +203,6 @@ function lab() {
     <circle cx="746" cy="640" r="18" fill="var(--glass)" ${S}/><circle cx="914" cy="640" r="18" fill="var(--glass)" ${S}/>
     <circle cx="746" cy="640" r="23" fill="none" stroke="#b9c8ea" stroke-width="3"/><circle cx="914" cy="640" r="23" fill="none" stroke="#b9c8ea" stroke-width="3"/>
     <path d="M736 634 l8 -6 M904 634 l8 -6" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>
-    <g transform="translate(882 668)"><rect x="-10" y="-14" width="20" height="28" rx="3" fill="#2f2d3b" ${s2(2)}/><circle class="blink-r" cx="-4" cy="-7" r="2.4" fill="#7dffb0"/><circle cx="4" cy="-7" r="2.4" fill="#ffd25e"/><path d="M-5 2 h10 M-5 7 h10" stroke="#5c5870" stroke-width="2"/></g>
   </g>`;
   glow(`<path d="M806 700 V650 A24 24 0 0 1 854 650 V700 Z"/>`, 0.1);
   glow(`<circle class="soft" cx="746" cy="640" r="16"/>`, 0.5);
@@ -213,9 +212,9 @@ function lab() {
 function tower() {
   const s = `<g class="bld" data-id="tower">
     <g><rect x="952" y="584" width="70" height="24" fill="#3f63cf" ${S}/>${[0, 1, 2].map((i) => `<rect x="${960 + i * 20}" y="590" width="14" height="12" rx="2" fill="var(--glass)" ${s2(2)}/>`).join('')}<path d="M952 608 H1022" stroke="#ffc220" stroke-width="4"/></g>
-    <path d="M1136 212 V184" ${s2(2.5)}/><circle class="mast-led" cx="1136" cy="181" r="3.5" fill="var(--rose)" ${s2(1.5)}/>
-    <rect x="1044" y="212" width="92" height="50" fill="#3f63cf" ${S}/>
-    <g transform="translate(1090 237) scale(1.15) translate(-12 -12)">${spark('#ffc220')}</g>
+    <path d="M1048 226 V258 M1132 226 V258" ${s2(3)}/>
+    <rect x="1026" y="212" width="128" height="34" rx="5" fill="#0071ce" ${S}/>
+    <text x="1102" y="236" text-anchor="middle" class="sign wm-sign">Walmart</text><g transform="translate(1046 229) scale(.95) translate(-12 -12)">${spark('#ffc220')}</g>
     <rect x="1020" y="260" width="140" height="440" fill="#4f7cf0" ${S}/>
     <rect x="1014" y="258" width="152" height="10" fill="#3f63cf" ${s2(2.5)}/>
     <path d="M1090 270 V640" stroke="#3f63cf" stroke-width="6"/>
@@ -242,8 +241,7 @@ function press() {
     ${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${1236 + i * 26} 600 h13 l-2 26 h-13 Z" fill="#e2725b"/>`).join('')}
     <path d="M1218 600 H1392 L1380 626 H1230 Z" fill="none" ${S}/>
     <rect x="1240" y="640" width="70" height="44" fill="var(--glass)" ${S}/>
-    <rect x="1248" y="654" width="28" height="20" rx="10" fill="#c9c3d6" ${s2(2.5)}/><g class="roller-lines"><path d="M1256 656 v16 M1262 656 v16 M1268 656 v16" stroke="#8a84a0" stroke-width="2"/></g>
-    <path d="M1274 656 h30 M1274 664 h24 M1274 672 h28" stroke="${INK}" stroke-width="2" opacity=".55"/>
+    <g transform="rotate(-4 1275 662)"><rect x="1252" y="646" width="46" height="34" rx="1.5" fill="#fffdf6" ${s2(2)}/><path d="M1256 652 h38" stroke="${INK}" stroke-width="3.2"/><rect x="1256" y="657" width="16" height="12" fill="#c9c3d6"/><path d="M1276 658 h18 M1276 663 h18 M1276 668 h14 M1256 674 h38" stroke="${INK}" stroke-width="1.5" opacity=".55"/></g>
     <rect x="1324" y="640" width="44" height="60" fill="#7a3324" ${S}/><circle cx="1360" cy="672" r="2.2" fill="#ffd25e"/>
     <g transform="translate(1270 692)"><rect x="-22" y="-6" width="34" height="8" fill="#fff" ${s2(2)}/><rect x="-18" y="-14" width="34" height="8" fill="#f2efe8" ${s2(2)}/></g>
   </g>`;
@@ -252,7 +250,7 @@ function press() {
 }
 function home() {
   const s = `<g class="bld" data-id="home">
-    <path d="M1520 234 Q1600 400 1525 553" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+    <path d="M1520 278 Q1586 430 1555 576" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
     <g transform="translate(1520 200)"><g>
       <path d="M0 0 L26 34 L0 78 L-26 34 Z" fill="var(--rose)" ${S}/><path d="M0 0 V78 M-26 34 H26" ${s2(2)}/><path d="M0 0 L26 34 L0 34 Z" fill="#ffd25e" opacity=".9"/>
       <path d="M0 78 C10 96 -10 110 4 128 C14 142 -4 152 6 166" fill="none" ${s2(2)}/>
@@ -260,7 +258,7 @@ function home() {
       ${swing(0, 34, -6, 7, 5)}</g></g>
     <path d="M1424 612 L1495 560 L1566 612 Z" fill="#c2593a" ${S}/><path d="M1446 596 L1495 560 L1544 596" fill="none" stroke="#e07a52" stroke-width="3"/>
     <rect x="1536" y="560" width="14" height="30" fill="#9a3f2a" ${s2(2.5)}/>
-    <g transform="translate(1516 577)"><g class="flier">${bot('', '#ffd25e', 'none')}<path d="M10 -12 L9 -24" ${s2(3)}/></g></g>
+    <g transform="translate(1546 600)"><g class="flier">${bot('', '#ffd25e', 'none')}<path d="M10 -12 L9 -24" ${s2(3)}/></g></g>
     <rect x="1432" y="610" width="126" height="90" fill="#fff4e0" ${S}/>
     <path d="M1432 622 H1558" stroke="#f2d9b8" stroke-width="3"/>
     <rect x="1444" y="632" width="52" height="38" rx="2" fill="var(--glass)" ${S}/><path d="M1470 632 v38 M1444 651 h52" stroke="${INK}" stroke-width="2"/>
@@ -287,6 +285,7 @@ function mid() {
     <defs><linearGradient id="g-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6cf" stop-opacity="1"/><stop offset=".55" stop-color="#fff6cf" stop-opacity=".35"/><stop offset="1" stop-color="#fff6cf" stop-opacity="0"/></linearGradient></defs>
     <rect class="lit sign-lit" style="--wd:.8s" x="1244" y="534" width="108" height="26" rx="3"/><text class="lit lit-text" style="--wd:.8s" x="1298" y="553" text-anchor="middle">THE PRESS</text>
     <text class="lit lit-agent" style="--wd:.3s" x="840" y="596" text-anchor="middle">AGENT LAB</text>
+    <g class="lit wm-lit" style="--wd:.15s"><text x="1102" y="236" text-anchor="middle" class="wm-sign">Walmart</text><g transform="translate(1046 229) scale(.95) translate(-12 -12)">${spark('#ffc220')}</g></g>
     ${[[1426, 611], [1438, 602], [1450, 593], [1462, 584], [1474, 575], [1486, 566], [1504, 566], [1516, 575], [1528, 584], [1540, 593], [1552, 602], [1564, 611]].map(([x, y], i) => `<circle class="lit fairy" style="--wd:${(1 + i * 0.06).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0', '#9fd0ff'][i % 4]};--fd:${(i * 0.23).toFixed(2)}s" cx="${x}" cy="${y + 3}" r="3"/>`).join('')}
     ${lights.join('')}
   </g>
@@ -387,7 +386,7 @@ function fg() {
   let flies = '';
   for (let i = 0; i < 18; i++) flies += `<circle class="firefly" style="--fx:${f(rand() * 60 - 30)}px;--fy:${f(rand() * 40 - 20)}px;--fd:${f(-rand() * 6)}s;--ft:${f(4 + rand() * 4)}s;--wd:${f(0.6 + rand() * 1.4)}s" cx="${f(i < 10 ? rand() * 320 : 1380 + rand() * 220)}" cy="${f(i < 10 ? 520 + rand() * 200 : 760 + rand() * 90)}" r="${f(2 + rand() * 1.5)}"/>`;
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g class="art">
-  <g transform="translate(-120 0)"><g class="petals" transform="translate(0 600)">${petals}</g>
+  <g transform="translate(-120 0)">
   <path d="M40 900 C46 820 32 760 70 650 M60 730 C30 700 0 690 -20 660 M70 700 C110 670 130 660 160 640" fill="none" stroke="var(--ink)" stroke-width="22" stroke-linecap="round"/>
   <path d="M40 900 C46 820 32 760 70 650 M60 730 C30 700 0 690 -20 660 M70 700 C110 670 130 660 160 640" fill="none" stroke="var(--bark)" stroke-width="15" stroke-linecap="round"/>
   <path d="M36 880 q6 -30 0 -60 M52 800 q4 -20 0 -40" fill="none" stroke="#5e3a20" stroke-width="3" stroke-linecap="round"/>
