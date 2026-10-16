@@ -204,7 +204,6 @@ function openBuilding(id) {
     <p class="tp-t">${esc(b.title)}</p>
     ${b.paras.map((t) => `<p class="tp-b">${esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')}</p>`).join('')}
     <div class="tp-stats">${b.stats.map(([k, v]) => `<div><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join('')}</div>
-    <div class="tp-notes">${b.notes.map((n) => `<span>${esc(n)}</span>`).join('')}</div>
     ${b.links ? `<p class="tp-links">${b.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join('')}</p>` : ''}
     <div class="tp-go"><a class="btn btn-ink" href="${b.go[1]}">${esc(b.go[0])} →</a>${next ? `<button class="btn btn-paper tp-next" type="button" data-next="${next.id}">Next stop: ${esc(next.name)} →</button>` : ''}</div>`;
   panel.classList.add('open');
@@ -213,7 +212,7 @@ function openBuilding(id) {
   $('#tp-x').addEventListener('click', closeBuilding);
   $('.tp-next', panel)?.addEventListener('click', (e) => openBuilding(e.currentTarget.dataset.next));
   setTimeout(() => $('#tp-x')?.focus({ preventScroll: true }), 500);
-  gsap.from('.tp-stats div, .tp-notes span', { y: 20, autoAlpha: 0, stagger: 0.06, delay: 0.45, ease: 'back.out(2)' });
+  gsap.from('.tp-stats div', { y: 20, autoAlpha: 0, stagger: 0.06, delay: 0.45, ease: 'back.out(2)' });
 }
 function closeBuilding() {
   if (!townOpen) return;

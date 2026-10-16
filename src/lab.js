@@ -239,7 +239,7 @@ function mimoReplay(st) {
     <div class="mm-app"><div class="mm-chrome"><i></i><i></i><i></i><span>github.com</span><span class="mm-rec"><i></i>mimo recording</span></div>
       <div class="mm-page"><nav class="mm-nav"><span data-c="0">Pull requests</span><span>Issues</span><span>Actions</span></nav>
         <div class="mm-filter"><span data-c="1">Author: anyone ▾</span></div>
-        <ul class="mm-list"><li>Fix OTP retry config <em>#4821</em></li><li>Add passkey fallback <em>#4815</em></li><li>Bump tokenOs plugin <em>#4810</em></li></ul>
+        <ul class="mm-list"><li>Fix OTP retry config <em>#4821</em></li><li>Add passkey fallback <em>#4815</em></li><li>Bump token-OS plugin <em>#4810</em></li></ul>
         <span class="mm-cursor" aria-hidden="true"></span></div></div>
     <div class="mm-tracks">
       <div class="mm-track" data-t="act"><b>Actions</b><div></div></div>

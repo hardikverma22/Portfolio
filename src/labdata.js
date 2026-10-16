@@ -40,10 +40,10 @@ export const lab = [
     stack: ['Python', 'LangGraph', 'MCP', 'OAuth 2.0', 'RFC 8693', 'CEL', 'A2UI', 'React'],
   },
   {
-    id: 'tokens', kind: 'Tool', when: 'Walmart · 2026', name: 'tokenOs', mark: 'walmart',
+    id: 'tokens', kind: 'Tool', when: 'Walmart · 2026', name: 'token-OS', mark: 'walmart',
     full: 'A token-efficiency layer for AI coding assistants',
     hook: 'Every token saved is a token spent on real work.',
-    pitch: 'Coding assistants spend much of their context window on duplicate, verbose and irrelevant input. tokenOs sits underneath the agent and compresses, routes and explains what goes into the model before every call, then writes every saving to a ledger anyone can verify.',
+    pitch: 'Coding assistants spend much of their context window on duplicate, verbose and irrelevant input. token-OS sits underneath the agent and compresses, routes and explains what goes into the model before every call, then writes every saving to a ledger anyone can verify.',
     tag: ['~80%', 'fewer tokens'],
     tagNote: 'hackathon finalist',
     meta: [['Role', 'Built it in hack week as a single Rust binary, then shipped it as a plugin'], ['Built with', 'Rust, MCP, tree-sitter, SQLite'], ['Recognition', 'Finalist, Walmart’s global tech hackathon 2026']],

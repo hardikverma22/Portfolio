@@ -36,9 +36,9 @@ export const buildings = [
     title: 'Walmart made me an AI advocate.',
     paras: [
       'Walmart runs on a tech-driven, AI-first culture, with AI in front of customers too. I built **Grid**, a super agent that triages incidents right in the Slack thread, and **Delegation Hub**, so an agent can shop for you safely.',
-      'I shipped features for Walmart’s super agents **Wibey** and **Code Puppy**, and built tools like **tokenOs** and **mimo**. That work is a big reason I was **promoted to Staff**.',
+      'I shipped features for Walmart’s super agents **Wibey** and **Code Puppy**, and built tools like **token-OS** and **mimo**. That work is a big reason I was **promoted to Staff**.',
     ],
-    stats: [['<5 min', 'to triage an incident, was 60–90'], ['~80%', 'fewer tokens with tokenOs'], ['Finalist', 'global tech hackathon 2026']],
+    stats: [['<5 min', 'to triage an incident, was 60–90'], ['~80%', 'fewer tokens with token-OS'], ['Finalist', 'global tech hackathon 2026']],
     notes: ['Supervisor + 5 sub-agents, with memory', 'Presented at big forums'],
     go: ['Walk into the lab', '#lab'],
   },
@@ -49,9 +49,9 @@ export const buildings = [
     title: 'Walmart taught me what scale really means.',
     paras: [
       'I joined the **international profile team**: addresses, payment methods and everything in your account, across countries and brands, for **millions of customers**.',
-      'Then **identity**: sign-up, sign-in, passkeys and recovery. We took **Chile from zero to live in about three months**, and I saw how “customer first” and “everyday low price” turn into engineering choices.',
+      'Then **identity**: everything that keeps an account safe. Sign-up and sign-in, passwords and **passkeys**, phone collection and verification, **2FA and MFA**, a **risk engine** that spots fraud, and the **OIDC and OAuth** plumbing underneath. I saw how “customer first” turns into engineering choices.',
     ],
-    stats: [['Millions', 'of customers'], ['~3 mo', 'Chile, zero to live'], ['Staff', 'promoted Sep 2026']],
+    stats: [['Millions', 'of customers signing in'], ['4', 'countries on the identity platform'], ['Staff', 'promoted Sep 2026']],
     notes: ['Passwordless OTP + passkeys', 'Ship behind flags, keep a rollback'],
     go: ['Flip through the passport', '#passport'],
   },
@@ -90,7 +90,7 @@ export const story = 'I started at TCS {{tcs}} in 2016, building tools for H&M {
 export const stickies = [
   { t: 'Staff Software Engineer, since Sep 2026.', s: 'promotion', c: 'sun', r: -5 },
   { t: 'Ten years shipping. Two of them teaching agents.', s: 'since 2016', c: 'rose', r: 4 },
-  { t: 'Finalist, Walmart’s global tech hackathon.', s: 'tokenOs · 2026', c: 'sky', r: -2 },
+  { t: 'Finalist, Walmart’s global tech hackathon.', s: 'token-OS · 2026', c: 'sky', r: -2 },
 ];
 
 // Highway milestones for the journey. km is just how far along the road the stone sits.
@@ -100,10 +100,9 @@ export const milestones = [
   { co: 'fidelity', y: '2019', place: 'Chennai', t: 'Joined Fidelity', d: 'Building for eMoney Advisor. Fell for React and Next.js.' },
   { co: 'fidelity', y: '2022', place: 'Chennai', t: 'Tech lead', d: 'Led 12 engineers. Reusable platforms, ~90% faster time-to-market.' },
   { co: 'home', y: '2024', place: 'Chennai', t: 'Travel Planner AI', d: 'Built it to learn Convex, became a Convex Champion. Later acquired by Rutugo.' },
-  { co: 'walmart', y: '2024', place: 'Bengaluru', t: 'Joined Walmart', d: 'Profile and payments for millions of customers, across countries.' },
+  { co: 'walmart', y: '2024', place: 'Bengaluru', t: 'Joined Walmart', d: 'Profile and payments, then identity: sign-in, passkeys, MFA and fraud checks for millions of customers.' },
   { co: 'walmart', y: '2025', place: 'Bengaluru', t: 'Built Grid', d: 'A super agent that triages incidents in Slack. 60–90 minutes down to under 5.' },
-  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Chile goes live', d: 'A brand-new market on the identity platform in about three months.' },
-  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Hackathon finalist', d: 'tokenOs cuts ~80% of tokens on repeated tasks.' },
+  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Hackathon finalist', d: 'token-OS cuts ~80% of tokens on repeated tasks.' },
   { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Staff Software Engineer', d: 'Promoted for my work on AI. The road keeps going.' },
 ];
 
@@ -111,7 +110,7 @@ export const milestones = [
 export const snacks = {
   triage: { kind: 'agent', code: 'A1', name: 'Triage', flavour: '60 → 3 min', hue: 18, icon: 'siren' },
   delegate: { kind: 'agent', code: 'A2', name: 'Delegate', flavour: 'revoke anytime', hue: 200, icon: 'key' },
-  tokens: { kind: 'tool', code: 'B1', name: 'tokenOs', flavour: '−80% tokens', hue: 45, icon: 'chip' },
+  tokens: { kind: 'tool', code: 'B1', name: 'token-OS', flavour: '−80% tokens', hue: 45, icon: 'chip' },
   mimo: { kind: 'tool', code: 'B2', name: 'mimo', flavour: 'record once', hue: 280, icon: 'rec' },
 };
 
