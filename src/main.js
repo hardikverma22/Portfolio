@@ -191,7 +191,7 @@ function openBuilding(id) {
   const px = (b.x / 1600) * W, py = (((b.y + 700) / 2) / 900) * H;
   const sx = narrow ? innerWidth * 0.5 : innerWidth * 0.66, sy = narrow ? innerHeight * 0.3 : innerHeight * 0.56;
   gsap.to(cam, { x: sx - r.left - px * scale, y: sy - r.top - py * scale, scale, duration: 1.3, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#buddy', '#street-nav'], { autoAlpha: 0, duration: 0.4 });
+  gsap.to(['#hero-copy', '#fly-cue', '#street-nav'], { autoAlpha: 0, duration: 0.4 });
   cam.classList.add('focus');
   $$('.bld, .pin', cam).forEach((el) => el.classList.toggle('on', el.dataset.id === id));
   panel.innerHTML = `
@@ -211,19 +211,21 @@ function openBuilding(id) {
   $('.tp-next', panel)?.addEventListener('click', (e) => openBuilding(e.currentTarget.dataset.next));
   setTimeout(() => $('#tp-x')?.focus({ preventScroll: true }), 500);
   gsap.from('.tp-stats div', { y: 20, autoAlpha: 0, stagger: 0.06, delay: 0.45, ease: 'back.out(2)' });
+  document.dispatchEvent(new CustomEvent('town', { detail: { open: id } }));
 }
 function closeBuilding() {
   if (!townOpen) return;
   const was = townOpen;
   townOpen = null;
   gsap.to(cam, { x: 0, y: 0, scale: 1, duration: 1.1, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#buddy', '#street-nav'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
+  gsap.to(['#hero-copy', '#fly-cue', '#street-nav'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
   cam.classList.remove('focus');
   panel.classList.remove('open');
   panel.setAttribute('inert', '');
   panel.setAttribute('aria-hidden', 'true');
   lenis?.start();
   $(`.pin[data-id="${was}"]`)?.focus({ preventScroll: true });
+  document.dispatchEvent(new CustomEvent('town', { detail: { open: null } }));
 }
 cam.addEventListener('click', (e) => {
   if (dragMoved) { dragMoved = false; return; }
@@ -619,12 +621,7 @@ band.className = 'foot-band';
 foot.replaceWith(band);
 band.appendChild(foot);
 
-/* ---------------- nav highlight ---------------- */
-const navLinks = $$('.nav a');
-const io = new IntersectionObserver((entries) => {
-  for (const e of entries) if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle('on', a.getAttribute('href') === `#${e.target.id}`));
-}, { rootMargin: '-45% 0px -50% 0px' });
-['story', 'lab', 'journey', 'passport', 'writing', 'contact'].forEach((id) => io.observe($(`#${id}`)));
+/* nav highlight follows the guide, see guide.js */
 
 /* ---------------- section entrances ---------------- */
 if (!reduced) {
@@ -654,4 +651,4 @@ else addEventListener('load', () => setTimeout(lift, 400));
 addEventListener('load', () => ScrollTrigger.refresh());
 
 /* ---------------- the guide: one bot that walks you through the whole page ---------------- */
-initGuide({ scrollToEl, reduced });
+initGuide({ scrollToEl, reduced, openBuilding, closeBuilding, chapters: TOUR.map((id) => buildings.find((b) => b.id === id)) });

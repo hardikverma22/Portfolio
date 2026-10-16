@@ -1415,3 +1415,14 @@ html.case-open .guide { display: none; }
 .g-say { font-size: 18px; margin-bottom: 10px; }
 .g-next, .g-back { font-size: 12.5px; padding: 8px 11px; }
 .g-bot .buddy-bot { width: 64px; height: 76px; }
+@media (min-aspect-ratio: 1/1) { .tp-next { display: none; } }
+
+/* guide motion is driven by GSAP; CSS only holds the resting states */
+.g-card { transition: none; animation: none !important; will-change: transform; }
+.guide.min .g-card { opacity: 0; visibility: hidden; transform: none; pointer-events: none; }
+.g-bot { position: relative; will-change: transform; }
+.g-prop { position: absolute; z-index: 2; left: -14px; top: 4px; width: 34px; height: 34px; display: grid; place-items: center; background: #fffaf0; border: 2.5px solid var(--ink); border-radius: 10px; box-shadow: 2px 2px 0 var(--ink); transform: rotate(-8deg); }
+.g-prop svg { width: 20px; height: 20px; }
+.g-prop .g-mk { width: 24px; height: 24px; border-radius: 6px; }
+.gw { display: inline-block; }
+@media (max-width: 760px) { .g-prop { width: 28px; height: 28px; left: -10px; } .g-prop svg { width: 16px; height: 16px; } .g-prop .g-mk { width: 20px; height: 20px; } }
