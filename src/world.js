@@ -4,62 +4,88 @@
 export const buildings = [
   {
     id: 'tcs', name: 'TCS', when: '2016–19', place: 'Chennai · Stockholm', x: 250, y: 462,
-    kicker: 'Chapter 1 · where it began',
-    title: 'Twelve apps, one tracking tool, and a winter in Stockholm.',
-    body: 'System Engineer at Tata Consultancy Services. Angular, Node, .NET Core and SQL Server, from schema to screen. Built a MEAN-stack tool used by more than a thousand colleagues, then ran a SAFe team on-site in Stockholm for H&M.',
-    stats: [['12', 'full-stack apps'], ['1,000+', 'colleagues on my tool'], ['1', 'SAFe team, on-site in Stockholm']],
-    notes: ['Star of the Month, a few times', 'On the Spot award, innovation'],
+    kicker: 'Chapter 1 · my first job',
+    role: 'System Engineer · TCS, working for H&M',
+    title: 'TCS taught me to always add something extra.',
+    paras: [
+      'I learned everything from scratch here. For **H&M** I built **12 season-planning tools** from zero, used to plan sizes, prices and stock for the next season. Angular, .NET Core and SQL Server.',
+      'I always looked for one extra thing to add. I learned the MEAN stack and built a tool to track those extras across the unit, and **10,000+ colleagues** ended up using it. Seeing people use something I built felt unreal.',
+      'In **Stockholm** I learned that process matters as much as code, and that how people treat each other at work matters as much as skill.',
+    ],
+    stats: [['12', 'tools built for H&M'], ['10,000+', 'colleagues used my side tool'], ['Sweden', 'on-site with H&M']],
+    notes: ['Star of the Month, a few times', 'Presented at large forums'],
     go: ['Walk the full journey', '#journey'],
   },
   {
     id: 'fidelity', name: 'Fidelity', when: '2019–24', place: 'Chennai', x: 560, y: 408,
-    kicker: 'Chapter 2 · the platform years',
-    title: 'Turned one-off client work into platforms.',
-    body: 'Lead Software Engineer on eMoney Advisor. Generic, reusable solutions replaced per-client custom work for clients such as Wells Fargo and PNC, which cut time-to-market by about 90%. Also: accessible report families, an AWS Lex + Kendra support bot, and tech talks to 100+ engineers.',
-    stats: [['~90%', 'faster time-to-market'], ['12+', 'initiatives led'], ['3', 'Impact / Eureka awards']],
-    notes: ['Promoted to Lead in Dec 2022', 'Tech talks to 100+ engineers'],
+    kicker: 'Chapter 2 · learning to lead',
+    role: 'Lead Software Engineer · eMoney Advisor',
+    title: 'Fidelity taught me what a team really is.',
+    paras: [
+      'I worked on **eMoney Advisor**, one of the best financial-advice platforms in the US. .NET APIs, and this is where I fell for **React and Next.js**.',
+      'I became tech lead for **12 engineers**. We had each other’s backs, at work and outside it, and it never felt like pressure. A daily **15-minute call** to teach each other something new kept the whole team growing.',
+    ],
+    stats: [['12', 'engineers I led'], ['~90%', 'faster time-to-market with reusable platforms'], ['3', 'Impact / Eureka awards']],
+    notes: ['Promoted to Lead, Dec 2022', 'Tech talks to 100+ engineers'],
     go: ['Read what people said', '#words'],
   },
   {
     id: 'lab', name: 'Walmart · AI agents', when: '2025–now', place: 'Walmart', x: 830, y: 444,
     kicker: 'Walmart · the agent lab',
-    title: 'Two agents, and the tooling around them.',
-    body: 'The agents: Grid, a super agent that triages an incident right inside the Slack thread before an engineer joins, and Delegation Hub, so an agent can shop for you without your password. The tooling: tokenOs, a token-efficiency layer for AI coding assistants, and mimo, which turns a demonstration into a reusable skill.',
-    stats: [['<5 min', 'to triage an incident'], ['~80%', 'fewer tokens'], ['Finalist', 'global hackathon 2026']],
-    notes: ['Supervisor + 5 sub-agents, with memory', 'Policy as data, not code'],
+    role: 'Staff Software Engineer · AI agents',
+    title: 'Walmart made me an AI advocate.',
+    paras: [
+      'Walmart runs on a tech-driven, AI-first culture, with AI in front of customers too. I built **Grid**, a super agent that triages incidents right in the Slack thread, and **Delegation Hub**, so an agent can shop for you safely.',
+      'I shipped features for Walmart’s super agents **Wibey** and **Code Puppy**, and built tools like **tokenOs** and **mimo**. That work is a big reason I was **promoted to Staff**.',
+    ],
+    stats: [['<5 min', 'to triage an incident, was 60–90'], ['~80%', 'fewer tokens with tokenOs'], ['Finalist', 'global tech hackathon 2026']],
+    notes: ['Supervisor + 5 sub-agents, with memory', 'Presented at big forums'],
     go: ['Walk into the lab', '#lab'],
   },
   {
-    id: 'tower', name: 'Walmart · Identity', when: '2024–now', place: 'Walmart Global Tech', x: 1090, y: 204,
-    kicker: 'Walmart · the tower with the lock',
-    title: 'Keeping millions of customers signed in.',
-    body: 'Staff Software Engineer at Walmart Global Tech. The identity platform behind sign-up, sign-in, two-factor, recovery and fraud-detection support, live in several countries and for partner brands. Chile went from zero to production in about three months.',
-    stats: [['Staff', 'promoted Sep 2026'], ['~3 mo', 'Chile, zero to live'], ['1,000+', 'incidents a week, worked by a skill']],
+    id: 'tower', name: 'Walmart · Identity', when: '2024–now', place: 'Bengaluru', x: 1090, y: 204,
+    kicker: 'Walmart · scale',
+    role: 'Profile, then Identity · International',
+    title: 'Walmart taught me what scale really means.',
+    paras: [
+      'I joined the **international profile team**: addresses, payment methods and everything in your account, across countries and brands, for **millions of customers**.',
+      'Then **identity**: sign-up, sign-in, passkeys and recovery. We took **Chile from zero to live in about three months**, and I saw how “customer first” and “everyday low price” turn into engineering choices.',
+    ],
+    stats: [['Millions', 'of customers'], ['~3 mo', 'Chile, zero to live'], ['Staff', 'promoted Sep 2026']],
     notes: ['Passwordless OTP + passkeys', 'Ship behind flags, keep a rollback'],
     go: ['Flip through the passport', '#passport'],
   },
   {
     id: 'press', name: 'Writing', when: '2026', place: 'Medium', x: 1298, y: 522,
-    kicker: 'After the day job · the press',
-    title: 'I write down what the agents taught me.',
-    body: 'Essays on agents, retrieval, governance and what happens behind a model’s answers, published on Medium and in Level Up Coding and AI in Plain English.',
+    kicker: 'After the day job · writing',
+    role: 'Medium · Level Up Coding · AI in Plain English',
+    title: 'Writing taught me to really understand things.',
+    paras: [
+      'I research a topic, try it myself, then write it down. If I can’t explain it simply, I don’t understand it yet.',
+      'Every essay made me more confident, at work and outside it.',
+    ],
     stats: [['10', 'essays in 2026'], ['~9 min', 'average read'], ['3', 'publications']],
     notes: ['Loop Engineering', 'Agent Gateways'],
     go: ['Read the paper', '#writing'],
   },
   {
     id: 'home', name: 'After hours', when: '', place: 'home, Bengaluru', x: 1466, y: 552,
-    kicker: 'After hours · home',
-    title: 'Things I build for fun, after the day job.',
-    body: 'Travel Planner AI for itineraries and packing lists, Voice Wise AI for turning voice notes into action items, a real-time 3D shoe configurator, collaborative docs and a few more. Small, shipped, and mostly live.',
-    stats: [['6', 'side projects'], ['5', 'live demos'], ['3', 'built on AI']],
-    notes: ['Next.js · Convex · Clerk', 'Three.js · Valtio'],
+    kicker: 'After hours · side projects',
+    role: 'Travel Planner AI, now part of Rutugo',
+    title: 'A side project taught me to ship like a founder.',
+    paras: [
+      'I built **Travel Planner AI** just to learn **Convex**, and became one of their early **Convex Champions**. It grew into a full SaaS: itineraries, weather, budgets, packing lists, expenses, collaborators and payments.',
+      '**Rutugo acquired it**, then brought me in to build more, like finding the cheapest flight and hotel links. I learned and earned from the same project, and that still drives me.',
+    ],
+    stats: [['Acquired', 'by Rutugo'], ['Convex', 'Champion'], ['6', 'side projects shipped']],
+    notes: ['Next.js · Convex · Clerk · Razorpay', 'AI tool calling'],
+    links: [['rutugo.com', 'https://rutugo.com/'], ['Convex Champions', 'https://www.convex.dev/champions']],
     go: ['See the side projects', '#after-hours'],
   },
 ];
 
 // The scroll-scrubbed story. [[text|doodle|tone]] marks a phrase that gets a hand-drawn mark.
-export const story = 'I started at TCS {{tcs}} in 2016, shipping twelve full-stack apps and running a team [[on-site for H&M in Stockholm|under|sun]] {{hm}}{{sweden}}. Then five years at Fidelity {{fidelity}}, turning one-off client work into [[reusable platforms|circle]]. Today I keep [[millions of people signed in|hilite|sky]] at Walmart {{walmart}}. Somewhere along the way I started teaching software to do [[the parts of the job nobody wants|strike]], and it became [[my favourite part.|under|rose]]';
+export const story = 'I started at TCS {{tcs}} in 2016, building tools for H&M {{hm}} and spending time [[on-site in Stockholm|under|sun]] {{sweden}}. At Fidelity {{fidelity}} I became a tech lead and learned [[what a team really is|circle]]. Today at Walmart {{walmart}} I keep [[millions of customers signed in|hilite|sky]] and build agents that do [[the parts of the job nobody wants|strike]]. On the side, one of my projects [[got acquired.|under|rose]]';
 
 export const stickies = [
   { t: 'Staff Software Engineer, since Sep 2026.', s: 'promotion', c: 'sun', r: -5 },
@@ -69,15 +95,16 @@ export const stickies = [
 
 // Highway milestones for the journey. km is just how far along the road the stone sits.
 export const milestones = [
-  { co: 'tcs', y: '2016', place: 'Chennai', t: 'Joined TCS', d: 'System Engineer. Twelve full-stack apps in three years, and a tool more than a thousand colleagues used.' },
-  { co: 'hm', y: '2018', place: 'Stockholm', t: 'Scrum Master, on-site', d: 'Ran a SAFe team on-site for H&M, the client side said “delivers fast”.' },
-  { co: 'fidelity', y: '2019', place: 'Chennai', t: 'Joined Fidelity', d: 'Third-party integrations into the eMoney Advisor platform.' },
-  { co: 'fidelity', y: '2022', place: 'Chennai', t: 'Lead Software Engineer', d: 'Reusable client solutions, ~90% faster time-to-market.' },
-  { co: 'walmart', y: '2024', place: 'Bengaluru', t: 'Joined Walmart', d: 'Accounts and identity, at platform scale.' },
-  { co: 'walmart', y: '2025', place: 'Bengaluru', t: 'Built the triage agent', d: 'An hour of incident investigation, down to about three minutes.' },
-  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Chile goes live', d: 'Shipped from Bengaluru: a brand-new market on the identity platform in about three months.' },
-  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Hackathon finalist', d: 'tokenOs: a Rust binary that cuts ~80% of tokens on repeated tasks.' },
-  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Staff Software Engineer', d: 'You are here. The road keeps going.' },
+  { co: 'tcs', y: '2016', place: 'Chennai', t: 'Joined TCS', d: 'First job. Built 12 season-planning tools for H&M from scratch, and a side tool 10,000+ colleagues used.' },
+  { co: 'hm', y: '2018', place: 'Stockholm', t: 'On-site for H&M', d: 'Learned that process and people matter as much as code.' },
+  { co: 'fidelity', y: '2019', place: 'Chennai', t: 'Joined Fidelity', d: 'Building for eMoney Advisor. Fell for React and Next.js.' },
+  { co: 'fidelity', y: '2022', place: 'Chennai', t: 'Tech lead', d: 'Led 12 engineers. Reusable platforms, ~90% faster time-to-market.' },
+  { co: 'home', y: '2024', place: 'Chennai', t: 'Travel Planner AI', d: 'Built it to learn Convex, became a Convex Champion. Later acquired by Rutugo.' },
+  { co: 'walmart', y: '2024', place: 'Bengaluru', t: 'Joined Walmart', d: 'Profile and payments for millions of customers, across countries.' },
+  { co: 'walmart', y: '2025', place: 'Bengaluru', t: 'Built Grid', d: 'A super agent that triages incidents in Slack. 60–90 minutes down to under 5.' },
+  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Chile goes live', d: 'A brand-new market on the identity platform in about three months.' },
+  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Hackathon finalist', d: 'tokenOs cuts ~80% of tokens on repeated tasks.' },
+  { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Staff Software Engineer', d: 'Promoted for my work on AI. The road keeps going.' },
 ];
 
 // Vending-machine labels for the four agents.

@@ -1356,3 +1356,16 @@ html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .
   .sn-dots { justify-self: center; padding: 5px 9px; border-radius: 99px; background: rgba(255, 250, 240, .85); border: 1.5px solid var(--ink); }
   [data-mode='night'] .sn-dots { background: rgba(29, 23, 69, .8); border-color: #fff4dd; }
 }
+
+/* chapter card: name, role, one lesson, short paragraphs, three numbers */
+.tp-name { font: 800 clamp(30px, 3vw, 40px)/1 var(--f-display); font-variation-settings: 'SOFT' 100; letter-spacing: -.02em; margin: 6px 0 4px; }
+.tp-role { font: 700 13.5px/1.35 var(--f-body); color: var(--ink-2); margin: 0 0 16px; }
+.tp-t { font: 800 20px/1.2 var(--f-body); margin: 0 0 10px; }
+.tp-b { font-size: 15px; line-height: 1.55; margin: 0 0 10px; }
+.tp-b b { color: var(--ink); font-weight: 800; }
+.tp-b:last-of-type { margin-bottom: 18px; }
+.tp-stats div { background: #fde9e3; border-color: transparent; }
+.tp-stats div:nth-child(2) { background: #fff3cf; } .tp-stats div:nth-child(3) { background: #e3f1ea; }
+.tp-links { display: flex; flex-wrap: wrap; gap: 8px; margin: -6px 0 18px; }
+.tp-links a { font: 700 13px var(--f-mono); color: var(--ink); padding: 5px 10px; border: 2px solid var(--ink); border-radius: 99px; text-decoration: none; background: #fff; }
+.tp-links a:hover { background: var(--sun); }

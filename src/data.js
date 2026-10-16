@@ -195,7 +195,7 @@ export const commits = [
 
 
 export const projects = [
-  { name: 'Travel Planner AI', alias: 'Rutugo', what: 'Itineraries, packing lists and places to visit, tailored by AI.', stack: 'Next.js · OpenAI · Convex · Clerk', code: 'https://github.com/hardikverma22/travel-planner-ai', live: 'https://travel-plannerai.vercel.app/', hue: 18 },
+  { name: 'Travel Planner AI', alias: 'Rutugo', what: 'A full travel-planning SaaS. Made me a Convex Champion, then Rutugo acquired it.', stack: 'Next.js · Convex · Clerk · Razorpay · AI', code: 'https://github.com/hardikverma22/travel-planner-ai', live: 'https://rutugo.com/', hue: 18 },
   { name: 'Voice Wise AI', what: 'Record a voice note; get transcript, summary and action items.', stack: 'Next.js · Whisper · Together.ai · Convex', code: 'https://github.com/hardikverma22/VoiceWiseAI', hue: 200 },
   { name: 'Shoe Forge', what: 'Real-time 3D shoe configurator for textures and colours.', stack: 'Three.js · React · Valtio · Framer Motion', code: 'https://github.com/hardikverma22/shoe-forge', live: 'https://hardikverma22.github.io/shoe-forge', hue: 140 },
   { name: 'HDocs', what: 'Create, edit and share documents collaboratively.', stack: 'React · Quill · Firebase · AWS API Gateway', code: 'https://github.com/hardikverma22/HDocs', live: 'https://hdocs.netlify.app/', hue: 260 },

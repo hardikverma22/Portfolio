@@ -199,11 +199,13 @@ function openBuilding(id) {
   panel.innerHTML = `
     <button class="tp-x" id="tp-x" aria-label="Back to town">✕</button>
     <p class="tp-k">${mark(pinMarks[b.id], 'tp-mk')}${esc(b.kicker)}</p>
-    <p class="tp-when">${[b.when, b.place].filter(Boolean).map(esc).join(' · ')}</p>
-    <h3 class="tp-t">${esc(b.title)}</h3>
-    <p class="tp-b">${esc(b.body)}</p>
+    <h3 class="tp-name">${esc(b.name.replace('Walmart · ', 'Walmart '))}</h3>
+    <p class="tp-role">${esc(b.role)}${b.when ? ` · ${esc(b.when)}` : ''}</p>
+    <p class="tp-t">${esc(b.title)}</p>
+    ${b.paras.map((t) => `<p class="tp-b">${esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')}</p>`).join('')}
     <div class="tp-stats">${b.stats.map(([k, v]) => `<div><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join('')}</div>
     <div class="tp-notes">${b.notes.map((n) => `<span>${esc(n)}</span>`).join('')}</div>
+    ${b.links ? `<p class="tp-links">${b.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join('')}</p>` : ''}
     <div class="tp-go"><a class="btn btn-ink" href="${b.go[1]}">${esc(b.go[0])} →</a>${next ? `<button class="btn btn-paper tp-next" type="button" data-next="${next.id}">Next stop: ${esc(next.name)} →</button>` : ''}</div>`;
   panel.classList.add('open');
   panel.removeAttribute('inert');
@@ -303,7 +305,7 @@ $('#jr-cities').innerHTML = cities.map((c) => `<div class="city" data-city="${c}
   $('#jr-hills').innerHTML = `<svg viewBox="0 0 6000 400" preserveAspectRatio="none"><path d="${d}" fill="var(--hill-near)" stroke="var(--ink)" stroke-width="3"/>${trees}</svg>`;
 })();
 // progress strip: one dot per stop, coloured by company
-const coColour = { tcs: '#EE3984', hm: '#E50010', fidelity: '#368727', walmart: '#0071CE' };
+const coColour = { tcs: '#EE3984', hm: '#E50010', fidelity: '#368727', walmart: '#0071CE', home: '#ef6a5b' };
 $('#jr-meter').innerHTML = `<span class="jm-y" id="jm-y"></span><span class="jm-dots">${milestones.map((m, i) => `<i style="--c:${coColour[m.co]}" data-i="${i}"></i>`).join('')}</span>`;
 const jCard = $('#jr-card'), stones = $$('.stone'), jDots = $$('#jr-meter i'), jWheels = $$('#jr-auto .wheel'), jAuto = $('#jr-auto');
 let jIdx = -1, jCity = '', moveT = 0;
