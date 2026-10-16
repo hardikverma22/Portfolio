@@ -4,8 +4,11 @@
 // drives it as you scroll, easing toward where it should be every frame, like a vehicle would.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { buddySvg } from './town.js';
 
 const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const pageTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
 const NS = 'http://www.w3.org/2000/svg';
 
 // the auto from above, nose down the road: three wheels, a ribbed canopy, the bot at the wheel looking
@@ -19,6 +22,8 @@ const AUTO = `<svg viewBox="-32 -56 64 136">
   <path class="ride-beam" d="M-5 41 L-22 80 H22 L5 41 Z" fill="url(#ride-beam)"/>
   <g class="ride-speed" stroke="#fffaf0" stroke-width="2.6" stroke-linecap="round"><path d="M-14 -50 v-14"/><path d="M14 -50 v-10"/><path d="M0 -52 v-18"/></g>
   <g class="ride-brake"><circle cx="-11" cy="-45" r="8" fill="url(#ride-red)"/><circle cx="11" cy="-45" r="8" fill="url(#ride-red)"/></g>
+  <circle class="ride-ring" cx="0" cy="0" r="40" fill="rgba(255,201,74,.18)" stroke="#ffc94a" stroke-width="3"/>
+  <g class="ride-waves" opacity="0" fill="none" stroke="#211c33" stroke-width="2.4" stroke-linecap="round"><path d="M-8 50 q8 6 16 0"/><path d="M-13 57 q13 9 26 0"/><path d="M-18 64 q18 12 36 0"/></g>
   <g class="ride-body">
     <ellipse cx="4" cy="2" rx="22" ry="44" fill="rgba(20,16,40,.22)"/>
     <rect x="-23" y="-34" width="7" height="16" rx="3" fill="#2a2638"/><rect x="16" y="-34" width="7" height="16" rx="3" fill="#2a2638"/>
@@ -32,12 +37,12 @@ const AUTO = `<svg viewBox="-32 -56 64 136">
     <path d="M-15 -28 H15 M-15 -17 H15 M-15 -6 H15 M-15 5 H15" stroke="#211c33" stroke-width="1.4" opacity=".22"/>
     <path d="M-11 -36 Q-11 -38 -9 -38 H-3" stroke="#fff6c4" stroke-width="2.4" stroke-linecap="round" fill="none"/>
     <rect x="-11.5" y="17" width="23" height="9" rx="3.5" fill="#cfe8f7" stroke="#211c33" stroke-width="2"/>
-    <g transform="translate(0 19)"><rect x="-6" y="-1" width="12" height="9" rx="3" fill="#fff8e6" stroke="#211c33" stroke-width="1.6"/><rect x="-4.2" y="1" width="8.4" height="4.6" rx="1.4" fill="#211c33"/><circle class="ride-eye" cx="-1.8" cy="3.3" r="1.1" fill="#7dffb0"/><circle class="ride-eye" cx="1.8" cy="3.3" r="1.1" fill="#7dffb0"/></g>
+    <g transform="translate(0 19)"><rect x="-6" y="-1" width="12" height="9" rx="3" fill="#fff8e6" stroke="#211c33" stroke-width="1.6"/><rect x="-4.2" y="1" width="8.4" height="4.6" rx="1.4" fill="#211c33"/><circle class="ride-eye" cx="-1.8" cy="3.3" r="1.1" fill="#7dffb0"/><circle class="ride-eye" cx="1.8" cy="3.3" r="1.1" fill="#7dffb0"/><path class="ride-happy" d="M-2.9 3.9 q1.1 -1.7 2.2 0 M0.7 3.9 q1.1 -1.7 2.2 0" fill="none" stroke="#7dffb0" stroke-width="1.1" stroke-linecap="round" opacity="0"/></g>
     <path d="M-8 26 l3 2 M8 26 l-3 2" stroke="#211c33" stroke-width="2" stroke-linecap="round"/>
     <path d="M-19 20 h-5" stroke="#211c33" stroke-width="2"/><circle cx="-25" cy="20" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
     <path d="M19 20 h5" stroke="#211c33" stroke-width="2"/><circle cx="25" cy="20" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
-    <path d="M0 -5 v-10" stroke="#211c33" stroke-width="2.2" stroke-linecap="round"/>
-    <circle class="ride-ball" cx="0" cy="-16" r="4" fill="#ef6a5b" stroke="#211c33" stroke-width="2"/><circle cx="-1.3" cy="-17.3" r="1.1" fill="#fff" opacity=".8"/>
+    <g class="ride-ant"><path d="M0 -5 v-10" stroke="#211c33" stroke-width="2.2" stroke-linecap="round"/>
+    <circle class="ride-ball" cx="0" cy="-16" r="4" fill="#ef6a5b" stroke="#211c33" stroke-width="2"/><circle cx="-1.3" cy="-17.3" r="1.1" fill="#fff" opacity=".8"/></g>
     <circle class="ind ind-l" cx="16" cy="28" r="2.6" fill="#ffb020"/><circle class="ind ind-r" cx="-16" cy="28" r="2.6" fill="#ffb020"/>
     <circle cx="0" cy="39.5" r="3" fill="#fff3c4" stroke="#211c33" stroke-width="1.6"/>
   </g>
@@ -163,8 +168,10 @@ export function initGuide({ reduced }) {
   function frame() {
     if (!built) return;
     const want = goal();
-    // jumping from one road to the other happens off-screen, in one go
-    if ((u <= A.L) !== (want <= A.L)) u = want;
+    // switching roads happens off-screen: going down it re-enters at the start of the second road,
+    // going back up it reappears at the end of the first, and drives on from there
+    if (u <= A.L && want > A.L) u = A.L + 0.5;
+    else if (u > A.L && want <= A.L) u = A.L;
     const diff = want - u;
     u = reduced || Math.abs(diff) < 0.3 ? want : u + diff * 0.12;
     const p = where(u), h = heading(u) ?? rot;
@@ -184,6 +191,7 @@ export function initGuide({ reduced }) {
       const L = t.getTotalLength(), done = t.dataset.piece === 'A' ? Math.min(L, u) : Math.max(0, u - A.L);
       t.style.strokeDasharray = `${L} ${L}`; t.style.strokeDashoffset = `${L - Math.min(L, done)}`;
     });
+    ending(want);
   }
   function puff(p) {
     const r = (rot + 90) * Math.PI / 180, bx = p.x - Math.cos(r) * 40, by = p.y - Math.sin(r) * 40;
@@ -192,6 +200,144 @@ export function initGuide({ reduced }) {
     route.appendChild(el);
     gsap.fromTo(el, { x: bx, y: by, scale: 0.4, autoAlpha: 0.7 }, { x: bx + gsap.utils.random(-16, 16), y: by - 20, scale: 1.8, autoAlpha: 0, duration: 0.9, ease: 'power1.out', onComplete: () => el.remove() });
   }
+
+  /* ---------- micro-interactions ---------- */
+  const shown = () => getComputedStyle(ride).opacity > 0.5 && ride.getBoundingClientRect().bottom > 0;
+
+  // 1. Tap the auto and it honks: a soft beep-beep, a bounce, a bubble, the bot's eyes light up
+  // Autos in India honk with a rubber bulb horn: a soft, nasal "paam paam". This builds one in Web Audio:
+  // a reedy tone that squeezes up in pitch and sags as the bulb empties, through a horn-shaped filter.
+  let audio = null;
+  function bulbHorn() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
+      const t0 = audio.currentTime + 0.02;
+      const out = audio.createGain();
+      out.gain.value = 0.9;
+      const body = audio.createBiquadFilter(); body.type = 'bandpass'; body.frequency.value = 1100; body.Q.value = 1.6;
+      const soft = audio.createBiquadFilter(); soft.type = 'lowpass'; soft.frequency.value = 2600;
+      body.connect(soft).connect(out).connect(audio.destination);
+      [[0, 392, 0.15], [0.21, 440, 0.19]].forEach(([dt, f, len]) => {
+        const t = t0 + dt, g = audio.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.11, t + 0.025);
+        g.gain.setValueAtTime(0.11, t + len * 0.55);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+        g.connect(body);
+        for (const [type, mul, lvl] of [['sawtooth', 1, 1], ['square', 2.01, 0.35]]) {
+          const o = audio.createOscillator(), og = audio.createGain();
+          o.type = type; og.gain.value = lvl;
+          o.frequency.setValueAtTime(f * mul * 0.9, t);
+          o.frequency.exponentialRampToValueAtTime(f * mul * 1.04, t + 0.04);
+          o.frequency.exponentialRampToValueAtTime(f * mul * 0.95, t + len);
+          o.connect(og).connect(g);
+          o.start(t); o.stop(t + len + 0.02);
+        }
+      });
+    } catch (_) { /* no sound is fine */ }
+  }
+  // tap: the auto squashes and springs back, its antenna wobbles, the bot grins and the horn goes paam paam
+  let honking = false;
+  function honk() {
+    if (honking) return;
+    honking = true;
+    setTimeout(() => { honking = false; }, 700);
+    bulbHorn();
+    const p = where(u);
+    const b = document.createElement('span');
+    b.className = 'ride-honk';
+    b.innerHTML = 'paam paam!';
+    route.appendChild(b);
+    if (reduced) { gsap.set(b, { x: p.x, y: p.y - 80, xPercent: -50 }); setTimeout(() => b.remove(), 900); return; }
+    gsap.timeline({ onComplete: () => b.remove() })
+      .fromTo(b, { x: p.x, y: p.y - 40, xPercent: -50, scale: 0.3, rotation: -8, autoAlpha: 0 }, { y: p.y - 84, scale: 1, rotation: 0, autoAlpha: 1, duration: 0.42, ease: 'back.out(2.8)' })
+      .to(b, { y: p.y - 100, autoAlpha: 0, duration: 0.35, delay: 0.5, ease: 'power1.in' });
+    gsap.timeline()
+      .to(autoSvg, { scaleX: 1.14, scaleY: 0.84, duration: 0.07, ease: 'power2.out', transformOrigin: '50% 50%' })
+      .to(autoSvg, { scaleX: 0.93, scaleY: 1.12, duration: 0.11, ease: 'power2.out' })
+      .to(autoSvg, { scaleX: 1, scaleY: 1, duration: 0.7, ease: 'elastic.out(1, 0.32)', clearProps: 'transform' });
+    gsap.fromTo($('.ride-ant', autoSvg), { rotation: -32, svgOrigin: '0 -5' }, { rotation: 0, duration: 1, ease: 'elastic.out(1.2, 0.22)' });
+    gsap.timeline()
+      .set($$('.ride-eye', autoSvg), { opacity: 0 }).set($('.ride-happy', autoSvg), { opacity: 1 })
+      .set($$('.ride-eye', autoSvg), { opacity: 1 }, 0.9).set($('.ride-happy', autoSvg), { opacity: 0 }, 0.9);
+    gsap.fromTo($('.ride-waves', autoSvg), { opacity: 1, scale: 0.5, svgOrigin: '0 46' }, { opacity: 0, scale: 1.35, duration: 0.42, ease: 'power1.out', repeat: 1 });
+    puff(p); setTimeout(() => puff(where(u)), 120);
+  }
+  const NOT_THE_AUTO = 'a, button, input, textarea, select, label, [role="button"], [tabindex]';
+  const overRide = (x, y) => { const r = ride.getBoundingClientRect(); return x >= r.left - 8 && x <= r.right + 8 && y >= r.top - 8 && y <= r.bottom + 8; };
+  document.addEventListener('click', (e) => { if (!e.target.closest(NOT_THE_AUTO) && shown() && overRide(e.clientX, e.clientY)) honk(); });
+  let hoverQueued = false;
+  document.addEventListener('pointermove', (e) => {
+    if (hoverQueued) return;
+    hoverQueued = true;
+    requestAnimationFrame(() => {
+      hoverQueued = false;
+      document.documentElement.classList.toggle('ride-hover', !e.target.closest?.(NOT_THE_AUTO) && shown() && overRide(e.clientX, e.clientY));
+    });
+  });
+
+  // 3. The end of the road: parked in the bay, the bot hops out, walks to the postbox and posts a letter
+  const walker = document.createElement('div');
+  walker.className = 'ride-walker';
+  walker.setAttribute('aria-hidden', 'true');
+  walker.innerHTML = buddySvg();
+  const letter = document.createElement('div');
+  letter.className = 'ride-letter';
+  letter.setAttribute('aria-hidden', 'true');
+  letter.innerHTML = '<svg viewBox="0 0 30 20"><rect x="1.5" y="1.5" width="27" height="17" rx="2" fill="#fffaf0" stroke="#211c33" stroke-width="2"/><path d="M2.5 3 L15 11.5 L27.5 3" fill="none" stroke="#211c33" stroke-width="1.8" stroke-linejoin="round"/><rect x="21" y="4" width="5" height="6" rx="1" fill="#ef6a5b"/></svg>';
+  document.body.append(walker, letter);
+  let endState = 'away', parkedSince = 0, endTl = null;
+  function resetEnding() {
+    endTl?.kill(); endTl = null;
+    gsap.set([walker, letter], { autoAlpha: 0 });
+    walker.classList.remove('walking');
+    endState = 'away';
+  }
+  function playEnding() {
+    endState = 'playing';
+    if (reduced || !postbox) { endState = 'done'; return; }
+    const car = where(A.L + B.L), pb = postbox.getBoundingClientRect();
+    const ground = pb.bottom + scrollY - 6;
+    const from = car.x + 22, to = pb.left + scrollX + pb.width * 0.22;
+    const slot = { x: pb.left + scrollX + pb.width / 2, y: pb.top + scrollY + pb.height * 0.44 };
+    const walk = Math.abs(to - from) / 170;
+    endTl = gsap.timeline({ onComplete: () => { endState = 'done'; } })
+      .set(walker, { x: from, y: ground, scaleX: 1, autoAlpha: 0, scale: 0.5 })
+      // hops out of the auto
+      .to(walker, { autoAlpha: 1, scale: 1, y: ground - 16, duration: 0.25, ease: 'power2.out' })
+      .to(walker, { y: ground, duration: 0.3, ease: 'bounce.out' })
+      // walks over to the postbox
+      .call(() => walker.classList.add('walking'))
+      .to(walker, { x: to, duration: walk, ease: 'none' })
+      .call(() => walker.classList.remove('walking'))
+      // throws the letter in an arc into the slot
+      .set(letter, { x: to + 10, y: ground - 40, autoAlpha: 1, scale: 1, rotation: -10 })
+      .to(letter, { x: slot.x, rotation: 340, scale: 0.6, duration: 0.75, ease: 'none' }, '>')
+      .to(letter, { y: Math.min(slot.y, ground - 40) - 70, duration: 0.38, ease: 'power2.out' }, '<')
+      .to(letter, { y: slot.y, duration: 0.37, ease: 'power2.in' }, '>')
+      .set(letter, { autoAlpha: 0 })
+      .call(() => { postbox.classList.add('posting'); setTimeout(() => postbox.classList.remove('posting'), 1300); postbox.classList.add('tip-nudge'); setTimeout(() => postbox.classList.remove('tip-nudge'), 1600); })
+      // a happy hop, then back into the auto
+      .to(walker, { y: ground - 18, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 1 }, '+=0.25')
+      .set(walker, { scaleX: -1 })
+      .call(() => walker.classList.add('walking'))
+      .to(walker, { x: from, duration: walk, ease: 'none' }, '+=0.2')
+      .call(() => walker.classList.remove('walking'))
+      .to(walker, { autoAlpha: 0, scale: 0.5, y: ground - 10, duration: 0.25, ease: 'power2.in' });
+  }
+  function ending(want) {
+    const total = A.L + B.L, parked = want >= total - 1 && Math.abs(u - total) < 1.5;
+    if (parked) {
+      if (endState !== 'away') return;
+      if (!parkedSince) parkedSince = performance.now();
+      else if (performance.now() - parkedSince > 450) playEnding();
+    } else {
+      parkedSince = 0;
+      if (endState !== 'away' && want < total - 40) resetEnding();
+    }
+  }
+  resetEnding();
 
   // the nav follows along
   let current = -2;

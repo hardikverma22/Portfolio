@@ -361,7 +361,7 @@ function street() {
   ${chaiCart()}
   <g fill="var(--lane)" opacity=".8">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="1398" y="${727 + i * 14}" width="58" height="8" rx="1"/>`).join('')}</g>
   <g transform="translate(0 764)">${scooter()}</g>
-  <g transform="translate(0 810)">${autoRickshaw()}</g>
+  <g id="town-auto" transform="translate(0 810)">${autoRickshaw()}</g>
   </g>
   <g class="lights">${cones}${Array.from({ length: 9 }, (_, i) => `<circle class="lit fairy" style="--wd:${(0.9 + i * 0.05).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0'][i % 3]};--fd:${(i * 0.3).toFixed(2)}s" cx="${632 + i * 10}" cy="${650 + Math.sin(i / 8 * Math.PI) * 5}" r="2.6"/>`).join('')}</g>
 </svg>`;

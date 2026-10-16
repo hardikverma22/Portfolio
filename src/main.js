@@ -102,7 +102,7 @@ $('#pins').innerHTML = buildings.map((b, i) => `
 const tick$ = $('.tick-t');
 if (tick$) $('.ticker').style.setProperty('--tw', (tick$.getComputedTextLength() / 2).toFixed(1));
 // chapters link to each other in the order they happened
-const TOUR = ['tcs', 'fidelity', 'tower', 'lab', 'press', 'home'];
+const TOUR = ['tcs', 'fidelity', 'lab', 'tower', 'press', 'home']; // left to right along the street
 
 
 // mouse parallax: each layer drifts by its depth
@@ -187,15 +187,17 @@ function openBuilding(id) {
   const r = scene.getBoundingClientRect();
   const W = scene.offsetWidth, H = scene.offsetHeight;
   const narrow = innerWidth < 760;
-  const scale = id === 'tower' ? (narrow ? 1.25 : 1.45) : (narrow ? 1.7 : 2.1);
-  const px = (b.x / 1600) * W, py = (((b.y + 700) / 2) / 900) * H;
-  const sx = narrow ? innerWidth * 0.5 : innerWidth * 0.66, sy = narrow ? innerHeight * 0.3 : innerHeight * 0.56;
+  const withAuto = townAuto.classList.contains('touring');
+  const scale = id === 'tower' ? (narrow ? 1.2 : 1.35) : withAuto ? (narrow ? 1.45 : 1.6) : (narrow ? 1.7 : 2.1);
+  const px = (b.x / 1600) * W, py = (((b.y + (withAuto ? 860 : 700)) / 2) / 900) * H;
+  const sx = narrow ? innerWidth * 0.5 : innerWidth * 0.66, sy = narrow ? innerHeight * 0.3 : innerHeight * (withAuto ? 0.52 : 0.56);
   gsap.to(cam, { x: sx - r.left - px * scale, y: sy - r.top - py * scale, scale, duration: 1.3, ease: 'power3.inOut' });
   gsap.to(['#hero-copy', '#fly-cue', '#street-nav'], { autoAlpha: 0, duration: 0.4 });
   cam.classList.add('focus');
   $$('.bld, .pin', cam).forEach((el) => el.classList.toggle('on', el.dataset.id === id));
   panel.innerHTML = `
     <button class="tp-x" id="tp-x" aria-label="Back to town">✕</button>
+    ${touring ? `<p class="tp-stop">Stop ${TOUR.indexOf(id) + 1} of ${TOUR.length} <span>${TOUR.map((t) => `<i class="${t === id ? 'on' : TOUR.indexOf(t) < TOUR.indexOf(id) ? 'past' : ''}"></i>`).join('')}</span></p>` : ''}
     <p class="tp-k">${mark(pinMarks[b.id], 'tp-mk')}${esc(b.kicker)}</p>
     <h3 class="tp-name">${esc(b.name.replace('Walmart · ', 'Walmart '))}</h3>
     <p class="tp-role">${esc(b.role)}${b.when ? ` · ${esc(b.when)}` : ''}</p>
@@ -203,18 +205,22 @@ function openBuilding(id) {
     ${b.paras.map((t) => `<p class="tp-b">${esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')}</p>`).join('')}
     <div class="tp-stats">${b.stats.map(([k, v]) => `<div><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join('')}</div>
     ${b.links ? `<p class="tp-links">${b.links.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join('')}</p>` : ''}
-    <div class="tp-go"><a class="btn btn-ink" href="${b.go[1]}">${esc(b.go[0])} →</a>${next ? `<button class="btn btn-paper tp-next" type="button" data-next="${next.id}">Next stop: ${esc(next.name)} →</button>` : ''}</div>`;
+    <div class="tp-go">${touring
+      ? `<button class="btn btn-ink tp-next" type="button" data-next="${next ? next.id : '__ride'}">${next ? `Next stop: ${esc(next.name.replace('Walmart · ', ''))} →` : 'Continue the ride ↓'}</button><a class="btn btn-paper" href="${b.go[1]}">${esc(b.go[0])}</a>`
+      : `<a class="btn btn-ink" href="${b.go[1]}">${esc(b.go[0])} →</a>${next ? `<button class="btn btn-paper tp-next" type="button" data-next="${next.id}">Next stop: ${esc(next.name.replace('Walmart · ', ''))} →</button>` : ''}`}</div>`;
   panel.classList.add('open');
   panel.removeAttribute('inert');
   panel.setAttribute('aria-hidden', 'false');
   $('#tp-x').addEventListener('click', closeBuilding);
-  $('.tp-next', panel)?.addEventListener('click', (e) => openBuilding(e.currentTarget.dataset.next));
+  $('.tp-next', panel)?.addEventListener('click', (e) => tourTo(e.currentTarget.dataset.next));
   setTimeout(() => $('#tp-x')?.focus({ preventScroll: true }), 500);
   gsap.from('.tp-stats div', { y: 20, autoAlpha: 0, stagger: 0.06, delay: 0.45, ease: 'back.out(2)' });
   document.dispatchEvent(new CustomEvent('town', { detail: { open: id } }));
 }
 function closeBuilding() {
   if (!townOpen) return;
+  touring = false;
+  if (townAuto.classList.contains('touring')) releaseAuto();
   const was = townOpen;
   townOpen = null;
   gsap.to(cam, { x: 0, y: 0, scale: 1, duration: 1.1, ease: 'power3.inOut' });
@@ -227,6 +233,76 @@ function closeBuilding() {
   $(`.pin[data-id="${was}"]`)?.focus({ preventScroll: true });
   document.dispatchEvent(new CustomEvent('town', { detail: { open: null } }));
 }
+/* ---------------- the town tour: the auto drives from building to building ---------------- */
+// Take the tour: the town's auto stops its loop, drives in from the left and pulls up at each building
+// in turn while its chapter opens. After the last one it drives off and the page ride carries on.
+let touring = false;
+// The town auto is driven from here all the time: it cruises along the street at an easy pace, the tour
+// pulls it up at each building, and afterwards it eases back into cruising from wherever it stopped.
+const townAuto = $('#town-auto'), ta = { x: 350 };
+const CRUISE = 150; // scene units per second
+// The street is drawn wider than the scene, so a vehicle must wrap just past the edges of the *window*,
+// not the scene, or it pops in mid-street. These are those edges in scene units, kept up to date.
+const edges = { start: -1000, end: 2600 };
+function measureEdges() {
+  const r = scene.getBoundingClientRect(), k = 1600 / r.width;
+  edges.start = (0 - r.left) * k - 240;
+  edges.end = (innerWidth - r.left) * k + 240;
+  const sc = $('.scooter');
+  if (sc) {
+    sc.style.setProperty('--scoot-from', `${edges.end.toFixed(0)}px`);
+    sc.style.setProperty('--scoot-to', `${(edges.start + 80).toFixed(0)}px`);
+    sc.style.setProperty('--scoot-dur', `${((edges.end - edges.start) / 175).toFixed(1)}s`);
+  }
+}
+measureEdges();
+addEventListener('resize', measureEdges);
+const placeAuto = () => townAuto.setAttribute('transform', `translate(${ta.x.toFixed(1)} 810)`);
+function cruise() {
+  if (reduced) return;
+  if (ta.x > edges.end) ta.x = edges.start;
+  gsap.to(ta, { x: edges.end, duration: Math.max(0.1, (edges.end - ta.x) / CRUISE), ease: 'none', onUpdate: placeAuto, onComplete: () => { measureEdges(); ta.x = edges.start; cruise(); } });
+}
+placeAuto();
+cruise();
+function driveAuto(x, done) {
+  townAuto.classList.add('touring');
+  gsap.killTweensOf(ta);
+  const d = Math.abs(x - ta.x);
+  if (reduced) { ta.x = x; placeAuto(); done?.(); return; }
+  gsap.to(ta, { x, duration: gsap.utils.clamp(0.9, 2.4, d / 520), ease: 'power2.inOut', onUpdate: placeAuto, onComplete: done });
+}
+const stopAt = (id) => buildings.find((b) => b.id === id).x - 30;
+// pulls away gently from the stop and settles back into its usual cruise
+function releaseAuto() {
+  townAuto.classList.remove('touring');
+  gsap.killTweensOf(ta);
+  if (reduced) return;
+  gsap.to(ta, { x: ta.x + 90, duration: 1.2, ease: 'power1.in', onUpdate: placeAuto, onComplete: cruise });
+}
+function tourTo(id) {
+  if (id === '__ride') {
+    closeBuilding();
+    setTimeout(() => scrollToEl('#story'), 900);
+    return;
+  }
+  driveAuto(stopAt(id));
+  openBuilding(id);
+}
+$('#tour-btn').addEventListener('click', () => {
+  touring = true;
+  // the auto slips out of view, reappears at the left edge of town and drives in to the first stop
+  const go = () => {
+    gsap.killTweensOf(ta);
+    townAuto.classList.add('touring');
+    gsap.to(townAuto, { opacity: 0, duration: reduced ? 0 : 0.2, onComplete: () => {
+      ta.x = -260; placeAuto();
+      gsap.set(townAuto, { opacity: 1 });
+      tourTo(TOUR[0]);
+    } });
+  };
+  if (scrollY > 40) { scrollToEl(document.body); setTimeout(go, 900); } else go();
+});
 cam.addEventListener('click', (e) => {
   if (dragMoved) { dragMoved = false; return; }
   const t = e.target.closest('.pin, .bld');

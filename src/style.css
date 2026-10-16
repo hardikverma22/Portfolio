@@ -309,7 +309,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes sip { 0%, 60%, 100% { rotate: 0deg; } 70%, 85% { rotate: -6deg; } }
 .auto { animation: drive 24s linear infinite; animation-delay: -9s; }
 @keyframes drive { from { transform: translateX(-1000px); } to { transform: translateX(2600px); } }
-.scooter { animation: drive 17s linear infinite reverse; animation-delay: -3s; }
+.scooter { animation: scoot var(--scoot-dur, 17s) linear infinite; animation-delay: -5s; }
+@keyframes scoot { from { transform: translateX(var(--scoot-from, 2600px)); } to { transform: translateX(var(--scoot-to, -1000px)); } }
 .scooter .auto-bob { transform: scaleX(-1); }
 .bus { animation: bus 34s linear infinite; animation-delay: -6s; }
 @keyframes bus { 0% { transform: translateX(1820px); } 45%, 100% { transform: translateX(-220px); } }
@@ -1417,3 +1418,28 @@ html.case-open .ride { visibility: hidden; }
 .ride-eye { animation: rideblink 4s steps(1) infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes rideblink { 0%, 94% { transform: scaleY(1); } 95%, 98% { transform: scaleY(.15); } }
 @media (prefers-reduced-motion: reduce) { .ride svg .ride-body, .ride-eye, .ride-speed { animation: none !important; } }
+
+/* town tour */
+.btn-sun { background: var(--sun); color: var(--ink); }
+#town-auto .auto { animation: none; }
+.tp-stop { display: flex; align-items: center; gap: 10px; margin: 0 40px 10px 0; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); }
+.tp-stop span { display: flex; gap: 4px; }
+.tp-stop i { width: 16px; height: 4px; border-radius: 4px; background: #e6dccb; }
+.tp-stop i.past { background: #c9bda8; } .tp-stop i.on { background: var(--rose); width: 26px; }
+
+/* ride micro-interactions */
+html.ride-hover, html.ride-hover body { cursor: pointer; }
+.ride-honk { position: absolute; z-index: 6; top: 0; left: 0; padding: 6px 12px 5px; white-space: nowrap; font: 700 20px/1 var(--f-hand); color: var(--ink); background: var(--sun); border: 2.5px solid var(--ink); border-radius: 14px 14px 14px 4px; box-shadow: 3px 3px 0 var(--ink); pointer-events: none; }
+.ride-ring { opacity: 0; transform-box: fill-box; transform-origin: center; transition: opacity .25s; }
+html.ride-hover .ride-ring { opacity: 1; animation: ridering 1.1s ease-out infinite; }
+@keyframes ridering { 0% { transform: scale(.85); } 70% { transform: scale(1.08); opacity: .9; } 100% { transform: scale(1.12); opacity: 0; } }
+html.ride-hover .ride svg { filter: drop-shadow(0 4px 6px rgba(33, 28, 51, .25)); }
+.ride-walker { position: absolute; z-index: 3; top: 0; left: 0; width: 38px; height: 46px; margin: -46px 0 0 -19px; pointer-events: none; opacity: 0; visibility: hidden; }
+.ride-walker svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.ride-walker.walking svg { animation: walkbob .22s ease-in-out infinite alternate; }
+@keyframes walkbob { from { translate: 0 0; } to { translate: 0 -3px; } }
+.ride-letter { position: absolute; z-index: 3; top: 0; left: 0; width: 30px; height: 20px; margin: -10px 0 0 -15px; pointer-events: none; opacity: 0; visibility: hidden; }
+.ride-letter svg { width: 100%; height: 100%; display: block; }
+.postbox.tip-nudge .pb-tip { animation: tipnudge .9s ease-out 2; }
+@keyframes tipnudge { 0%, 100% { scale: 1; } 30% { scale: 1.25; } 60% { scale: .95; } }
+@media (max-width: 759px) { .ride-walker { width: 28px; height: 34px; margin: -34px 0 0 -14px; } }
