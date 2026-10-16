@@ -120,19 +120,52 @@ if (fine && !reduced) {
   });
 }
 
-// touch: drag sideways to look around a town that is wider than the phone
-if (!fine) {
-  let sx = 0, base = 0, pan = 0, drag = false;
-  const limit = () => Math.max(0, (scene.offsetWidth - innerWidth) / 2);
-  stage.addEventListener('pointerdown', (e) => { if (e.target.closest('button,a,.tpanel')) return; drag = true; sx = e.clientX; base = pan; });
+// portrait screens: the town is wider than the screen, so it becomes a street you swipe along,
+// one building at a time, with a stepper bar that says where you are and opens that chapter
+const portrait = matchMedia('(max-aspect-ratio: 1/1)');
+const STOPS = ['tcs', 'fidelity', 'lab', 'tower', 'press', 'home'];
+let pan = 0, stop = 0, dragMoved = false;
+const panLimit = () => Math.max(0, (scene.offsetWidth - innerWidth) / 2);
+const panFor = (id) => { const b = buildings.find((x) => x.id === id); return Math.max(-panLimit(), Math.min(panLimit(), scene.offsetWidth / 2 - (b.x / 1600) * scene.offsetWidth)); };
+const setPan = (v) => { pan = v; scene.style.setProperty('--pan', `${v}px`); };
+$('#sn-dots').innerHTML = STOPS.map(() => '<i></i>').join('');
+function goStop(i, animate = true) {
+  stop = (i + STOPS.length) % STOPS.length;
+  const b = buildings.find((x) => x.id === STOPS[stop]);
+  $('#sn-now').innerHTML = `${mark(pinMarks[b.id], 'sn-mk')}<span><b>${esc(b.name.replace('Walmart · ', 'Walmart ').replace('Walmart AI agents', 'AI agent lab').replace('Walmart Identity', 'Walmart identity'))}</b>${b.when ? `<small>${esc(b.when)}</small>` : ''}</span><em>Open</em>`;
+  $('#sn-now').setAttribute('aria-label', `Open ${b.name}`);
+  $$('#sn-dots i').forEach((d, k) => d.classList.toggle('on', k === stop));
+  if (!portrait.matches) return;
+  const to = panFor(b.id);
+  if (animate && !reduced) gsap.to({ v: pan }, { v: to, duration: 0.6, ease: 'power3.out', onUpdate() { setPan(this.targets()[0].v); } });
+  else setPan(to);
+}
+$('#street-nav').addEventListener('click', (e) => {
+  const a = e.target.closest('.sn-arrow');
+  if (a) goStop(stop + +a.dataset.step);
+  else if (e.target.closest('#sn-now')) openBuilding(STOPS[stop]);
+});
+{
+  let sx = 0, base = 0, drag = false;
+  stage.addEventListener('pointerdown', (e) => { if (!portrait.matches || e.target.closest('button,a,.tpanel,.street-nav')) return; drag = true; dragMoved = false; sx = e.clientX; base = pan; });
   stage.addEventListener('pointermove', (e) => {
     if (!drag || townOpen) return;
-    pan = Math.max(-limit(), Math.min(limit(), base + (e.clientX - sx)));
-    scene.style.setProperty('--pan', `${pan}px`);
+    if (Math.abs(e.clientX - sx) > 6) dragMoved = true;
+    setPan(Math.max(-panLimit(), Math.min(panLimit(), base + (e.clientX - sx))));
   });
-  addEventListener('pointerup', () => { drag = false; });
-  // start slightly left so the lab and the tower share the screen
-  scene.style.setProperty('--pan', '0px');
+  addEventListener('pointerup', () => {
+    if (!drag) return;
+    drag = false;
+    if (!dragMoved) return;
+    // snap to the building nearest the middle of the screen
+    let best = 0, bd = Infinity;
+    STOPS.forEach((id, k) => { const d = Math.abs(panFor(id) - pan); if (d < bd) { bd = d; best = k; } });
+    goStop(best);
+  });
+  const sync = () => { if (portrait.matches) goStop(stop, false); else setPan(0); };
+  portrait.addEventListener('change', sync);
+  addEventListener('resize', sync);
+  goStop(0, false);
 }
 
 // leaving town: no pin, no zoom. The layers just slide away at different speeds, so the street feels deep.
@@ -160,7 +193,7 @@ function openBuilding(id) {
   const px = (b.x / 1600) * W, py = (((b.y + 700) / 2) / 900) * H;
   const sx = narrow ? innerWidth * 0.5 : innerWidth * 0.66, sy = narrow ? innerHeight * 0.3 : innerHeight * 0.56;
   gsap.to(cam, { x: sx - r.left - px * scale, y: sy - r.top - py * scale, scale, duration: 1.3, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#buddy'], { autoAlpha: 0, duration: 0.4 });
+  gsap.to(['#hero-copy', '#fly-cue', '#buddy', '#street-nav'], { autoAlpha: 0, duration: 0.4 });
   cam.classList.add('focus');
   $$('.bld, .pin', cam).forEach((el) => el.classList.toggle('on', el.dataset.id === id));
   panel.innerHTML = `
@@ -185,7 +218,7 @@ function closeBuilding() {
   const was = townOpen;
   townOpen = null;
   gsap.to(cam, { x: 0, y: 0, scale: 1, duration: 1.1, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#buddy'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
+  gsap.to(['#hero-copy', '#fly-cue', '#buddy', '#street-nav'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
   cam.classList.remove('focus');
   panel.classList.remove('open');
   panel.setAttribute('inert', '');
@@ -194,6 +227,7 @@ function closeBuilding() {
   $(`.pin[data-id="${was}"]`)?.focus({ preventScroll: true });
 }
 cam.addEventListener('click', (e) => {
+  if (dragMoved) { dragMoved = false; return; }
   const t = e.target.closest('.pin, .bld');
   if (t) openBuilding(t.dataset.id);
 });
