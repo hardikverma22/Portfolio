@@ -3,7 +3,7 @@
 // Buildings in the hero town. x/y are the pin anchor in the 1600×900 scene; zoom is where the camera flies on click.
 export const buildings = [
   {
-    id: 'tcs', name: 'TCS', when: '2016 – 2019', place: 'Chennai · Stockholm', x: 250, y: 494,
+    id: 'tcs', name: 'TCS', when: '2016–19', place: 'Chennai · Stockholm', x: 250, y: 462,
     kicker: 'Chapter 1 · where it began',
     title: 'Twelve apps, one tracking tool, and a winter in Stockholm.',
     body: 'System Engineer at Tata Consultancy Services. Angular, Node, .NET Core and SQL Server, from schema to screen. Built a MEAN-stack tool used by more than a thousand colleagues, then ran a SAFe team on-site in Stockholm for H&M.',
@@ -12,7 +12,7 @@ export const buildings = [
     go: ['Walk the full journey', '#journey'],
   },
   {
-    id: 'fidelity', name: 'Fidelity', when: '2019 – 2024', place: 'Chennai', x: 530, y: 404,
+    id: 'fidelity', name: 'Fidelity', when: '2019–24', place: 'Chennai', x: 540, y: 410,
     kicker: 'Chapter 2 · the platform years',
     title: 'Turned one-off client work into platforms.',
     body: 'Lead Software Engineer on eMoney Advisor. Generic, reusable solutions replaced per-client custom work for clients such as Wells Fargo and PNC, which cut time-to-market by about 90%. Also: accessible report families, an AWS Lex + Kendra support bot, and tech talks to 100+ engineers.',
@@ -21,7 +21,7 @@ export const buildings = [
     go: ['Read what people said', '#words'],
   },
   {
-    id: 'lab', name: 'Walmart · AI Agents', when: '2025 – now', place: 'Walmart', x: 830, y: 398,
+    id: 'lab', name: 'Walmart · AI agents', when: '2025–now', place: 'Walmart', x: 830, y: 398,
     kicker: 'Walmart · the agent lab',
     title: 'Two agents, and the tooling around them.',
     body: 'The agents: Grid, a super agent that triages an incident right inside the Slack thread before an engineer joins, and Delegation Hub, so an agent can shop for you without your password. The tooling: tokenOs, a token-efficiency layer for AI coding assistants, and mimo, which turns a demonstration into a reusable skill.',
@@ -30,7 +30,7 @@ export const buildings = [
     go: ['Walk into the lab', '#lab'],
   },
   {
-    id: 'tower', name: 'Walmart · Identity', when: '2024 – now', place: 'Walmart Global Tech', x: 1090, y: 130,
+    id: 'tower', name: 'Walmart · Identity', when: '2024–now', place: 'Walmart Global Tech', x: 1090, y: 130,
     kicker: 'Walmart · the tower with the lock',
     title: 'Keeping millions of customers signed in.',
     body: 'Staff Software Engineer at Walmart Global Tech. The identity platform behind sign-up, sign-in, two-factor, recovery and fraud-detection support, live in several countries and for partner brands. Chile went from zero to production in about three months.',

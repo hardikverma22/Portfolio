@@ -132,47 +132,60 @@ function bot(cls, tint, carry = 'mail') {
 }
 
 function tcs() {
-  const laundry = `<g class="laundry"><path d="M206 500 Q253 512 300 506" fill="none" ${s2(1.6)}/>
-    <g transform="translate(224 505)"><g class="cloth" style="--cd:0s"><path d="M-8 0 h16 l3 6 h-4 v12 h-14 v-12 h-4 Z" fill="#7cc4ff" ${s2(2)}/></g></g>
-    <g transform="translate(252 509)"><g class="cloth" style="--cd:-.6s"><rect x="-7" y="0" width="14" height="18" fill="#ef6a5b" ${s2(2)}/><path d="M-7 5 h14" stroke="#fff" stroke-width="2"/></g></g>
-    <g transform="translate(280 507)"><g class="cloth" style="--cd:-1.2s"><path d="M-6 0 h12 v16 l-6 -4 l-6 4 Z" fill="#fff4e0" ${s2(2)}/></g></g></g>`;
+  // an office, not a house: its lit windows are the apps shipped there, and the roof remembers the H&M stint in Stockholm
+  const app = (x, y, c, k) => `<g><rect x="${x + 4}" y="${y + 4}" width="22" height="4" rx="1" fill="${c}"/>${k ? `<rect x="${x + 4}" y="${y + 11}" width="9" height="9" rx="1.5" fill="${c}" opacity=".55"/><path d="M${x + 16} ${y + 13} h10 M${x + 16} ${y + 18} h7" stroke="#8d88a6" stroke-width="1.8"/>` : `<path d="M${x + 4} ${y + 13} h22 M${x + 4} ${y + 18} h15" stroke="#8d88a6" stroke-width="1.8"/>`}</g>`;
+  let wins = '';
+  const apps = { '0,0': '#ef6a5b', '0,2': '#4f7cf0', '1,1': '#7cc4a8', '1,3': '#f2b134', '2,0': '#b9a6f2', '2,3': '#ef6a5b' };
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
+    const x = 170 + c * 42, y = 572 + r * 34;
+    if (r === 2 && (c === 1 || c === 2)) continue; // the entrance
+    wins += `<rect x="${x}" y="${y}" width="30" height="24" rx="2" fill="var(--glass)" ${s2(2.5)}/>`;
+    const a = apps[`${r},${c}`];
+    if (a) wins += app(x, y, a, (r + c) % 2);
+    lights.push(`<rect class="lit" style="--wd:${f(0.3 + r * 0.25 + c * 0.08)}s;--d:${f(c * 1.7)}s" x="${x + 1.5}" y="${y + 1.5}" width="27" height="21" rx="1.5"/>`);
+  }
   const s = `<g class="bld" data-id="tcs">
-    ${laundry}
-    <rect x="168" y="498" width="38" height="34" rx="7" fill="#2f2d3b" ${S}/><rect x="300" y="504" width="32" height="28" rx="7" fill="#2f2d3b" ${S}/>
-    <path d="M178 506 h18 M308 512 h16" stroke="#555169" stroke-width="3"/>
-    <g transform="translate(338 520)"><path d="M0 10 v-14" ${s2(2.5)}/><path d="M-12 -8 A13 13 0 0 0 12 -16 Z" fill="#e8e3da" ${s2(2)}/></g>
-    <rect x="140" y="530" width="220" height="14" fill="#c9862a" ${S}/>
-    ${[154, 336].map((x) => `<g transform="translate(${x} 530)"><path d="M-7 0 l2 -10 h10 l2 10 Z" fill="#c2593a" ${s2(2)}/><circle cx="-3" cy="-14" r="5" fill="var(--leaf-1)" ${s2(2)}/><circle cx="4" cy="-16" r="6" fill="var(--leaf-2)" ${s2(2)}/></g>`).join('')}
-    <rect x="150" y="544" width="200" height="156" fill="#f2b134" ${S}/>
-    <path d="M150 552 H350" stroke="#d99a22" stroke-width="4"/>
-    ${windows(166, 562, 4, 3, 32, 22, 14, 16, { sill: '#c9862a', glint: true, skip: [[1, 3], [2, 1], [2, 2]] })}
-    <g><rect x="303" y="600" width="34" height="22" rx="3" fill="#ece7dc" ${s2(2.5)}/><path d="M308 606 h10 M308 611 h10 M308 616 h10" stroke="#a9a397" stroke-width="1.6"/>
-      <circle cx="328" cy="611" r="7" fill="#d8d2c4" ${s2(2)}/><g>${[0, 120, 240].map((r) => `<path d="M328 611 q4 -2 3 -6" transform="rotate(${r} 328 611)" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>`).join('')}${spinAt(328, 611, 1.2)}</g>
-      <path class="drip" d="M334 624 v0.1" stroke="#7cc4ff" stroke-width="3" stroke-linecap="round"/></g>
-    <rect x="216" y="646" width="68" height="16" rx="3" fill="#fff4e0" ${s2(2)}/><text x="250" y="658" text-anchor="middle" class="sign sign-ink sign-s">CHENNAI</text>
-    ${pigeon(316, 504, true, 'pg-2')}
-    <rect x="232" y="670" width="36" height="30" fill="#8a4f1c" ${S}/><circle cx="260" cy="686" r="2.5" fill="${INK}"/>
+    <path d="M186 528 V470" ${s2(3)}/><g class="flag"><path d="M186 472 q12 -5 22 0 t22 0 v16 q-11 -5 -22 0 t-22 0 Z" fill="#2e6fb7" ${s2(2.5)}/><path d="M198 471 v18 M187 480 q11 -4 21 0 t21 0" fill="none" stroke="#ffcd00" stroke-width="4"/></g>
+    <path d="M292 528 V514 M330 528 V514" ${s2(3)}/>
+    <rect x="280" y="488" width="62" height="28" rx="3" fill="#fff" ${S}/><text x="311" y="508" text-anchor="middle" class="sign hm-sign">H&amp;M</text>
+    <rect x="156" y="526" width="188" height="12" fill="#d6cfe8" ${S}/>
+    <rect x="160" y="536" width="180" height="164" fill="#eeeaf8" ${S}/>
+    <rect x="160" y="536" width="180" height="26" fill="#2b2f45" ${S}/>
+    <g transform="translate(184 549) scale(.75) translate(-12 -12)">${markInner('tcs')}</g><text x="258" y="555" text-anchor="middle" class="sign">TCS</text>
+    ${wins}
+    <rect x="214" y="644" width="72" height="56" fill="var(--glass)" ${S}/><path d="M250 644 v56" ${s2(2.5)}/><path d="M244 674 v8 M256 674 v8" ${s2(2.5)}/>
+    <rect x="208" y="638" width="84" height="8" fill="#EE3984" ${s2(2.5)}/>
+    ${[150, 350].map((x) => `<g transform="translate(${x} 700)"><path d="M-7 0 l2 -12 h10 l2 12 Z" fill="#c2593a" ${s2(2)}/><circle cx="0" cy="-20" r="10" fill="var(--leaf-2)" ${s2(2.5)}/></g>`).join('')}
   </g>`;
-  glow(`<rect x="232" y="670" width="36" height="30"/>`, 0.2);
+  glow(`<rect class="soft" x="214" y="644" width="72" height="56"/>`, 0.2);
   return s;
 }
 function fidelity() {
+  // a platform, built from identical modules: one-off client work turned into reusable pieces, the next one on the crane
+  const greens = ['#7cc4a8', '#69b597'];
+  let mods = '';
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++) {
+    const x = 440 + c * 62, y = 556 + r * 36;
+    if (r === 3 && c === 1) continue; // the door
+    mods += `<rect x="${x}" y="${y}" width="62" height="36" fill="${greens[(r + c) % 2]}" ${s2(2.5)}/><rect x="${x + 8}" y="${y + 9}" width="46" height="14" rx="2" fill="var(--glass)" ${s2(2)}/><path d="M${x + 31} ${y + 9} v14" ${s2(1.6)}/>`;
+    lights.push(`<rect class="lit" style="--wd:${f(0.35 + (3 - r) * 0.2 + c * 0.1)}s;--d:${f(r * 2.1 + c)}s" x="${x + 9.5}" y="${y + 10.5}" width="43" height="11" rx="1"/>`);
+  }
   const s = `<g class="bld" data-id="fidelity">
-    <path d="M530 456 V408" ${s2(3)}/><g class="flag"><path d="M530 410 q12 -5 22 0 t22 0 v16 q-11 -5 -22 0 t-22 0 Z" fill="var(--rose)" ${s2(2.5)}/></g>
-    <rect x="400" y="688" width="260" height="12" fill="#d9e8df" ${S}/><rect x="412" y="678" width="236" height="10" fill="#e6f1ea" ${S}/>
-    <rect x="430" y="512" width="200" height="166" fill="#7cc4a8" ${S}/>
-    <path d="M418 512 L530 456 L642 512 Z" fill="#5aa88a" ${S}/><path d="M446 504 L530 466 L614 504 Z" fill="none" stroke="#e9f5ef" stroke-width="2" opacity=".7"/>
-    <rect x="422" y="508" width="216" height="16" fill="#e9f5ef" ${S}/>
-    ${Array.from({ length: 18 }, (_, i) => `<rect x="${428 + i * 12}" y="524" width="6" height="5" fill="#cfe3d8" stroke="var(--ink)" stroke-width="1.2"/>`).join('')}
-    <circle cx="530" cy="488" r="11" fill="#fff8e6" ${s2(2.5)}/><g class="clock-hand"><path d="M530 488 v-7" ${s2(2)}/></g><path d="M530 488 l5 3" ${s2(2)}/>
-    ${[0, 1, 2, 3, 4].map((i) => `<rect x="${444 + i * 40}" y="532" width="16" height="146" fill="#e9f5ef" ${s2(2.5)}/><path d="M${449 + i * 40} 538 v134 M${455 + i * 40} 538 v134" stroke="#c7ddd1" stroke-width="1.5"/><rect x="${441 + i * 40}" y="530" width="22" height="6" fill="#e9f5ef" ${s2(2)}/><rect x="${441 + i * 40}" y="672" width="22" height="6" fill="#e9f5ef" ${s2(2)}/>`).join('')}
-    <rect x="512" y="620" width="36" height="58" fill="#2f5d4c" ${S}/><path d="M530 620 v58" stroke="#244a3c" stroke-width="2"/><circle cx="526" cy="652" r="1.8" fill="#ffd25e"/><circle cx="534" cy="652" r="1.8" fill="#ffd25e"/>
-    ${windows(466, 560, 1, 2, 18, 22, 0, 18)}${windows(578, 560, 1, 2, 18, 22, 0, 18)}
-    ${[500, 560].map((x) => `<g transform="translate(${x} 612)"><path d="M0 0 v-8" ${s2(2)}/><rect x="-5" y="0" width="10" height="13" rx="2" fill="#ffe9a8" ${s2(2)}/></g>`).join('')}
-    ${[404, 656].map((x) => `<g transform="translate(${x} 688)"><rect x="-10" y="-12" width="20" height="12" fill="#c2593a" ${s2(2)}/><circle cx="0" cy="-22" r="12" fill="var(--leaf-2)" ${s2(2.5)}/></g>`).join('')}
+    <path d="M612 556 V430" ${s2(4)}/>${Array.from({ length: 7 }, (_, i) => `<path d="M606 ${552 - i * 18} l12 -18 M618 ${552 - i * 18} l-12 -18" stroke="var(--ink)" stroke-width="1.8"/>`).join('')}
+    <path d="M606 556 V430 M618 556 V430" ${s2(2.5)}/>
+    <path d="M488 436 H650" ${s2(5)}/><path d="M488 436 H650" stroke="#ffd25e" stroke-width="2.5"/>
+    <rect x="630" y="438" width="22" height="16" fill="#5d566f" ${s2(2)}/><path d="M612 430 L612 414 L650 436 M612 414 L500 436" fill="none" ${s2(1.6)}/>
+    <rect x="598" y="440" width="28" height="18" rx="3" fill="#ffd25e" ${s2(2.5)}/>
+    <g><path d="M530 436 V462" stroke="var(--ink)" stroke-width="1.8"/><path d="M522 462 h16 l-8 -8 Z" fill="#5d566f" ${s2(1.6)}/>
+      <rect x="499" y="466" width="62" height="36" fill="#7cc4a8" ${s2(2.5)}/><rect x="507" y="475" width="46" height="14" rx="2" fill="var(--glass)" ${s2(2)}/><path d="M530 475 v14" ${s2(1.6)}/>
+      ${swing(530, 436, -2.5, 2.5, 4)}</g>
+    <rect x="432" y="548" width="202" height="10" fill="#e9f5ef" ${S}/>
+    ${mods}
+    <rect x="502" y="664" width="62" height="36" fill="#e9f5ef" ${s2(2.5)}/><rect x="514" y="670" width="38" height="30" fill="var(--glass)" ${s2(2.5)}/><path d="M533 670 v30" ${s2(2)}/>
+    <path d="M462 548 V538 M560 548 V538" ${s2(3)}/><rect x="448" y="512" width="126" height="28" rx="4" fill="#fff" ${S}/><g transform="translate(464 526) scale(.8) translate(-12 -12)">${markInner('fidelity')}</g><text x="520" y="532" text-anchor="middle" class="sign fid-sign">Fidelity</text>
+    <g transform="translate(652 700)"><rect x="-10" y="-12" width="20" height="12" fill="#c2593a" ${s2(2)}/><circle cx="0" cy="-22" r="12" fill="var(--leaf-2)" ${s2(2.5)}/></g>
   </g>`;
-  glow(`<rect x="495" y="612" width="10" height="13" rx="2"/>`, 0.25);
-  glow(`<rect x="555" y="612" width="10" height="13" rx="2"/>`, 0.3);
+  glow(`<rect class="soft" x="514" y="670" width="38" height="30"/>`, 0.25);
   return s;
 }
 function lab() {
@@ -221,10 +234,6 @@ function tower() {
     ${windows(1034, 278, 2, 13, 20, 18, 12, 11, { glint: true })}${windows(1102, 278, 2, 13, 20, 18, 12, 11, { glint: true })}
     <rect x="1030" y="636" width="120" height="10" fill="#3f63cf" ${s2(2.5)}/>
     <rect x="1060" y="646" width="60" height="54" fill="var(--door-glow)" ${S}/>
-    <g class="gondola-ropes"><path d="M1112 268 V300 M1144 268 V300" stroke="${INK}" stroke-width="1.6"/></g>
-    <g class="gondola"><rect x="1106" y="300" width="44" height="10" rx="2" fill="#ffd25e" ${s2(2.5)}/><path d="M1106 300 v-10 h44 v10" fill="none" ${s2(2)}/>
-      <g transform="translate(1124 300)"><rect x="-6" y="-8" width="12" height="9" rx="3" fill="#7cc4a8" ${s2(2)}/><rect x="-7" y="-21" width="14" height="13" rx="4" fill="#fff8e6" ${s2(2)}/><rect x="-4.5" y="-18" width="9" height="6" rx="2" fill="${INK}"/>
-        <g><path d="M6 -6 L14 -16" ${s2(2.2)}/><path d="M10 -20 L18 -12" ${s2(3.5)}/>${swing(6, -6, -10, 22, 2.6)}</g></g></g>
     <g class="revolve"><path d="M1090 652 v48" ${s2(2.5)}/><path d="M1072 676 h36" ${s2(2.5)}/></g>
   </g>`;
   glow(`<rect x="1060" y="646" width="60" height="54"/>`, 0.1);
@@ -275,41 +284,33 @@ function home() {
 }
 function mid() {
   lights.length = 0;
-  const trees = tree(395, 700, 0.85) + tree(678, 700, 0.75, 'var(--leaf-2)') + tree(1408, 700, 0.6);
+  const trees = tree(1408, 700, 0.6);
   const body = trees + tcs() + fidelity() + lab() + tower() + press() + home();
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g class="art">
   <defs><radialGradient id="g-sunwash" cx="1290" cy="170" r="1100" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff6d6" stop-opacity=".55"/><stop offset=".6" stop-color="#fff6d6" stop-opacity="0"/></radialGradient></defs>
   <rect x="-1600" y="696" width="4800" height="30" fill="var(--hill-near)"/>
   <g class="contact-shadows"><ellipse cx="250" cy="702" rx="120" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="530" cy="702" rx="140" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="830" cy="702" rx="140" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="1090" cy="702" rx="90" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="1305" cy="702" rx="95" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="1495" cy="702" rx="80" ry="7" fill="#1d1745" opacity=".16"/></g>
   ${body}
-  <g class="side-shade" style="mix-blend-mode:multiply"><rect x="151" y="545" width="36" height="154" fill="#1d1745" opacity=".11"/><rect x="431" y="513" width="30" height="165" fill="#1d1745" opacity=".11"/><rect x="707" y="573" width="40" height="126" fill="#1d1745" opacity=".11"/><rect x="1021" y="268" width="26" height="368" fill="#1d1745" opacity=".11"/><rect x="1045" y="213" width="16" height="48" fill="#1d1745" opacity=".11"/><rect x="1226" y="561" width="28" height="138" fill="#1d1745" opacity=".11"/><rect x="1433" y="623" width="22" height="76" fill="#1d1745" opacity=".11"/></g>
+  <g class="side-shade" style="mix-blend-mode:multiply"><rect x="161" y="563" width="30" height="136" fill="#1d1745" opacity=".11"/><rect x="441" y="557" width="22" height="142" fill="#1d1745" opacity=".11"/><rect x="707" y="573" width="40" height="126" fill="#1d1745" opacity=".11"/><rect x="1021" y="268" width="26" height="368" fill="#1d1745" opacity=".11"/><rect x="1045" y="213" width="16" height="48" fill="#1d1745" opacity=".11"/><rect x="1226" y="561" width="28" height="138" fill="#1d1745" opacity=".11"/><rect x="1433" y="623" width="22" height="76" fill="#1d1745" opacity=".11"/></g>
   <rect class="dayonly sunwash" x="-1600" y="-400" width="4800" height="1100" fill="url(#g-sunwash)" style="mix-blend-mode:soft-light"/>
-  <g class="token-line">
-    <path id="tk-path" d="M918 446 Q990 270 1060 200" fill="none" stroke="var(--packet-line)" stroke-width="2.2" stroke-dasharray="3 8" stroke-linecap="round"/>
-    <g transform="translate(956 246)"><rect x="-62" y="-11" width="124" height="22" rx="11" fill="#fffaf0" ${s2(2)}/><text x="0" y="4" text-anchor="middle" class="sign sign-ink sign-s">agent → identity</text></g>
-    <g><circle r="9" fill="#ffd25e" ${s2(2)}/><circle cx="-2.5" cy="0" r="3" fill="none" ${s2(1.6)}/><path d="M0.5 0 h5 M4 0 v2.6" ${s2(1.6)}/>
-      <animateMotion dur="4.5s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;.7;1" calcMode="spline" keySplines=".45 0 .55 1;0 0 1 1"><mpath href="#tk-path"/></animateMotion></g>
-  </g>
   </g>
   <g class="lights">
     <defs><linearGradient id="g-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6cf" stop-opacity="1"/><stop offset=".55" stop-color="#fff6cf" stop-opacity=".35"/><stop offset="1" stop-color="#fff6cf" stop-opacity="0"/></linearGradient></defs>
     <path class="beam" d="M1090 176 L990 -260 L1190 -260 Z" fill="url(#g-beam)"/>
     <rect class="lit sign-lit" style="--wd:.8s" x="1244" y="534" width="108" height="26" rx="3"/><text class="lit lit-text" style="--wd:.8s" x="1298" y="553" text-anchor="middle">THE PRESS</text>
-    <rect class="lit sign-lit" style="--wd:.6s" x="218" y="648" width="64" height="12" rx="2"/><text class="lit lit-text lit-s" style="--wd:.6s" x="250" y="658" text-anchor="middle">CHENNAI</text>
     <text class="lit lit-agent" style="--wd:.3s" x="840" y="596" text-anchor="middle">AGENT LAB</text>
     ${[[1426, 611], [1438, 602], [1450, 593], [1462, 584], [1474, 575], [1486, 566], [1504, 566], [1516, 575], [1528, 584], [1540, 593], [1552, 602], [1564, 611]].map(([x, y], i) => `<circle class="lit fairy" style="--wd:${(1 + i * 0.06).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0', '#9fd0ff'][i % 4]};--fd:${(i * 0.23).toFixed(2)}s" cx="${x}" cy="${y + 3}" r="3"/>`).join('')}
     ${lights.join('')}
     <circle class="lit halo" style="--wd:.2s" cx="830" cy="398" r="16"/>
     <rect class="lit lock-lit" style="--wd:0s" x="1062" y="166" width="56" height="46" rx="9"/>
-    <text class="neon" x="830" y="620" text-anchor="middle">ON CALL 24×7</text>
   </g>
 </svg>`;
 }
 
 /* ============================== street ============================== */
 function chaiCart() {
-  // sits on the pavement in the gap between the lab and the tower
-  return `<g transform="translate(986 712)">
+  // sits on the pavement in the gap between Fidelity and the lab, out of the errand bot's way
+  return `<g transform="translate(672 712)">
     <path d="M-40 -64 V-30 M40 -64 V-30" ${s2(3)}/>
     <g transform="translate(-6 -30)">
       <rect x="-10" y="-14" width="20" height="16" rx="5" fill="#f4f1ea" ${s2(2.2)}/>
@@ -354,6 +355,18 @@ function scooter() {
     <circle class="tail" cx="-40" cy="-30" r="2.6" fill="#ff4d4d"/>
   </g></g>`;
 }
+// The one agent on the street with a job: it carries an alert from the lab to the identity tower and
+// comes back with it resolved. That is the whole story of the triage agent, told without a caption.
+function courier() {
+  const kt = '0;.36;.5;.86;1';
+  const ticket = `<g transform="translate(-11 -64)"><rect x="-1" y="-11" width="22" height="16" rx="3" fill="#ef6a5b" ${s2(2)}/><text x="10" y="1" text-anchor="middle" class="tk-glyph">!</text>
+      <animate attributeName="opacity" values="1;1;0;0;1" keyTimes="${kt}" dur="14s" calcMode="discrete" repeatCount="indefinite"/></g>`;
+  const done = `<g transform="translate(-11 -64)" opacity="0"><rect x="-1" y="-11" width="22" height="16" rx="3" fill="#2eb67d" ${s2(2)}/><path d="M4 -3 l4 4 l8 -8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="${kt}" dur="14s" calcMode="discrete" repeatCount="indefinite"/></g>`;
+  return `<g class="courier"><animateTransform attributeName="transform" type="translate" values="836 706;1078 706;1078 706;836 706;836 706" keyTimes="0;.36;.5;.86;1" dur="14s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .6 1;0 0 1 1;.4 0 .6 1;0 0 1 1"/>
+    <g><animateTransform attributeName="transform" type="scale" values="1 1;1 1;-1 1;-1 1" keyTimes="0;.43;.5;1" dur="14s" calcMode="discrete" repeatCount="indefinite"/>
+    ${bot('walking', '#7cc4a8', 'none')}</g>${ticket}${done}</g>`;
+}
 const LAMPS = [372, 1180, 1588];
 function street() {
   const poles = LAMPS.map((x) => `<g><path d="M${x} 712 V606 q0 -10 12 -10 h10" fill="none" ${s2(4)}/><path d="M${x - 6} 612 h12" ${s2(3)}/><path d="M${x + 16} 594 h20 l-4 10 h-12 Z" fill="#3b3750" ${s2(2.5)}/><circle class="bulb-day" cx="${x + 26}" cy="606" r="4" fill="#fff3c4" ${s2(1.5)}/></g>`).join('');
@@ -373,13 +386,12 @@ function street() {
   <defs><linearGradient id="g-cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".6" stop-color="#ffe9a8" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a8" stop-opacity=".08"/></linearGradient></defs>
   ${poles}
   <g fill="var(--lane)" opacity=".8">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="1398" y="${727 + i * 14}" width="58" height="8" rx="1"/>`).join('')}</g>
-  <g transform="translate(0 704)">${bot('walker w1', '#7cc4a8', 'none')}${bot('walker w3', '#b9a6f2', 'none')}</g>
+  ${courier()}
   ${chaiCart()}
-  <g transform="translate(1046 704)">${bot('loiter', '#ef6a5b', 'chai')}</g>
   <g transform="translate(0 764)">${scooter()}</g>
   <g transform="translate(0 810)">${autoRickshaw()}</g>
   </g>
-  <g class="lights">${cones}${Array.from({ length: 9 }, (_, i) => `<circle class="lit fairy" style="--wd:${(0.9 + i * 0.05).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0'][i % 3]};--fd:${(i * 0.3).toFixed(2)}s" cx="${946 + i * 10}" cy="${650 + Math.sin(i / 8 * Math.PI) * 5}" r="2.6"/>`).join('')}</g>
+  <g class="lights">${cones}${Array.from({ length: 9 }, (_, i) => `<circle class="lit fairy" style="--wd:${(0.9 + i * 0.05).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0'][i % 3]};--fd:${(i * 0.3).toFixed(2)}s" cx="${632 + i * 10}" cy="${650 + Math.sin(i / 8 * Math.PI) * 5}" r="2.6"/>`).join('')}</g>
 </svg>`;
 }
 
@@ -402,11 +414,11 @@ function fg() {
   let flies = '';
   for (let i = 0; i < 18; i++) flies += `<circle class="firefly" style="--fx:${f(rand() * 60 - 30)}px;--fy:${f(rand() * 40 - 20)}px;--fd:${f(-rand() * 6)}s;--ft:${f(4 + rand() * 4)}s;--wd:${f(0.6 + rand() * 1.4)}s" cx="${f(i < 10 ? rand() * 320 : 1380 + rand() * 220)}" cy="${f(i < 10 ? 520 + rand() * 200 : 760 + rand() * 90)}" r="${f(2 + rand() * 1.5)}"/>`;
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g class="art">
-  <g class="petals" transform="translate(0 600)">${petals}</g>
+  <g transform="translate(-120 0)"><g class="petals" transform="translate(0 600)">${petals}</g>
   <path d="M40 900 C46 820 32 760 70 650 M60 730 C30 700 0 690 -20 660 M70 700 C110 670 130 660 160 640" fill="none" stroke="var(--ink)" stroke-width="22" stroke-linecap="round"/>
   <path d="M40 900 C46 820 32 760 70 650 M60 730 C30 700 0 690 -20 660 M70 700 C110 670 130 660 160 640" fill="none" stroke="var(--bark)" stroke-width="15" stroke-linecap="round"/>
   <path d="M36 880 q6 -30 0 -60 M52 800 q4 -20 0 -40" fill="none" stroke="#5e3a20" stroke-width="3" stroke-linecap="round"/>
-  <g class="crown">${crown}${dots}</g>
+  <g class="crown">${crown}${dots}</g></g>
   <path d="${grass}" fill="var(--leaf-2)" ${S}/>
   ${blades}${flowers}
   <g transform="translate(1500 900)"><circle cx="-40" cy="-60" r="60" fill="var(--leaf-1)" ${S}/><circle cx="40" cy="-80" r="70" fill="var(--leaf-2)" ${S}/><circle cx="110" cy="-50" r="60" fill="var(--leaf-1)" ${S}/>

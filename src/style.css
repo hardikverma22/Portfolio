@@ -1299,3 +1299,6 @@ html.theme-snap, html.theme-snap * { transition: none !important; }
 html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .8s var(--spring), opacity .4s !important; }
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 ::view-transition-new(root) { z-index: 9999; }
+.hm-sign { fill: #e50010; font: 900 italic 17px var(--f-display); letter-spacing: -.02em; }
+.fid-sign { fill: #368727; font: 800 17px var(--f-body); }
+.tk-glyph { fill: #fff; font: 900 13px var(--f-body); }
