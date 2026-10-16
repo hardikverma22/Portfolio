@@ -1,199 +1,214 @@
-// The guide: the bot from the hero walks you through the whole page. The tour starts with the town,
-// building by building in the order they happened, then moves down the sections. It always says where
-// you are, what to do, where next and how to go back, whether you use its buttons or just scroll.
+// One auto ride. Below the town a wide road curves in from off the edge of the screen and sweeps across
+// the page behind the content, then curves away again before the journey (which has a highway of its
+// own). After the journey it curves back in and ends in a parking bay beside the postbox. The bot's auto
+// drives it as you scroll, easing toward where it should be every frame, like a vehicle would.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { mark } from './marks.js';
 
 const $ = (s, r = document) => r.querySelector(s);
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const NS = 'http://www.w3.org/2000/svg';
 
-// a small prop the bot holds up at each stop
-const I = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="#211c33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
-const PROPS = {
-  town: I('<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
-  story: I('<path d="M4 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-4a2 2 0 0 0-2 2"/><path d="M20 5v13h-6"/>'),
-  lab: I('<path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7 15h10"/>'),
-  journey: I('<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>'),
-  passport: I('<rect x="6" y="14" width="12" height="6" rx="1"/><path d="M9 14V9a3 3 0 1 1 6 0v5"/><path d="M4 22h16"/>'),
-  writing: I('<rect x="3" y="5" width="15" height="15" rx="1.5"/><path d="M18 9h3v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 13h7M7 17h4"/>'),
-  words: I('<path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"/>'),
-  'after-hours': I('<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>'),
-  stack: I('<rect x="5" y="4" width="14" height="5" rx="2"/><rect x="5" y="9" width="14" height="5" rx="2"/><rect x="5" y="14" width="14" height="6" rx="2"/>'),
-  contact: I('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
-};
-const CO = { tcs: 'tcs', fidelity: 'fidelity', lab: 'walmart', tower: 'walmart', press: 'medium', home: 'home' };
-const short = (n) => n.replace('Walmart · ', '');
+// the auto from above, nose down the road: three wheels, a ribbed canopy, the bot at the wheel looking
+// out through the windscreen, mirrors, number plates, and lights that do what lights do
+const AUTO = `<svg viewBox="-32 -56 64 136">
+  <defs>
+    <linearGradient id="ride-beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff4cc" stop-opacity=".85"/><stop offset="1" stop-color="#fff4cc" stop-opacity="0"/></linearGradient>
+    <radialGradient id="ride-red"><stop offset="0" stop-color="#ff4d4d" stop-opacity=".95"/><stop offset="1" stop-color="#ff4d4d" stop-opacity="0"/></radialGradient>
+    <linearGradient id="ride-can" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f0bf22"/><stop offset=".35" stop-color="#ffd84a"/><stop offset=".65" stop-color="#ffd84a"/><stop offset="1" stop-color="#e8b31c"/></linearGradient>
+  </defs>
+  <path class="ride-beam" d="M-5 41 L-22 80 H22 L5 41 Z" fill="url(#ride-beam)"/>
+  <g class="ride-speed" stroke="#fffaf0" stroke-width="2.6" stroke-linecap="round"><path d="M-14 -50 v-14"/><path d="M14 -50 v-10"/><path d="M0 -52 v-18"/></g>
+  <g class="ride-brake"><circle cx="-11" cy="-45" r="8" fill="url(#ride-red)"/><circle cx="11" cy="-45" r="8" fill="url(#ride-red)"/></g>
+  <g class="ride-body">
+    <ellipse cx="4" cy="2" rx="22" ry="44" fill="rgba(20,16,40,.22)"/>
+    <rect x="-23" y="-34" width="7" height="16" rx="3" fill="#2a2638"/><rect x="16" y="-34" width="7" height="16" rx="3" fill="#2a2638"/>
+    <rect x="-3.5" y="30" width="7" height="13" rx="3" fill="#2a2638"/>
+    <path d="M-19 -38 Q-19 -45 -12 -45 H12 Q19 -45 19 -38 V10 Q19 27 9 38 Q0 44 -9 38 Q-19 27 -19 10 Z" fill="#1f8a4c" stroke="#211c33" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M-13 30 Q0 37 13 30" fill="none" stroke="#3aa866" stroke-width="2.5" stroke-linecap="round"/>
+    <rect x="-17" y="-44" width="34" height="9" rx="4" fill="#2a2638" stroke="#211c33" stroke-width="2"/>
+    <rect x="-6" y="-48" width="12" height="5" rx="1.2" fill="#fffaf0" stroke="#211c33" stroke-width="1.4"/>
+    <rect x="-14" y="-47.5" width="5" height="3.5" rx="1" fill="#c0392b"/><rect x="9" y="-47.5" width="5" height="3.5" rx="1" fill="#c0392b"/>
+    <path d="M-17 -38 Q-17 -41 -13 -41 H13 Q17 -41 17 -38 V12 Q17 17 12 17 H-12 Q-17 17 -17 12 Z" fill="url(#ride-can)" stroke="#211c33" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M-15 -28 H15 M-15 -17 H15 M-15 -6 H15 M-15 5 H15" stroke="#211c33" stroke-width="1.4" opacity=".22"/>
+    <path d="M-11 -36 Q-11 -38 -9 -38 H-3" stroke="#fff6c4" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+    <rect x="-11.5" y="17" width="23" height="9" rx="3.5" fill="#cfe8f7" stroke="#211c33" stroke-width="2"/>
+    <g transform="translate(0 19)"><rect x="-6" y="-1" width="12" height="9" rx="3" fill="#fff8e6" stroke="#211c33" stroke-width="1.6"/><rect x="-4.2" y="1" width="8.4" height="4.6" rx="1.4" fill="#211c33"/><circle class="ride-eye" cx="-1.8" cy="3.3" r="1.1" fill="#7dffb0"/><circle class="ride-eye" cx="1.8" cy="3.3" r="1.1" fill="#7dffb0"/></g>
+    <path d="M-8 26 l3 2 M8 26 l-3 2" stroke="#211c33" stroke-width="2" stroke-linecap="round"/>
+    <path d="M-19 20 h-5" stroke="#211c33" stroke-width="2"/><circle cx="-25" cy="20" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
+    <path d="M19 20 h5" stroke="#211c33" stroke-width="2"/><circle cx="25" cy="20" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
+    <path d="M0 -5 v-10" stroke="#211c33" stroke-width="2.2" stroke-linecap="round"/>
+    <circle class="ride-ball" cx="0" cy="-16" r="4" fill="#ef6a5b" stroke="#211c33" stroke-width="2"/><circle cx="-1.3" cy="-17.3" r="1.1" fill="#fff" opacity=".8"/>
+    <circle class="ind ind-l" cx="16" cy="28" r="2.6" fill="#ffb020"/><circle class="ind ind-r" cx="-16" cy="28" r="2.6" fill="#ffb020"/>
+    <circle cx="0" cy="39.5" r="3" fill="#fff3c4" stroke="#211c33" stroke-width="1.6"/>
+  </g>
+</svg>`;
 
-const STOPS = [
-  { id: 'town', name: 'Agent Town', say: 'Hi, I’m Hardik’s agent. Ten years live in this town. Want me to walk you through it?' },
-  { id: 'story', name: 'The story', say: 'The same ten years, in one paragraph. Keep scrolling and it fills in.' },
-  { id: 'lab', name: 'Agents', say: 'Four things built at Walmart. Open any one to watch it work.' },
-  { id: 'journey', name: 'Journey', say: 'Scroll to drive down the road, one stop at a time.' },
-  { id: 'passport', name: 'Markets', say: 'Tap a stamp to see that country.' },
-  { id: 'writing', name: 'Writing', say: 'Pick any story to read it on Medium.' },
-  { id: 'words', name: 'Kind words', say: 'Flip through what people I’ve worked with said.' },
-  { id: 'after-hours', name: 'After hours', say: 'Side projects. Most are live, tap one to try it.' },
-  { id: 'stack', name: 'Stack', say: 'Open the tiffin to see what I work with.' },
-  { id: 'contact', name: 'Say hi', say: 'That’s the tour! Post a letter and I’ll pass it to Hardik.' },
-];
+// one smooth curve through the waypoints; the road passes every waypoint heading straight down the page,
+// so each swing is an even S and every join (town, highway, parking) lines up without a kink
+function smooth(pts) {
+  let d = '';
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x1, y1] = pts[i], [x2, y2] = pts[i + 1], h = (y2 - y1) * 0.55;
+    d += ` C${x1.toFixed(1)} ${(y1 + h).toFixed(1)} ${x2.toFixed(1)} ${(y2 - h).toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+  }
+  return d;
+}
+const M = (p) => `M${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+function sample(d, step) {
+  const p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', d);
+  const L = p.getTotalLength(), X = [], Y = [];
+  for (let s = 0; s <= L; s += step) { const q = p.getPointAtLength(s); X.push(q.x); Y.push(q.y); }
+  return { L, X, Y };
+}
+// a road drawn in layers: kerb, surface, centre line; `paint` decides the colours
+function road(svg, d, w, paint, extra = '') {
+  for (const [cls, sw] of [['r-edge', w + 8], ['r-surf', w], ['r-lane', w > 60 ? 4 : 3]]) {
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d); p.setAttribute('class', `${cls} ${extra}`); p.setAttribute('stroke-width', sw);
+    if (paint[cls]) p.setAttribute('stroke', paint[cls]);
+    svg.appendChild(p);
+  }
+}
 
-export function initGuide({ scrollToEl, reduced, openBuilding, closeBuilding, chapters }) {
-  const stops = STOPS.filter((s) => document.getElementById(s.id));
-  const root = $('#buddy'), card = $('#g-card'), bot = $('#g-bot');
-  const body = $('#buddy-bot svg');
-  bot.insertAdjacentHTML('afterbegin', '<span class="g-prop" id="g-prop" aria-hidden="true"></span>');
-  const prop = $('#g-prop');
-  let at = -1, ch = -1, propKey = '', hold = 0;
+export function initGuide({ reduced }) {
+  const route = $('#route'), svg = $('#route-svg'), junction = $('#junction'), ride = $('#ride');
+  const town = $('#town'), journey = $('#journey'), postbox = $('#postbox');
+  ride.innerHTML = AUTO;
+  const autoSvg = ride.firstElementChild;
+  const STEP = 4;
+  let A = null, B = null, jTop = 0, jBot = 0, built = false;
+  const eye = () => innerHeight * 0.6;
 
-  /* ---------- drawing the bubble ---------- */
-  function render({ step, where, say, prim, sec, pk, propHTML, dots }) {
-    gsap.killTweensOf(card, 'height');
-    card.style.height = '';
-    const h0 = card.offsetHeight;
-    $('#g-step').textContent = step;
-    $('#g-where').textContent = where;
-    $('#g-say').innerHTML = say.split(' ').map((w) => `<span class="gw">${esc(w)}</span>`).join(' ');
-    const p = $('#g-next'), b = $('#g-back');
-    p.textContent = prim.label; p.onclick = prim.fn;
-    b.hidden = !sec;
-    if (sec) { b.textContent = sec.label; b.onclick = sec.fn; b.setAttribute('aria-label', sec.aria || sec.label); }
-    $('#g-dots').innerHTML = Array.from({ length: dots.n }, (_, k) => `<i class="${k < dots.i ? 'seen' : k === dots.i ? 'on' : ''}"></i>`).join('');
-    if (pk !== propKey) swapProp(pk, propHTML);
-    if (reduced || !open) return;
-    // the bubble grows or shrinks to its new text, and the words arrive one after another
-    const h1 = card.offsetHeight;
-    if (h0 && h0 !== h1) gsap.fromTo(card, { height: h0 }, { height: h1, duration: 0.45, ease: 'power3.out', clearProps: 'height' });
-    gsap.fromTo('#g-say .gw', { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.3, stagger: 0.025, ease: 'power2.out', delay: 0.05 });
-    gsap.fromTo('#g-next, #g-back', { scale: 0.85 }, { scale: 1, duration: 0.5, ease: 'back.out(3)', clearProps: 'transform' });
-  }
-  function swapProp(pk, html) {
-    propKey = pk;
-    if (reduced) { prop.innerHTML = html; return; }
-    gsap.killTweensOf(prop);
-    gsap.timeline()
-      .to(prop, { scale: 0, rotation: 30, duration: prop.innerHTML ? 0.18 : 0, ease: 'power2.in' })
-      .call(() => { prop.innerHTML = html; })
-      .fromTo(prop, { scale: 0, rotation: -40, y: 10 }, { scale: 1, rotation: -8, y: 0, duration: 0.55, ease: 'back.out(2.6)' });
-  }
+  function build() {
+    const vw = document.documentElement.clientWidth, vh = innerHeight, docH = document.documentElement.scrollHeight;
+    const phone = vw < 760;
+    const pageTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
+    for (const s of [svg, junction]) { s.setAttribute('viewBox', `0 0 ${vw} ${docH}`); s.setAttribute('width', vw); s.setAttribute('height', docH); s.innerHTML = ''; }
+    route.style.height = `${docH}px`;
+    const w = phone ? 44 : 84;
+    const lo = vw * (phone ? 0.17 : 0.12), hi = vw * (phone ? 0.83 : 0.88), span = vh * (phone ? 0.85 : 1.05);
+    const yB = pageTop(town) + town.offsetHeight;
+    jTop = pageTop(journey); jBot = jTop + journey.offsetHeight;
 
-  /* ---------- the page tour ---------- */
-  function showStop(i) {
-    at = i; ch = -1;
-    const s = stops[i], last = i === stops.length - 1;
-    const prim = i === 0 ? { label: 'Walk the town →', fn: () => walk(0) }
-      : last ? { label: 'Back to the top ↑', fn: () => goStop(0) }
-        : { label: `Next: ${stops[i + 1].name} ↓`, fn: () => goStop(i + 1) };
-    const sec = i === 0 ? { label: 'Skip to the story ↓', fn: () => goStop(1) }
-      : { label: `↑ ${stops[i - 1].name}`, aria: `Back to ${stops[i - 1].name}`, fn: () => goStop(i - 1) };
-    render({ step: `${i + 1} / ${stops.length}`, where: s.name, say: s.say, prim, sec, pk: s.id, propHTML: PROPS[s.id] || PROPS.town, dots: { n: stops.length, i } });
-    document.documentElement.classList.toggle('in-hero', i === 0);
-    document.querySelectorAll('.nav a').forEach((l) => l.classList.toggle('on', l.getAttribute('href') === `#${s.id}`));
-  }
-  function goStop(i) {
-    if (i < 0) return;
-    hold = Date.now() + 1700;
-    const dir = i >= Math.max(at, 0) ? 1 : -1;
-    if (ch >= 0) { ch = -1; closeBuilding(); }
-    showStop(i);
-    travel(dir);
-    scrollToEl(i === 0 ? document.body : `#${stops[i].id}`);
-  }
-
-  /* ---------- the town walk: each building is a chapter ---------- */
-  const walk = (k) => openBuilding(chapters[k].id);
-  function showChapter(k) {
-    ch = k;
-    const b = chapters[k], prev = chapters[k - 1], next = chapters[k + 1];
-    const say = k === 0 ? 'This is where it started. Read the card, then keep walking.'
-      : next ? b.title : 'That’s the whole town. Now the short version, in words.';
-    render({
-      step: `Chapter ${k + 1} / ${chapters.length}`, where: b.name.replace('Walmart · ', 'Walmart '), say,
-      prim: next ? { label: `Next: ${short(next.name)} →`, fn: () => walk(k + 1) } : { label: 'On to the story ↓', fn: () => goStop(1) },
-      sec: prev ? { label: `← ${short(prev.name)}`, aria: `Back to ${prev.name}`, fn: () => walk(k - 1) } : { label: '✕ Back to town', fn: () => closeBuilding() },
-      pk: `co-${b.id}`, propHTML: mark(CO[b.id], 'g-mk'), dots: { n: chapters.length, i: k },
-    });
-    hop();
-  }
-  document.addEventListener('town', (e) => {
-    const id = e.detail.open;
-    if (id) showChapter(Math.max(0, chapters.findIndex((c) => c.id === id)));
-    else if (ch >= 0) showStop(current());
-  });
-
-  /* ---------- motion ---------- */
-  // jumping to another section: the bot leaps toward where the page is heading, then settles back in the corner
-  function travel(dir) {
-    if (reduced) return;
-    const r = bot.getBoundingClientRect();
-    const tx = Math.min(innerWidth * 0.5 - (r.left + r.width / 2), 0);
-    const ty = dir > 0 ? -innerHeight * 0.42 : -innerHeight * 0.2;
-    gsap.killTweensOf(bot);
-    gsap.killTweensOf(card, 'scale,opacity,visibility');
-    gsap.timeline()
-      .to(card, { scale: 0.4, autoAlpha: 0, transformOrigin: '92% 100%', duration: 0.22, ease: 'power2.in' }, 0)
-      .to(bot, { keyframes: [
-        { x: tx * 0.45, y: ty, rotation: -14 * dir, scale: 1.12, duration: 0.45, ease: 'power2.out' },
-        { x: tx * 0.2, y: ty * 0.6, rotation: 8 * dir, duration: 0.3, ease: 'sine.inOut' },
-        { x: 0, y: 0, rotation: 0, scale: 1, duration: 0.6, ease: 'back.out(1.8)' },
-      ], clearProps: 'transform' }, 0)
-      .to(card, { scale: 1, autoAlpha: 1, duration: 0.5, ease: 'back.out(1.8)', clearProps: 'transform,opacity,visibility' }, 1.05);
-  }
-  // moving between chapters: a small hop
-  function hop() {
-    if (reduced) return;
-    gsap.timeline()
-      .to(bot, { y: -22, scaleY: 1.06, duration: 0.2, ease: 'power2.out' })
-      .to(bot, { y: 0, scaleY: 1, duration: 0.55, ease: 'bounce.out', clearProps: 'transform' });
-  }
-  // the bot leans into fast scrolling and springs back when the page stops
-  if (!reduced && body) {
-    gsap.set(body, { transformOrigin: '50% 100%' });
-    const lean = gsap.quickTo(body, 'rotation', { duration: 0.8, ease: 'elastic.out(1, 0.35)' });
-    let rest = 0;
-    ScrollTrigger.create({ onUpdate: (self) => {
-      lean(gsap.utils.clamp(-14, 14, -self.getVelocity() / 160));
-      clearTimeout(rest); rest = setTimeout(() => lean(0), 140);
-    } });
-  }
-
-  /* ---------- shrink to just the bot ---------- */
-  let open = true;
-  try { open = sessionStorage.getItem('hv-guide') !== 'min'; } catch (_) {}
-  function setOpen(v, animate = true) {
-    open = v;
-    bot.setAttribute('aria-expanded', String(v));
-    bot.setAttribute('aria-label', v ? 'Hide the tour guide' : 'Show the tour guide');
-    try { sessionStorage.setItem('hv-guide', v ? 'open' : 'min'); } catch (_) {}
-    gsap.killTweensOf(card, 'scale,opacity,visibility');
-    if (!animate || reduced) { root.classList.toggle('min', !v); return; }
-    if (v) {
-      root.classList.remove('min');
-      gsap.fromTo(card, { scale: 0.2, autoAlpha: 0, transformOrigin: '92% 100%' }, { scale: 1, autoAlpha: 1, duration: 0.55, ease: 'back.out(1.8)', clearProps: 'transform,opacity,visibility' });
-      gsap.fromTo('#g-say .gw', { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.3, stagger: 0.02, delay: 0.2 });
-    } else {
-      gsap.to(card, { scale: 0.2, autoAlpha: 0, transformOrigin: '92% 100%', duration: 0.3, ease: 'back.in(1.6)', onComplete: () => { root.classList.add('min'); gsap.set(card, { clearProps: 'transform,opacity,visibility' }); } });
-      hop();
+    function swings(from, to, startSide) {
+      const out = [];
+      let side = startSide, y = from + span * 0.6;
+      while (y < to - span * 0.55) { out.push([side, y]); side = side === lo ? hi : lo; y += span; }
+      return out;
     }
-  }
-  $('#g-min').addEventListener('click', () => setOpen(false));
-  bot.addEventListener('click', () => setOpen(!open));
-  setOpen(open, false);
+    // in from off the right edge, a sweeping turn, then side to side
+    const enter = (y, first) => `M${(vw + w * 2).toFixed(1)} ${y.toFixed(1)} C${(vw * 0.62).toFixed(1)} ${y.toFixed(1)} ${first[0].toFixed(1)} ${(first[1] - span * 0.45).toFixed(1)} ${first[0].toFixed(1)} ${first[1].toFixed(1)}`;
+    // and out again off the left edge
+    const leave = (last, y) => ` C${last[0].toFixed(1)} ${(last[1] + span * 0.45).toFixed(1)} ${(vw * 0.38).toFixed(1)} ${y.toFixed(1)} ${(-w * 2).toFixed(1)} ${y.toFixed(1)}`;
 
-  /* ---------- follow the reader ---------- */
-  // the current stop is the last section whose top has passed the middle of the screen,
-  // or the last stop once you reach the bottom (short closing sections never reach the middle)
-  const current = () => {
-    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 4) return stops.length - 1;
-    let k = 0;
-    stops.forEach((s, i) => { if (document.getElementById(s.id).getBoundingClientRect().top <= innerHeight * 0.55) k = i; });
-    return k;
+    // A: below the town, off-screen right → … → off-screen left before the journey
+    let midA = swings(yB + vh * 0.15, jTop, lo);
+    if (!midA.length) midA = [[lo, (yB + jTop) / 2]];
+    if (midA[midA.length - 1][0] === lo && midA.length > 1) midA.pop();
+    const dA = enter(yB + vh * 0.12, midA[0]) + smooth(midA) + leave(midA[midA.length - 1], jTop - vh * 0.08);
+    // B: after the journey, off-screen right → … → the parking bay by the postbox
+    const park = [Math.max(lo, postbox.getBoundingClientRect().left + scrollX - w * 1.2), pageTop(postbox) + postbox.offsetHeight - w * 0.6];
+    let midB = swings(jBot + vh * 0.1, park[1], lo);
+    if (!midB.length) midB = [[lo, (jBot + park[1]) / 2]];
+    const ptsB = [...midB, park];
+    const dB = enter(jBot + vh * 0.1, midB[0]) + smooth(ptsB);
+
+    road(svg, dA, w, {});
+    road(svg, dB, w, {});
+    svg.insertAdjacentHTML('beforeend', `<g class="r-park" transform="translate(${park[0].toFixed(1)} ${park[1].toFixed(1)})">
+      <rect x="${-w * 0.9}" y="${-w * 0.55}" width="${w * 1.8}" height="${w * 1.5}" rx="${w * 0.4}" class="r-bay"/>
+      <path d="M${-w * 0.6} ${w * 0.75} h${w * 1.2}" class="r-bay-line"/></g>`);
+    for (const [id, d] of [['A', dA], ['B', dB]]) {
+      const t = document.createElementNS(NS, 'path');
+      t.setAttribute('d', d); t.setAttribute('class', 'r-trail'); t.setAttribute('stroke-width', phone ? 5 : 7); t.dataset.piece = id;
+      svg.appendChild(t);
+    }
+    junction.insertAdjacentHTML('beforeend', `<g class="r-sign" transform="translate(${(park[0] + w * 1.25).toFixed(1)} ${(park[1] - w * 0.2).toFixed(1)})"><path d="M0 0 V-46" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/><rect x="-15" y="-78" width="30" height="34" rx="6" fill="#2e6fb7" stroke="var(--ink)" stroke-width="3"/><text x="0" y="-53" text-anchor="middle">P</text></g>`);
+    A = sample(dA, STEP);
+    B = sample(dB, STEP);
+    gsap.set(ride, { scale: phone ? 0.62 : 1 });
+    built = true;
+  }
+
+  /* ---------- where on the road ---------- */
+  function pt(T, s) {
+    const f = gsap.utils.clamp(0, T.X.length - 1, s / STEP), i = Math.floor(f), j = Math.min(T.X.length - 1, i + 1), t = f - i;
+    return { x: T.X[i] + (T.X[j] - T.X[i]) * t, y: T.Y[i] + (T.Y[j] - T.Y[i]) * t };
+  }
+  // the roads head down the page, so a height maps to a distance (the off-screen turns are nearly flat,
+  // and the auto simply drives through them)
+  function sOnY(T, y) {
+    if (y <= T.Y[0]) return 0;
+    if (y >= T.Y[T.Y.length - 1]) return T.L;
+    let a = 0, b = T.Y.length - 1;
+    while (b - a > 1) { const m = (a + b) >> 1; if (T.Y[m] < y) a = m; else b = m; }
+    return (a + (y - T.Y[a]) / ((T.Y[b] - T.Y[a]) || 1)) * STEP;
+  }
+  const goal = () => {
+    // at the very bottom of the page the auto pulls all the way into the parking bay
+    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 6) return A.L + B.L;
+    const y = scrollY + eye();
+    return y < (jTop + jBot) / 2 ? sOnY(A, y) : A.L + sOnY(B, y);
   };
-  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: () => {
-    if (Date.now() < hold || ch >= 0) return;
-    const k = current();
-    if (k !== at) showStop(k);
-  } });
-  showStop(0);
-  ScrollTrigger.refresh();
+  const where = (u) => (u <= A.L ? pt(A, u) : pt(B, u - A.L));
+  function heading(u) {
+    const a = where(u - 10), b = where(u + 10);
+    if (Math.hypot(b.x - a.x, b.y - a.y) > 200) return null; // between the two roads
+    return Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI - 90;
+  }
+
+  /* ---------- drive: every frame the auto eases toward where it should be ---------- */
+  let u = 0, rot = 0, lastX = 0, lastY = 0, lastV = 0, puffAt = 0;
+  function frame() {
+    if (!built) return;
+    const want = goal();
+    // jumping from one road to the other happens off-screen, in one go
+    if ((u <= A.L) !== (want <= A.L)) u = want;
+    const diff = want - u;
+    u = reduced || Math.abs(diff) < 0.3 ? want : u + diff * 0.12;
+    const p = where(u), h = heading(u) ?? rot;
+    let dr = h - rot; if (dr > 180) dr -= 360; if (dr < -180) dr += 360;
+    rot = reduced ? h : rot + dr * 0.22;
+    gsap.set(ride, { x: p.x, y: p.y, rotation: rot, autoAlpha: document.documentElement.classList.contains('town-focus') ? 0 : 1 });
+    const v = Math.hypot(p.x - lastX, p.y - lastY), acc = v - lastV;
+    lastX = p.x; lastY = p.y; lastV = v;
+    autoSvg.classList.toggle('braking', acc < -0.6 && v > 1);
+    autoSvg.classList.toggle('moving', v > 0.6);
+    autoSvg.classList.toggle('fast', v > 9);
+    const turn = (heading(u + 70) ?? h) - h;
+    autoSvg.classList.toggle('turn-l', turn > 8 && turn < 120);
+    autoSvg.classList.toggle('turn-r', turn < -8 && turn > -120);
+    if (!reduced && acc > 0.8 && v < 60 && performance.now() - puffAt > 110) { puffAt = performance.now(); puff(p); }
+    svg.querySelectorAll('.r-trail').forEach((t) => {
+      const L = t.getTotalLength(), done = t.dataset.piece === 'A' ? Math.min(L, u) : Math.max(0, u - A.L);
+      t.style.strokeDasharray = `${L} ${L}`; t.style.strokeDashoffset = `${L - Math.min(L, done)}`;
+    });
+  }
+  function puff(p) {
+    const r = (rot + 90) * Math.PI / 180, bx = p.x - Math.cos(r) * 40, by = p.y - Math.sin(r) * 40;
+    const el = document.createElement('i');
+    el.className = 'ride-puff';
+    route.appendChild(el);
+    gsap.fromTo(el, { x: bx, y: by, scale: 0.4, autoAlpha: 0.7 }, { x: bx + gsap.utils.random(-16, 16), y: by - 20, scale: 1.8, autoAlpha: 0, duration: 0.9, ease: 'power1.out', onComplete: () => el.remove() });
+  }
+
+  // the nav follows along
+  let current = -2;
+  const secs = ['story', 'lab', 'journey', 'passport', 'writing', 'words', 'after-hours', 'stack', 'contact'].map((id) => document.getElementById(id)).filter(Boolean);
+  function section() {
+    const yy = scrollY + innerHeight * 0.45;
+    let k = -1;
+    secs.forEach((el, i) => { if (el.getBoundingClientRect().top + scrollY <= yy) k = i; });
+    if (k === current) return;
+    current = k;
+    document.querySelectorAll('.nav a').forEach((l) => l.classList.toggle('on', k >= 0 && l.getAttribute('href') === `#${secs[k].id}`));
+  }
+
+  document.addEventListener('town', (e) => { document.documentElement.classList.toggle('town-focus', !!e.detail.open); });
+  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: section });
+  gsap.ticker.add(frame);
+  const reset = () => { build(); u = goal(); rot = heading(u) ?? 0; section(); };
+  ScrollTrigger.addEventListener('refresh', reset);
+  reset();
 }

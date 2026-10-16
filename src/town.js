@@ -314,9 +314,9 @@ export function autoRickshaw() {
   return `<defs><linearGradient id="g-hl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff4cc" stop-opacity=".9"/><stop offset=".45" stop-color="#fff4cc" stop-opacity=".35"/><stop offset="1" stop-color="#fff4cc" stop-opacity="0"/></linearGradient></defs><g class="auto"><g class="auto-bob">
     <path d="M-62 -30 V-54 Q-62 -64 -50 -64 H20 Q38 -64 46 -44 L52 -30 Z" fill="#2a2638" ${S}/>
     <path d="M-54 -32 V-54 H-8 V-32 Z" fill="#3d3852"/>
-    <g transform="translate(-30 -32)"><rect x="-8" y="-8" width="16" height="9" rx="3" fill="#b9a6f2" ${s2(2)}/><rect x="-9" y="-20" width="18" height="13" rx="4" fill="#fff8e6" ${s2(2)}/><rect x="-6" y="-17" width="12" height="6" rx="2" fill="${INK}"/></g>
+    <g transform="translate(-30 -32)"><rect x="-8" y="-9" width="16" height="10" rx="3" fill="var(--rose)" ${s2(2)}/><circle cx="0" cy="-15" r="6" fill="#8a5a3a" ${s2(2)}/><path d="M-7 -17 q7 -9 14 0 Z" fill="#2a2638"/><path d="M5 -18 h6" stroke="#2a2638" stroke-width="2.4" stroke-linecap="round"/><path d="M-3 -14 h6" stroke="#2a2638" stroke-width="1.4" opacity=".7"/></g>
     <path d="M4 -58 H22 Q34 -56 40 -34 H4 Z" fill="var(--glass)" ${s2(2.5)}/>
-    <g transform="translate(14 -32)"><rect x="-7" y="-9" width="14" height="10" rx="3" fill="#c9b27a" ${s2(2)}/><circle cx="0" cy="-15" r="6" fill="#7a4a2a" ${s2(2)}/><path d="M-6 -18 h12 l-2 -4 h-8 Z" fill="#c9b27a" ${s2(1.6)}/><path d="M6 -6 l10 -2" ${s2(2.2)}/></g>
+    <g transform="translate(15 -32)"><rect x="-7" y="-8" width="14" height="9" rx="3" fill="#7cc4a8" ${s2(2)}/><rect x="-8" y="-21" width="16" height="13" rx="4" fill="#fff8e6" ${s2(2)}/><rect x="-5.5" y="-18" width="11" height="6" rx="2" fill="${INK}"/><circle cx="-2" cy="-15" r="1.2" fill="#7dffb0"/><circle cx="2.5" cy="-15" r="1.2" fill="#7dffb0"/><path d="M0 -21 v-4" ${s2(1.6)}/><circle cx="0" cy="-26" r="1.8" fill="var(--rose)"/><path d="M6 -4 l10 -2" ${s2(2.2)}/></g>
     <path d="M-66 -32 H56 Q70 -30 70 -16 V-14 H-66 Z" fill="#ffd23f" ${S}/>
     <path d="M-66 -14 H70 V-6 Q70 2 62 2 H-58 Q-66 2 -66 -6 Z" fill="#1f8a4c" ${S}/>
     <circle cx="64" cy="-22" r="4" fill="#fff3c4" ${s2(2)}/>
@@ -358,8 +358,8 @@ function street() {
   <path d="M-1600 768 H3200" stroke="var(--lane)" stroke-width="5" stroke-dasharray="44 34"/>
   <defs><linearGradient id="g-cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".6" stop-color="#ffe9a8" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a8" stop-opacity=".08"/></linearGradient></defs>
   ${poles}
-  <g fill="var(--lane)" opacity=".8">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="1398" y="${727 + i * 14}" width="58" height="8" rx="1"/>`).join('')}</g>
   ${chaiCart()}
+  <g fill="var(--lane)" opacity=".8">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="1398" y="${727 + i * 14}" width="58" height="8" rx="1"/>`).join('')}</g>
   <g transform="translate(0 764)">${scooter()}</g>
   <g transform="translate(0 810)">${autoRickshaw()}</g>
   </g>

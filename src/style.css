@@ -1370,59 +1370,50 @@ html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .
 .tp-links a { font: 700 13px var(--f-mono); color: var(--ink); padding: 5px 10px; border: 2px solid var(--ink); border-radius: 99px; text-decoration: none; background: #fff; }
 .tp-links a:hover { background: var(--sun); }
 
-/* ---------------- the guide: bottom-right on every section ---------------- */
 .fly-cue { display: none !important; }
-.guide { position: fixed; z-index: 60; right: max(16px, var(--gutter)); bottom: 18px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
-.guide > * { pointer-events: auto; }
-.g-card { position: relative; width: min(300px, calc(100vw - 32px)); padding: 14px 16px 12px; background: #fffaf0; color: var(--ink); border: 2.5px solid var(--ink); border-radius: 18px 18px 4px 18px; box-shadow: 4px 4px 0 var(--ink); transform-origin: 90% 100%; transition: opacity .3s, transform .35s var(--spring); }
-.g-card.pop { animation: gpop .45s var(--spring); }
-@keyframes gpop { from { transform: scale(.94); } }
-.guide.min .g-card { opacity: 0; transform: scale(.6) translateY(20px); pointer-events: none; }
-.g-min { all: unset; cursor: pointer; position: absolute; top: 6px; right: 8px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; font: 800 18px/1 var(--f-body); color: var(--ink-2); }
-.g-min:hover { background: var(--paper-2); }
-.g-k { margin: 0 24px 4px 0; display: flex; gap: 8px; align-items: baseline; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); }
-.g-k b { color: var(--rose); }
-.g-say { margin: 0 0 12px; font: 700 20px/1.15 var(--f-hand); }
-.g-btns { display: flex; gap: 8px; align-items: center; }
-.g-next, .g-back { all: unset; cursor: pointer; font: 800 13.5px/1 var(--f-body); padding: 9px 13px; border-radius: 99px; border: 2px solid var(--ink); white-space: nowrap; transition: transform .2s var(--spring); }
-.g-next { background: var(--ink); color: #fff8e6; margin-left: auto; }
-.g-back { background: #fff; color: var(--ink); max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
-.g-next:hover, .g-back:hover { transform: translateY(-2px); }
-.g-next:focus-visible, .g-back:focus-visible, .g-bot:focus-visible, .g-min:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
-.g-dots { display: flex; gap: 4px; margin-top: 10px; }
-.g-dots i { flex: 1; height: 4px; border-radius: 4px; background: #e6dccb; transition: background .3s; }
-.g-dots i.seen { background: #c9bda8; } .g-dots i.on { background: var(--rose); }
-.g-bot { all: unset; cursor: pointer; display: block; -webkit-tap-highlight-color: transparent; }
-.g-bot .buddy-bot { width: 78px; height: 92px; }
-.g-bot:hover .buddy-bot { transform: translateY(-5px) rotate(-4deg); }
-html.case-open .guide { display: none; }
-@media (max-width: 760px) {
-  .guide { right: 10px; bottom: 10px; flex-direction: row; align-items: flex-end; }
-  .g-card { width: min(280px, calc(100vw - 92px)); padding: 11px 12px 10px; }
-  .g-say { font-size: 17px; margin-bottom: 10px; }
-  .g-next, .g-back { font-size: 12.5px; padding: 8px 10px; }
-  .g-back { max-width: 90px; }
-  .g-bot .buddy-bot { width: 58px; height: 70px; }
-}
-/* on a tall screen the hero has its own street stepper at the bottom, so the guide waits until you scroll */
-@media (max-aspect-ratio: 1/1) {
-  html.in-hero .guide { opacity: 0; pointer-events: none; transform: translateY(30px); }
-  html.in-hero .guide > * { pointer-events: none; }
-  .guide { transition: opacity .4s, transform .4s var(--out); }
-}
-.g-back[hidden] { display: none; }
-.g-card { width: min(270px, calc(100vw - 32px)); padding: 12px 14px 11px; }
-.g-say { font-size: 18px; margin-bottom: 10px; }
-.g-next, .g-back { font-size: 12.5px; padding: 8px 11px; }
-.g-bot .buddy-bot { width: 64px; height: 76px; }
-@media (min-aspect-ratio: 1/1) { .tp-next { display: none; } }
 
-/* guide motion is driven by GSAP; CSS only holds the resting states */
-.g-card { transition: none; animation: none !important; will-change: transform; }
-.guide.min .g-card { opacity: 0; visibility: hidden; transform: none; pointer-events: none; }
-.g-bot { position: relative; will-change: transform; }
-.g-prop { position: absolute; z-index: 2; left: -14px; top: 4px; width: 34px; height: 34px; display: grid; place-items: center; background: #fffaf0; border: 2.5px solid var(--ink); border-radius: 10px; box-shadow: 2px 2px 0 var(--ink); transform: rotate(-8deg); }
-.g-prop svg { width: 20px; height: 20px; }
-.g-prop .g-mk { width: 24px; height: 24px; border-radius: 6px; }
-.gw { display: inline-block; }
-@media (max-width: 760px) { .g-prop { width: 28px; height: 28px; left: -10px; } .g-prop svg { width: 16px; height: 16px; } .g-prop .g-mk { width: 20px; height: 20px; } }
+/* ---------------- one auto ride: one connected road, town street to postbox ---------------- */
+:root { --rd-dark: var(--road); --rd-kerb: var(--ink); --rd-pale: #efe3cb; --rd-pale-edge: #e2d2b2; }
+[data-mode='night'] { --rd-pale: #24213b; --rd-pale-edge: #2f2b4d; }
+#main { position: relative; z-index: 1; }
+body { background-image: radial-gradient(color-mix(in srgb, var(--text) 5%, transparent) 1px, transparent 1.4px); background-size: 22px 22px; }
+.paper { background: transparent; }
+.route { position: absolute; z-index: 0; top: 0; left: 0; width: 100%; pointer-events: none; overflow: hidden; }
+.route-svg { position: absolute; inset: 0; overflow: visible; }
+.junction { position: absolute; z-index: 2; top: 0; left: 0; pointer-events: none; overflow: visible; transition: opacity .4s; }
+html.town-focus .junction { opacity: 0; }
+.route-svg path, .junction path, .jr-link path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.r-edge { stroke: var(--rd-pale-edge); }
+.r-surf { stroke: var(--rd-pale); }
+.r-edge.dark { stroke: var(--ink); }
+.r-surf.dark { stroke: var(--road); }
+.r-lane { stroke: #fffaf0; stroke-dasharray: 22 26; }
+.r-lane.dark { stroke: var(--lane); stroke-dasharray: 34 30; }
+.r-trail { stroke: var(--rose); opacity: .55; fill: none; stroke-linecap: round; }
+.r-bay { fill: var(--rd-pale); stroke: var(--rd-pale-edge); stroke-width: 4; }
+.r-bay-line { stroke: #fffaf0; stroke-width: 4; stroke-linecap: round; }
+.r-sign text { font: 900 22px var(--f-body); fill: #fff; }
+.jr-link { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; overflow: visible; }
+.ride { position: absolute; z-index: 5; top: 0; left: 0; width: 50px; height: 106px; margin: -44px 0 0 -25px; pointer-events: none; will-change: transform; }
+.ride svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.ride-beam { opacity: 0; transition: opacity .6s; }
+[data-mode='night'] .ride-beam { opacity: 1; }
+.ride-brake { opacity: 0; transition: opacity .15s; }
+.ride svg.braking .ride-brake { opacity: 1; }
+.ind { opacity: .25; }
+.ride svg.turn-l .ind-l, .ride svg.turn-r .ind-r { animation: blinker .7s steps(2, jump-none) infinite; }
+@keyframes blinker { 0% { opacity: 1; } 100% { opacity: .2; } }
+.ride-puff { position: absolute; z-index: 4; top: 0; left: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: #e7e1ee; box-shadow: 0 0 0 1.5px rgba(33, 28, 51, .2); pointer-events: none; }
+html.case-open .ride { visibility: hidden; }
+.road-div { display: none; }
+
+/* the small auto: a little bounce on the road while it moves, speed lines when it's fast, blinking bot eyes */
+.ride-body { transform-origin: 50% 60%; transform-box: fill-box; }
+.ride svg.moving .ride-body { animation: ridebob .32s ease-in-out infinite alternate; }
+@keyframes ridebob { from { transform: translateY(0) rotate(-.8deg); } to { transform: translateY(-1.2px) rotate(.8deg); } }
+.ride-speed { opacity: 0; transition: opacity .25s; }
+.ride svg.fast .ride-speed { opacity: .9; animation: speedl .25s linear infinite; }
+@keyframes speedl { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+.ride-eye { animation: rideblink 4s steps(1) infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes rideblink { 0%, 94% { transform: scaleY(1); } 95%, 98% { transform: scaleY(.15); } }
+@media (prefers-reduced-motion: reduce) { .ride svg .ride-body, .ride-eye, .ride-speed { animation: none !important; } }

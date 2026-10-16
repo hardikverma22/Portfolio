@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { skillsBuilt, markets, writing, testimonials, projects, toolbox, toolboxGroups, awards, identity } from './data.js';
 import { buildings, story, stickies, milestones, tiffin } from './world.js';
-import { townMarkup, buddySvg, autoRickshaw, skylines } from './town.js';
+import { townMarkup, autoRickshaw, skylines } from './town.js';
 import { mark } from './marks.js';
 import { initLab } from './lab.js';
 import { initGuide } from './guide.js';
@@ -26,6 +26,7 @@ if (!reduced) {
   gsap.ticker.lagSmoothing(0);
 }
 const scrollToEl = (target) => {
+  if (typeof target === 'number') { if (lenis) lenis.scrollTo(target, { duration: 1.4 }); else scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' }); return; }
   const el = typeof target === 'string' ? $(target) : target;
   if (!el) return;
   if (lenis) lenis.scrollTo(el, { duration: 1.4 });
@@ -97,7 +98,6 @@ $('#pins').innerHTML = buildings.map((b, i) => `
   </button>`).join('') + '<p class="tap-hint hand" id="tap-hint" aria-hidden="true">tap a building <svg viewBox="0 0 40 40"><path d="M4 4 C14 10 24 20 30 34 M30 34 l-9 -3 M30 34 l3 -9"/></svg></p>';
 
 // buddy bot
-$('#buddy-bot').innerHTML = buddySvg();
 // the newsroom ticker loops by exactly one copy of its text
 const tick$ = $('.tick-t');
 if (tick$) $('.ticker').style.setProperty('--tw', (tick$.getComputedTextLength() / 2).toFixed(1));
@@ -360,8 +360,11 @@ const journeyPos = (p) => {
   const x = lerp(lastX, (innerWidth - trackW * fit) / 2, t);
   const scale = lerp(1, fit, t);
   gsap.set('#jr-track', { x, scale, transformOrigin: '0% 100%' });
-  gsap.set('#jr-hills', { x: lastX * 0.3 });
-  gsap.set(jAuto, { autoAlpha: 1 - t });
+  gsap.set('#jr-hills', { x: Math.min(0, lastX * 0.3) });
+  // the auto drives in from off the left edge as the journey starts, and off to the right at the end
+  const IN = 0.06, inT = reduced ? 1 : gsap.parseEase('power2.out')(Math.min(1, p / IN));
+  const off = jAuto.offsetLeft + jAuto.offsetWidth + 40;
+  gsap.set(jAuto, { autoAlpha: 1, x: lerp(-off, 0, inT) + (reduced ? 0 : t * (innerWidth - jAuto.offsetLeft + 40)) });
   $('.jr-road i').style.setProperty('--lane-x', `${lastX}px`);
   jWheels.forEach((w) => w.setAttribute('transform', `rotate(${(-lastX * 2.4) % 360})`));
   jAuto.classList.add('moving');
@@ -642,7 +645,6 @@ const lift = () => {
     gsap.from('.ly-street', { scale: 1.12, duration: 2, ease: 'power3.out' });
     gsap.from('.hero-copy > *', { y: 40, autoAlpha: 0, stagger: 0.09, duration: 0.9, delay: 0.45, ease: 'power3.out' });
     gsap.from('.pin', { autoAlpha: 0, stagger: 0.1, duration: 0.5, delay: 0.9, clearProps: 'opacity,visibility' });
-    gsap.from('#g-bot', { y: 140, duration: 0.9, delay: 1.2, ease: 'back.out(1.6)', clearProps: 'transform' });
   }
 };
 if (reduced) lift();
@@ -651,4 +653,4 @@ else addEventListener('load', () => setTimeout(lift, 400));
 addEventListener('load', () => ScrollTrigger.refresh());
 
 /* ---------------- the guide: one bot that walks you through the whole page ---------------- */
-initGuide({ scrollToEl, reduced, openBuilding, closeBuilding, chapters: TOUR.map((id) => buildings.find((b) => b.id === id)) });
+initGuide({ reduced });
