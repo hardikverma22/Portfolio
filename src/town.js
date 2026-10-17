@@ -99,8 +99,37 @@ function far() {
 }
 
 /* ============================== mid ============================== */
-function tree(x, y, s = 1, c = 'var(--leaf-1)') {
-  return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 V-34" ${s2(5)}/><circle cx="0" cy="-58" r="30" fill="${c}" ${S}/><circle cx="-18" cy="-44" r="18" fill="${c}" ${S}/><circle cx="18" cy="-46" r="20" fill="${c}" ${S}/><path d="M-8 -66 q8 -8 16 0" fill="none" stroke="var(--leaf-hi)" stroke-width="4" stroke-linecap="round"/></g>`;
+// Foliage the way flat illustrators draw it: one lumpy outline made of round lobes, a darker underside,
+// the base colour shifted up and left, a couple of light lobes where the sun hits, and a few leaf ticks.
+const ORANGE = ['#d4572a', '#f2913a', '#fbc25f', '#c2481f'];
+const GREEN = ['#3e8a4c', '#5fae5e', '#8fd07a', '#2f6e3c'];
+function foliage(lobes, [shade, base, hi, tick], lights = [], ticks = 0) {
+  let out = lobes.map(([x, y, r]) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${shade}" ${S}/>`).join('');
+  out += lobes.map(([x, y, r]) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r - 1.5)}" fill="${shade}"/>`).join('');
+  out += lobes.map(([x, y, r]) => `<circle cx="${f(x - r * 0.08)}" cy="${f(y - r * 0.14)}" r="${f(r * 0.84)}" fill="${base}"/>`).join('');
+  out += lights.map(([x, y, r]) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${hi}"/>`).join('');
+  const xs = lobes.map(([x, , r]) => [x - r, x + r]).flat(), ys = lobes.map(([, y, r]) => [y - r, y + r]).flat();
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  for (let i = 0; i < ticks; i++) {
+    const x = x0 + (x1 - x0) * (0.2 + rand() * 0.6), y = y0 + (y1 - y0) * (0.35 + rand() * 0.5);
+    out += `<path d="M${f(x)} ${f(y)} q5 -5 10 -1" fill="none" stroke="${tick}" stroke-width="2.2" stroke-linecap="round"/>`;
+  }
+  return out;
+}
+// a small round street tree: lobed canopy on a short trunk
+function tree(x, y, s = 1) {
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <path d="M0 0 V-40 M0 -26 l-9 -10 M0 -32 l8 -9" fill="none" ${s2(7)}/><path d="M0 0 V-40 M0 -26 l-9 -10 M0 -32 l8 -9" fill="none" stroke="var(--bark)" stroke-width="3.5" stroke-linecap="round"/>
+    ${foliage([[-20, -56, 20], [18, -56, 20], [0, -70, 25], [-4, -50, 18]], GREEN, [[-10, -80, 8], [-22, -66, 5]], 3)}
+  </g>`;
+}
+// a low hedge along the pavement, dotted with flowers
+function hedge(x0, x1, y) {
+  const lobes = [];
+  for (let x = x0 + 10; x < x1 - 6; x += 15) lobes.push([x, y - 9 - (rand() * 3), 11 + rand() * 3]);
+  let flowers = '';
+  for (let i = 0; i < Math.round((x1 - x0) / 16); i++) flowers += `<circle cx="${f(x0 + 8 + rand() * (x1 - x0 - 16))}" cy="${f(y - 8 - rand() * 12)}" r="2.2" fill="${['#ff8ec4', '#fff', '#ffd27a'][i % 3]}"/>`;
+  return foliage(lobes, GREEN, [], 0) + flowers;
 }
 function pigeon(x, y, flip, cls = '') {
   return `<g transform="translate(${x} ${y})${flip ? ' scale(-1 1)' : ''}"><g class="pigeon ${cls}"><g class="pg-bob">
@@ -291,7 +320,7 @@ function home() {
 }
 function mid() {
   lights.length = 0;
-  const trees = tree(1408, 700, 0.6);
+  const trees = tree(1408, 700, 0.6) + tree(398, 702, 0.72) + tree(982, 702, 0.66) + tree(1203, 702, 0.6);
   const body = trees + tcs() + fidelity() + lab() + tower() + press() + home();
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g class="art">
   <defs><radialGradient id="g-sunwash" cx="1290" cy="170" r="1100" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff6d6" stop-opacity=".55"/><stop offset=".6" stop-color="#fff6d6" stop-opacity="0"/></radialGradient></defs>
@@ -385,9 +414,11 @@ function street() {
   <rect x="-1600" y="700" width="4800" height="20" fill="var(--pavement)" ${S}/>
   <path d="M-1600 708 H3200" stroke="var(--pavement-line)" stroke-width="2" stroke-dasharray="40 14"/>
   <rect x="-1600" y="720" width="4800" height="96" fill="var(--road)" ${S}/>
+  <g>${Array.from({ length: 112 }, (_, i) => `<rect x="${-560 + i * 24}" y="716" width="24" height="7" fill="${i % 2 ? '#fff4e0' : '#e05a47'}"/>`).join('')}</g><path d="M-1600 716 H3200 M-1600 723 H3200" ${s2(2)}/>
   <rect x="-1600" y="816" width="4800" height="400" fill="var(--leaf-2)"/>
   <path d="M-1600 768 H3200" stroke="var(--lane)" stroke-width="5" stroke-dasharray="44 34"/>
   <defs><linearGradient id="g-cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".95"/><stop offset=".6" stop-color="#ffe9a8" stop-opacity=".35"/><stop offset="1" stop-color="#ffe9a8" stop-opacity=".08"/></linearGradient></defs>
+  ${hedge(-520, 618, 706)}${hedge(728, 2120, 706)}
   ${poles}
   ${chaiCart()}
   <g fill="var(--lane)" opacity=".8">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="1398" y="${727 + i * 14}" width="58" height="8" rx="1"/>`).join('')}</g>
@@ -400,37 +431,80 @@ function street() {
 
 /* ============================== foreground ============================== */
 function fg() {
-  let crown = '';
-  const blobs = [[60, 580, 70], [-20, 630, 58], [140, 640, 52], [30, 500, 52], [120, 520, 44], [-50, 540, 44], [170, 590, 36]];
-  for (const [x, y, r] of blobs) crown += `<circle cx="${x}" cy="${y}" r="${r}" fill="var(--bloom)" ${S}/>`;
-  let dots = '';
-  for (let i = 0; i < 46; i++) { const a = rand() * Math.PI * 2, d = rand() * 120; dots += `<circle cx="${f(60 + Math.cos(a) * d * 1.1)}" cy="${f(580 + Math.sin(a) * d * 0.7)}" r="${f(rand() * 4 + 3)}" fill="var(--bloom-hi)"/>`; }
+  // a lush strip in front of the road: a big leafy tree in blossom on the left with a bench and a lamp,
+  // a band of flowering shrubs along the kerb, a lawn with flowers, and big leaves framing the corners
+  const LEAF = ['#2f6e3c', '#3e8a4c', '#4f9e55', '#6bb862', '#8fd07a', '#b5e39a'];
+  const cx = -170, cy = 600, rx = 230, ry = 170;
+  const lobes = [[-330, 640, 60], [-260, 560, 80], [-170, 500, 90], [-70, 540, 84], [10, 610, 64], [-120, 650, 86], [-240, 660, 74], [-40, 670, 58]];
+  let leaves = '';
+  for (let i = 0; i < 340; i++) {
+    const a = rand() * Math.PI * 2, d = Math.sqrt(rand());
+    const x = cx + Math.cos(a) * d * rx, y = cy + Math.sin(a) * d * ry - 10;
+    // light falls from the upper left: lighter leaves there, darker low and to the right
+    const lit = (-(x - cx) / rx - (y - cy) / ry) * 0.5 + (rand() - 0.5) * 0.9;
+    const c = LEAF[Math.max(0, Math.min(5, Math.round(2.5 + lit * 2.4)))];
+    leaves += `<ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(7 + rand() * 4)}" ry="${f(4 + rand() * 2)}" transform="rotate(${(rand() * 180) | 0} ${f(x)} ${f(y)})" fill="${c}"/>`;
+  }
+  let blossoms = '';
+  for (let i = 0; i < 26; i++) {
+    const a = rand() * Math.PI * 2, d = Math.sqrt(rand()) * 0.9;
+    const x = cx + Math.cos(a) * d * rx, y = cy + Math.sin(a) * d * ry - 14;
+    blossoms += `<g transform="translate(${f(x)} ${f(y)})">${[0, 1, 2, 3, 4].map((k) => `<circle cx="${f(Math.cos(k * 1.2566) * 3.4)}" cy="${f(Math.sin(k * 1.2566) * 3.4)}" r="2.8" fill="#fffaf0"/>`).join('')}<circle r="1.6" fill="#ffc23d"/></g>`;
+  }
+  const trunk = 'M-160 880 C-158 820 -170 760 -164 700 M-164 744 C-190 720 -220 704 -250 690 M-166 726 C-150 704 -120 690 -90 680 M-164 712 C-168 690 -176 670 -184 650';
+  const tree = `<path d="${trunk}" fill="none" stroke="var(--ink)" stroke-width="30" stroke-linecap="round"/><path d="${trunk}" fill="none" stroke="var(--bark)" stroke-width="22" stroke-linecap="round"/>
+    <path d="M-168 860 q4 -40 -2 -80 M-154 820 q3 -24 -1 -44" fill="none" stroke="#5e3a20" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-186 884 q14 -16 26 -8 q12 -10 28 6 Z" fill="var(--bark)" ${s2(2.5)}/>
+    <g class="crown">${lobes.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${LEAF[1]}" ${S}/>`).join('')}${lobes.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r - 1.5}" fill="${LEAF[1]}"/>`).join('')}${leaves}${blossoms}</g>`;
+
+  // the shrub band right under the kerb, thick with flowers
+  const shrubLobes = [];
+  for (let x = -520; x < 2120; x += 22) shrubLobes.push([x, 846 - rand() * 6, 15 + rand() * 6]);
+  let shrubFlowers = '';
+  for (let i = 0; i < 150; i++) {
+    const x = -520 + rand() * 2640, y = 830 + rand() * 26;
+    shrubFlowers += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(2.4 + rand() * 1.4)}" fill="${['#ff8ec4', '#fffaf0', '#ffd23f', '#ff7a59', '#e83e8c'][i % 5]}"/>`;
+  }
+  // lawn flowers in loose clusters, and tufts
+  let lawn = '';
+  for (let c = 0; c < 22; c++) {
+    const x0 = -400 + rand() * 2400, y0 = 872 + rand() * 24, col = ['#ff8ec4', '#fffaf0', '#ffd23f', '#ff9f1c'][c % 4];
+    for (let k = 0; k < 5; k++) lawn += `<circle cx="${f(x0 + (rand() - 0.5) * 30)}" cy="${f(y0 + (rand() - 0.5) * 10)}" r="${f(2.6 + rand() * 1.4)}" fill="${col}" ${s2(1)}/>`;
+  }
+  for (let i = 0; i < 40; i++) { const x = -400 + rand() * 2400, y = 870 + rand() * 30; lawn += `<path class="blade" style="--bd:${f(-rand() * 3)}s" d="M${f(x)} ${f(y)} q-1 -8 -4 -12 M${f(x + 4)} ${f(y)} q0 -10 2 -15" fill="none" stroke="#3e8a4c" stroke-width="2.2" stroke-linecap="round"/>`; }
+  // big leaves framing the bottom corners, like plants right in front of the camera
+  const bigLeaf = (x, y, rot, len, c) => `<path transform="translate(${x} ${y}) rotate(${rot})" d="M0 0 C${len * 0.3} ${-len * 0.22} ${len * 0.75} ${-len * 0.2} ${len} 0 C${len * 0.75} ${len * 0.2} ${len * 0.3} ${len * 0.22} 0 0 Z" fill="${c}" ${s2(2.5)}/><path transform="translate(${x} ${y}) rotate(${rot})" d="M4 0 H${len - 8}" stroke="${LEAF[0]}" stroke-width="2"/>`;
+  const corner = (x, flip) => [[-70, 120, LEAF[2]], [-40, 140, LEAF[1]], [-15, 110, LEAF[3]], [-100, 100, LEAF[2]]].map(([r, l, c], i) => bigLeaf(x + i * 14 * flip, 912, flip > 0 ? r : -180 - r, l, c)).join('');
+  // a front row of flowering bushes along the bottom edge, cut off by the frame
+  let front = '';
+  for (let x = -480; x < 2100; x += 120 + rand() * 60) {
+    if (x > 20 && x < 160) continue; // keep the bench and lamp clear
+    const k = 0.8 + rand() * 0.5, col = ['#ff8ec4', '#fffaf0', '#ffd23f', '#e83e8c', '#ff9f1c'][(Math.abs(x) / 7 | 0) % 5];
+    let fl = '';
+    for (let i = 0; i < 9; i++) fl += `<circle cx="${f(x + (rand() - 0.5) * 70 * k)}" cy="${f(904 - rand() * 30 * k)}" r="${f(3 + rand() * 1.6)}" fill="${col}" ${s2(1)}/>`;
+    front += foliage([[x - 26 * k, 914, 24 * k], [x, 900, 30 * k], [x + 28 * k, 912, 24 * k]], GREEN, [[x - 8 * k, 884, 9 * k]], 2) + fl;
+  }
   let petals = '';
-  for (let i = 0; i < 12; i++) petals += `<path class="petal" style="--x:${(rand() * 260 + 20) | 0}px;--d:${f(rand() * 8)}s;--t:${f(7 + rand() * 5)}s" d="M0 0 q6 -6 10 0 q-4 6 -10 0 Z" fill="var(--bloom)"/>`;
-  let grass = 'M-1600 1300 V836';
-  for (let x = -1600; x <= 3200; x += 40) grass += ` Q${x + 20} ${818 + (x % 120 === 0 ? -6 : 6)} ${x + 40} 836`;
-  grass += ' V1300 Z';
-  let blades = '';
-  for (let i = 0; i < 70; i++) { const x = rand() * 1600, h = 8 + rand() * 12; blades += `<path class="blade" style="--bd:${f(-rand() * 3)}s" d="M${f(x)} 842 q${f(rand() * 6 - 3)} ${f(-h / 2)} ${f(rand() * 8 - 4)} ${f(-h)}" stroke="var(--leaf-1)" stroke-width="2.5" stroke-linecap="round" fill="none"/>`; }
-  let flowers = '';
-  for (let i = 0; i < 26; i++) { const x = 340 + rand() * 1240, y = 852 + rand() * 30; flowers += `<g transform="translate(${x | 0} ${y | 0})"><g class="flower" style="--fd:${f(-rand() * 4)}s"><path d="M0 0 v10" stroke="var(--leaf-2)" stroke-width="2"/><circle r="4.5" fill="${['#fff', 'var(--sun)', 'var(--rose)'][i % 3]}" ${s2(1.5)}/><circle r="1.6" fill="${INK}" opacity=".6"/></g></g>`; }
+  for (let i = 0; i < 10; i++) petals += `<path class="petal" style="--x:${(rand() * 240) | 0}px;--d:${f(rand() * 8)}s;--t:${f(7 + rand() * 5)}s" d="M0 0 q6 -6 10 0 q-4 6 -10 0 Z" fill="#fffaf0"/>`;
   let flies = '';
-  for (let i = 0; i < 18; i++) flies += `<circle class="firefly" style="--fx:${f(rand() * 60 - 30)}px;--fy:${f(rand() * 40 - 20)}px;--fd:${f(-rand() * 6)}s;--ft:${f(4 + rand() * 4)}s;--wd:${f(0.6 + rand() * 1.4)}s" cx="${f(i < 10 ? rand() * 320 : 1380 + rand() * 220)}" cy="${f(i < 10 ? 520 + rand() * 200 : 760 + rand() * 90)}" r="${f(2 + rand() * 1.5)}"/>`;
+  for (let i = 0; i < 18; i++) flies += `<circle class="firefly" style="--fx:${f(rand() * 60 - 30)}px;--fy:${f(rand() * 40 - 20)}px;--fd:${f(-rand() * 6)}s;--ft:${f(4 + rand() * 4)}s;--wd:${f(0.6 + rand() * 1.4)}s" cx="${f(i < 10 ? -340 + rand() * 360 : 1380 + rand() * 220)}" cy="${f(i < 10 ? 520 + rand() * 260 : 780 + rand() * 90)}" r="${f(2 + rand() * 1.5)}"/>`;
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g class="art">
-  <g transform="translate(-120 0)">
-  <path d="M40 900 C46 820 32 760 70 650 M60 730 C30 700 0 690 -20 660 M70 700 C110 670 130 660 160 640" fill="none" stroke="var(--ink)" stroke-width="22" stroke-linecap="round"/>
-  <path d="M40 900 C46 820 32 760 70 650 M60 730 C30 700 0 690 -20 660 M70 700 C110 670 130 660 160 640" fill="none" stroke="var(--bark)" stroke-width="15" stroke-linecap="round"/>
-  <path d="M36 880 q6 -30 0 -60 M52 800 q4 -20 0 -40" fill="none" stroke="#5e3a20" stroke-width="3" stroke-linecap="round"/>
-  <g class="crown">${crown}${dots}</g></g>
-  <path d="${grass}" fill="var(--leaf-2)" ${S}/>
-  ${blades}${flowers}
-  <g transform="translate(1500 900)"><circle cx="-40" cy="-60" r="60" fill="var(--leaf-1)" ${S}/><circle cx="40" cy="-80" r="70" fill="var(--leaf-2)" ${S}/><circle cx="110" cy="-50" r="60" fill="var(--leaf-1)" ${S}/>
-    <circle cx="-30" cy="-90" r="5" fill="var(--rose)" ${s2(1.5)}/><circle cx="20" cy="-120" r="5" fill="#fff" ${s2(1.5)}/><circle cx="70" cy="-100" r="5" fill="var(--sun)" ${s2(1.5)}/></g>
-  <g class="signpost" transform="translate(330 900)"><path d="M0 0 V-118" ${s2(7)}/><path d="M0 0 V-118" stroke="var(--bark)" stroke-width="3"/>
+  <path d="M-1600 1300 V830 H3200 V1300 Z" fill="#8fcf72"/>
+  <path d="M-1600 868 Q-400 860 400 868 T2000 864 T3200 868" fill="none" stroke="#a9dc8c" stroke-width="10"/>
+  ${foliage(shrubLobes, GREEN, [], 0)}${shrubFlowers}
+  ${lawn}
+  <g transform="translate(46 890)"><rect x="-38" y="-22" width="76" height="7" rx="2" fill="#a3683f" ${s2(2.2)}/><rect x="-38" y="-36" width="76" height="6" rx="2" fill="#a3683f" ${s2(2.2)}/><path d="M-31 -15 v15 M31 -15 v15 M-31 -30 v8 M31 -30 v8" ${s2(3)}/></g>
+  <g transform="translate(118 892)"><path d="M0 0 V-120" ${s2(6)}/><path d="M-8 0 h16" ${s2(4)}/><path d="M-10 -120 h20 l-3 -16 h-14 Z" fill="#3b3750" ${s2(2.4)}/><circle class="bulb-day" cx="0" cy="-127" r="4" fill="#fff3c4"/><path d="M-7 -136 l7 -7 l7 7" fill="none" ${s2(2.4)}/></g>
+  ${tree}
+  <g transform="translate(-260 620)">${petals}</g>
+  <g transform="translate(980 884)"><path d="M-30 6 C-30 -16 -10 -24 8 -22 C26 -24 34 -8 32 6 Z" fill="#c9c3d6" ${S}/><path d="M-18 -8 q10 -8 22 -6" fill="none" stroke="#e8e4ef" stroke-width="4" stroke-linecap="round"/></g>
+  ${front}
+  ${corner(-500, 1)}${corner(2100, -1)}
+  <g class="signpost" transform="translate(560 900)"><path d="M0 0 V-118" ${s2(7)}/><path d="M0 0 V-118" stroke="var(--bark)" stroke-width="3"/>
     <path d="M-6 -116 H96 l14 14 l-14 14 H-6 Z" fill="#fff4e0" ${S}/><text x="44" y="-96" text-anchor="middle" class="sign sign-ink">AGENT TOWN</text>
     <path d="M6 -78 H-80 l-12 12 l12 12 H6 Z" fill="var(--sun)" ${S}/><text x="-40" y="-60" text-anchor="middle" class="sign sign-ink">EST. 2016</text></g>
   </g>
-  <g class="lights">${flies}</g>
+  <g class="lights">${flies}<circle class="lit" style="--wd:.5s" cx="118" cy="765" r="10" fill="#ffe9a8" opacity=".9"/></g>
 </svg>`;
 }
 
