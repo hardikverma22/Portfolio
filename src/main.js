@@ -10,6 +10,7 @@ import { initLab } from './lab.js';
 import { initGuide } from './guide.js';
 import { initStack } from './stack.js';
 import { initNudge } from './nudge.js';
+import { initCursor } from './cursor.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -233,13 +234,6 @@ function cruise() {
 }
 placeAuto();
 cruise();
-// when the bot stands up to wave its flag (see nudge.js), the town auto pulls over, then carries on
-document.addEventListener('nudge', (e) => {
-  if (townAuto.classList.contains('touring')) return;
-  const tw = gsap.getTweensOf(ta);
-  if (e.detail.on && e.detail.auto === townAuto) tw.forEach((t) => gsap.to(t, { timeScale: 0, duration: 0.5, ease: 'power2.out' }));
-  else if (!e.detail.on) tw.forEach((t) => gsap.to(t, { timeScale: 1, duration: 0.8, ease: 'power1.in' }));
-});
 function driveAuto(x, done) {
   townAuto.classList.add('touring');
   gsap.killTweensOf(ta);
@@ -615,7 +609,7 @@ edgeArrows($('#line'), { label: 'project' });
 document.fonts?.ready.then(hangPolaroids);
 
 /* =====================================================================
-   STACK: the gumball machine + the medal rack (see stack.js)
+   STACK: the keyboard + the medal rack (see keyboard.js, stack.js)
    ===================================================================== */
 initStack({ reduced });
 
@@ -825,3 +819,4 @@ addEventListener('load', () => ScrollTrigger.refresh());
 /* ---------------- the guide: one bot that walks you through the whole page ---------------- */
 initGuide({ reduced });
 initNudge({ reduced, scrollToEl });
+initCursor({ reduced });

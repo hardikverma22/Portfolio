@@ -663,61 +663,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .stack { padding: clamp(70px, 9vw, 120px) 0; }
 .stack-grid { display: block; }
 
-/* the gumball machine: SVG body, a canvas of capsules behind the glass, a crank you can turn */
-.gumball { display: grid; grid-template-columns: minmax(280px, 400px) minmax(0, 1fr); gap: clamp(30px, 5vw, 70px); align-items: center; margin-top: 30px; }
-.gb-machine { position: relative; width: 100%; aspect-ratio: 360 / 560; justify-self: center; user-select: none; -webkit-user-select: none; }
-.gb-back, .gb-front { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.gb-balls { position: absolute; border-radius: 50%; touch-action: pan-y; cursor: grab; }
-.gb-crank { position: absolute; left: 50%; top: 77.1%; width: 22.5%; aspect-ratio: 1; translate: -50% -50%; padding: 0; border: 0; background: none; border-radius: 50%; cursor: grab; touch-action: none; }
-.gb-crank:active { cursor: grabbing; }
-.gb-crank svg { width: 100%; height: 100%; overflow: visible; display: block; filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, .25)); }
-.gb-crank:hover svg { scale: 1.06; transition: scale .3s var(--spring); }
-.gb-hint { position: absolute; left: 196%; top: 2%; font-size: clamp(16px, 4.6vw, 21px); color: var(--text); white-space: nowrap; rotate: 6deg; animation: hintbob 1.6s ease-in-out infinite; }
-.gumball.turned .gb-hint { opacity: 0; transition: opacity .4s; animation: none; }
-@keyframes hintbob { 50% { translate: 4px -3px; } }
-.gb-cap { position: absolute; width: 9%; aspect-ratio: 1; margin: -4.5% 0 0 -4.5%; pointer-events: none; opacity: 0; visibility: hidden; }
-.gb-cap span { position: absolute; left: 0; right: 0; border: 2.5px solid var(--ink); }
-.gb-cap-bot { bottom: 0; height: 50%; border-radius: 0 0 99px 99px; background: rgba(255, 250, 240, .95); }
-.gb-cap-top { top: 0; height: 50%; border-radius: 99px 99px 0 0; background: var(--c); transform-origin: 0 100%; z-index: 2; }
-.gb-cap-paper { left: 18% !important; right: 18% !important; bottom: 40%; height: 120%; border-radius: 2px; background: #fffaf0 repeating-linear-gradient(transparent 0 5px, rgba(33, 28, 51, .2) 5px 6px); transform-origin: 50% 100%; z-index: 1; }
-
-.gb-side { display: grid; gap: 22px; align-content: center; }
-
-/* the slip prints out of a slot, like a receipt */
-.gb-printer { position: relative; padding-top: 14px; overflow: hidden; min-height: 250px; }
-.gb-slot { position: absolute; z-index: 2; top: 0; left: -2px; right: -2px; height: 16px; border-radius: 10px; background: #2a2440; border: 3px solid var(--ink); box-shadow: inset 0 4px 0 rgba(0, 0, 0, .4); }
-.gb-slip { --c: var(--sun); position: relative; margin: 0 16px; padding: 18px 22px 26px; background: #fffaf0; color: var(--ink); border: 2.5px solid var(--ink); border-top: 8px solid var(--c); box-shadow: 4px 5px 0 rgba(0, 0, 0, .15);
-  --zig: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%; -webkit-mask: var(--zig); mask: var(--zig); }
-.gs-k { display: flex; justify-content: space-between; margin: 0; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; color: #6b6480; }
-.gs-n { margin: 8px 0 6px; font: 900 clamp(28px, 3.6vw, 42px)/1 var(--f-display); font-variation-settings: 'SOFT' 100, 'WONK' 1; letter-spacing: -.02em; }
-.gs-note { margin: 0; font-size: 22px; line-height: 1.15; color: #4b4560; }
-.gs-w { display: flex; flex-wrap: wrap; gap: 14px; margin: 16px 0 0; padding-top: 12px; border-top: 2px dashed rgba(33, 28, 51, .25); font: 700 12px var(--f-mono); text-transform: uppercase; }
-.gs-w span { display: inline-flex; align-items: center; gap: 6px; }
-.gs-mk { width: 18px; height: 18px; border-radius: 4px; box-shadow: 0 0 0 1.5px var(--ink); }
-.gs-me { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--sun); border: 1.5px solid var(--ink); font: 700 7.5px var(--f-mono); font-style: normal; }
-.gs-p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 12px 0 0; }
-.gs-p span { font: 700 11px var(--f-mono); text-transform: uppercase; color: #6b6480; margin-right: 2px; }
-.gs-p b { padding: 3px 9px; border: 1.5px solid var(--ink); border-radius: 99px; background: color-mix(in srgb, var(--c) 45%, #fffaf0); font: 700 12.5px var(--f-body); }
-
-.gb-coll-k { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 0 10px; font: 700 12px var(--f-mono); text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); }
-.gb-coll-k .hand { font-size: 18px; text-transform: none; letter-spacing: 0; }
-.gb-all { display: grid; gap: 10px; }
-.gb-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: baseline; }
-.gb-row-k { margin: 0; display: flex; align-items: center; gap: 8px; font: 700 12px/1.3 var(--f-mono); text-transform: uppercase; letter-spacing: .04em; color: var(--text-2); }
-.gb-row-k::before { content: ''; flex: none; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ink); background: linear-gradient(var(--c) 50%, #fffaf0 50%); }
-.gb-row ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.gb-row button { padding: 4px 10px; border: 1.5px solid var(--ink); border-radius: 999px; background: color-mix(in srgb, var(--c) 22%, #fffaf0); color: var(--ink); font: 600 13px var(--f-body); transition: transform .3s var(--spring), background .3s, box-shadow .3s; }
-.gb-row button:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--c) 55%, #fffaf0); }
-.gb-row button.got { background: var(--c); }
-.gb-row button.now { box-shadow: 2px 2px 0 var(--ink); transform: translate(-1px, -2px); animation: got .5s var(--spring); }
-@keyframes got { from { transform: scale(1.25); } }
-@media (max-width: 860px) {
-  .gumball { grid-template-columns: 1fr; }
-  .gb-machine { max-width: 300px; }
-  .gb-row { grid-template-columns: 1fr; gap: 6px; }
-  .gb-hint { left: 50%; top: 214%; translate: -50% 0; rotate: 0deg; }
-}
-
 /* recognition: a rail of pegs, each medal hanging on its ribbon and swinging like a pendulum */
 .medals-wrap { margin-top: clamp(60px, 8vw, 110px); }
 .mr-sub { margin: -6px 0 0; }
@@ -1604,42 +1549,31 @@ html.ride-hover .ride svg { filter: drop-shadow(0 4px 6px rgba(33, 28, 51, .25))
 @keyframes tipnudge { 0%, 100% { scale: 1; } 30% { scale: 1.25; } 60% { scale: .95; } }
 @media (max-width: 759px) { .ride-walker { width: 28px; height: 34px; margin: -34px 0 0 -14px; } }
 
-/* the idle nudge: the auto on screen pulls over and its driver says what's next.
-   .nudge sits exactly on the auto's roof; the bubble grows out of that point */
-.nudge { position: fixed; z-index: 60; left: 0; top: 0; width: 0; height: 0; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: none; -webkit-tap-highlight-color: transparent; }
+/* the idle nudge: the bot peeks in from the left or right edge of the screen, above everything, with a
+   one-line bubble beside its head */
+.nudge { position: fixed; z-index: 70; right: 0; bottom: clamp(90px, 20svh, 200px); display: flex; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: none; -webkit-tap-highlight-color: transparent; }
+.nudge[data-side='left'] { right: auto; left: 0; flex-direction: row-reverse; }
 .nudge.on { pointer-events: auto; }
-/* the speech bubble: opens up and to the right of the roof (or left, near the right edge), tail pointing down at the auto */
-.ng-bubble { position: absolute; left: -18px; bottom: 16px; display: grid; gap: 2px; width: max-content; max-width: min(240px, 64vw); padding: 9px 13px 10px; border: 2.5px solid var(--ink); border-radius: 14px; background: #fffaf0; color: var(--ink); text-align: left; box-shadow: 3px 3px 0 var(--ink);
-  transform-origin: 18px calc(100% + 12px); scale: .3; opacity: 0; transition: scale .2s ease-in, opacity .15s; }
-.ng-bubble::after { content: ''; position: absolute; left: 12px; bottom: -11px; width: 14px; height: 11px; background: #fffaf0; border: 2.5px solid var(--ink); border-top: 0; border-right: 0; clip-path: polygon(0 0, 100% 0, 0 100%); }
-.nudge.flip .ng-bubble { left: auto; right: -18px; transform-origin: calc(100% - 18px) calc(100% + 12px); }
-.nudge.flip .ng-bubble::after { left: auto; right: 12px; border-left: 0; border-right: 2.5px solid var(--ink); clip-path: polygon(0 0, 100% 0, 100% 100%); }
-.nudge.on .ng-bubble { scale: 1; opacity: 1; transition: scale .5s var(--spring), opacity .15s; }
-.ng-bubble small { font: 700 10px var(--f-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--rose); }
-.ng-bubble b { font: 800 14.5px/1.25 var(--f-display); }
-.ng-arrow { display: inline-block; font: 900 15px var(--f-body); font-style: normal; color: var(--rose); }
+.ng-bubble { position: relative; display: block; width: max-content; white-space: nowrap; margin: 0 10px; padding: 8px 13px; border: 2.5px solid var(--ink); border-radius: 999px; background: #fffaf0; color: var(--ink); font: 700 14px/1.3 var(--f-body); text-align: left;
+  transform-origin: calc(100% + 10px) 50%; scale: .3; opacity: 0; transition: scale .2s ease-in, opacity .15s; }
+.nudge[data-side='left'] .ng-bubble { transform-origin: -10px 50%; }
+.nudge.on .ng-bubble { scale: 1; opacity: 1; transition: scale .45s var(--spring) .25s, opacity .15s .25s; }
+.ng-arrow { display: inline-block; font-style: normal; color: var(--rose); }
 .nudge.on .ng-arrow { animation: ngarrow 1s ease-in-out infinite; }
-.nudge:hover .ng-bubble { background: #fff3cf; } .nudge:hover .ng-bubble::after { background: #fff3cf; }
-/* peekaboo: when the auto is hidden behind something, the bot's head comes up over that thing's edge
-   (clipped at the edge, so it reads as rising from behind it) or pokes round its side */
-.ng-peek { position: absolute; left: -22px; bottom: 0; width: 44px; height: var(--peek, 40px); overflow: hidden; pointer-events: none; transform-origin: 50% 100%; }
-.nudge[data-side='auto'] .ng-peek { display: none; }
-.nudge[data-side='left'] .ng-peek { rotate: -90deg; }
-.nudge[data-side='right'] .ng-peek { rotate: 90deg; }
-.nudge[data-side='bottom'] .ng-peek { rotate: 180deg; }
-.ng-peek-in { position: absolute; left: 0; top: 0; width: 44px; height: 53px; transform: translateY(100%); transition: transform .3s ease-in; }
-.ng-peek-in svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.nudge.on .ng-peek-in { transform: none; transition: transform .55s var(--spring); }
-.nudge[data-side='top'] .ng-bubble { bottom: calc(var(--peek, 40px) + 8px); }
-.nudge[data-side='left'] .ng-bubble { left: auto; right: 6px; bottom: 30px; }
-.nudge[data-side='right'] .ng-bubble { left: 6px; bottom: 30px; }
-/* hanging from a bottom edge: the bubble sits below, its tail pointing up at the upside-down bot */
-.nudge[data-side='bottom'] .ng-bubble { bottom: auto; top: calc(var(--peek, 40px) + 12px); transform-origin: 18px -12px; }
-.nudge.flip[data-side='bottom'] .ng-bubble { transform-origin: calc(100% - 18px) -12px; }
-.nudge[data-side='bottom'] .ng-bubble::after { bottom: auto; top: -11px; border-top: 2.5px solid var(--ink); border-bottom: 0; clip-path: polygon(0 100%, 100% 100%, 0 0); }
-.nudge.flip[data-side='bottom'] .ng-bubble::after { clip-path: polygon(0 100%, 100% 100%, 100% 0); }
-.nudge.on:not([data-side='auto']) .ng-bubble { transition-delay: .3s; }
+.nudge:hover .ng-bubble { background: #fff3cf; }
 .nudge.still .ng-arrow { animation: none !important; }
+/* only part of the bot shows: the screen edge cuts it off, so it reads as peeking round the side */
+.ng-peek { position: relative; width: 52px; height: 96px; overflow: hidden; flex: none; }
+.ng-peek-in { position: absolute; inset: 0; transform: translateX(110%); transition: transform .3s ease-in; }
+.nudge[data-side='left'] .ng-peek-in { transform: translateX(-110%); }
+.ng-peek-in svg { position: absolute; left: 28px; top: 12px; width: 84px; height: 101px; rotate: -14deg; transform-origin: 50% 100%; overflow: visible; }
+.nudge[data-side='left'] .ng-peek-in svg { left: auto; right: 28px; scale: -1 1; rotate: 14deg; }
+.nudge.on .ng-peek-in, .nudge.on[data-side='left'] .ng-peek-in { transform: none; transition: transform .6s var(--spring); }
+.nudge.on .ng-peek-in svg { animation: ngtilt 2.4s ease-in-out .9s infinite; }
+.nudge.on[data-side='left'] .ng-peek-in svg { animation-name: ngtiltl; }
+@keyframes ngtilt { 0%, 100% { rotate: -14deg; } 50% { rotate: -6deg; } }
+@keyframes ngtiltl { 0%, 100% { rotate: 14deg; } 50% { rotate: 6deg; } }
+.nudge.still .ng-peek-in svg { animation: none; }
 @keyframes ngarrow { 50% { translate: 0 3px; } }
 
 /* How Grid thinks: the animated flow (gridflow.js). One moving thing, the ticket chip; the rest is state. */
@@ -1835,3 +1769,103 @@ html.ride-hover .ride svg { filter: drop-shadow(0 4px 6px rgba(33, 28, 51, .25))
 .line-wrap { --ea-y: 31%; }
 .ea-on > .line { scrollbar-width: none; }
 .ea-on > .line::-webkit-scrollbar { display: none; }
+
+/* ---------------- stack: the keyboard (keyboard.js) ---------------- */
+.keyboard { margin-top: 34px; max-width: 1060px; }
+.kb-case { --gap: 7px; position: relative; padding: 16px 18px 20px; border-radius: 26px; background: linear-gradient(#3a3355, #2a2440); border: 3px solid var(--ink); box-shadow: 6px 8px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, .12); }
+.kb-top { display: flex; gap: 14px; align-items: stretch; margin-bottom: 16px; }
+.kb-screen { flex: 1; min-width: 0; min-height: 118px; padding: 12px 16px; border-radius: 12px; background: #120f1d; border: 2.5px solid var(--ink); box-shadow: inset 0 0 0 2px #4a4266, inset 0 0 30px rgba(255, 201, 74, .07); color: #ffd86b; font-family: var(--f-mono); position: relative; overflow: hidden; }
+.kb-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(transparent 0 3px, rgba(0, 0, 0, .18) 3px 4px); }
+.ks-line { margin: 0; font: 700 clamp(20px, 2.6vw, 28px)/1.15 var(--f-mono); color: #ffe7a0; text-shadow: 0 0 10px rgba(255, 201, 74, .45); display: flex; align-items: baseline; gap: 4px; }
+.ks-prompt { color: var(--now, var(--sun)); }
+.ks-cur { display: inline-block; width: .55em; height: .95em; background: currentColor; translate: 0 .12em; animation: kscur 1s steps(1) infinite; }
+@keyframes kscur { 50% { opacity: 0; } }
+.ks-note { margin: 8px 0 0; font: 400 14px/1.45 var(--f-mono); color: #f3e6c4; max-width: 70ch; }
+.ks-meta { margin: 10px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: #b9b0cf; }
+.ks-meta:empty { display: none; }
+.ks-g { padding: 2px 8px; border-radius: 99px; background: var(--c); color: var(--ink); }
+.ks-w { display: inline-flex; align-items: center; gap: 6px; }
+.ks-mk { width: 16px; height: 16px; border-radius: 4px; }
+.ks-me { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--sun); color: var(--ink); font: 700 7px var(--f-mono); font-style: normal; }
+.ks-p { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.ks-p b { font-weight: 700; color: var(--c); }
+.kb-badge { flex: none; width: 112px; display: grid; align-content: space-between; padding: 10px 12px; border-radius: 12px; background: #fffaf0; border: 2.5px solid var(--ink); color: var(--ink); font: 700 11px var(--f-mono); text-transform: uppercase; }
+.kb-badge b { font: 900 22px/1 var(--f-display); letter-spacing: -.02em; text-transform: none; }
+.kb-badge span { display: flex; align-items: center; gap: 6px; }
+.kb-badge em { font-style: normal; }
+.kb-led { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 6px #3ddc84; }
+.kb-touch { display: none; }
+@media (hover: none) { .kb-touch { display: inline; } .kb-type { display: none; } }
+
+.kb-board { display: grid; gap: var(--gap); }
+.kb-row, .kb-half { display: flex; gap: var(--gap); }
+.kb-half { display: contents; }
+.kb-key { all: unset; box-sizing: border-box; flex: var(--u) 1 0; min-width: 0; height: clamp(58px, 5.4vw, 66px); padding: 0 0 6px; border-radius: 10px; border: 2px solid var(--ink); background: color-mix(in srgb, var(--c, #8e86a8) 55%, #211c33); cursor: pointer; position: relative; transition: box-shadow .3s; -webkit-tap-highlight-color: transparent; }
+.kb-cap { position: relative; display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding: 5px 5px 6px; border-radius: 7px; background: linear-gradient(color-mix(in srgb, var(--c, #8e86a8) 26%, #fffaf0), color-mix(in srgb, var(--c, #8e86a8) 42%, #fffaf0)); color: var(--ink); transition: translate .08s, background .25s; }
+.kb-ch { font: 700 10px var(--f-mono); font-style: normal; opacity: .55; }
+.kb-cap b { font: 800 clamp(10.5px, .95vw, 12px)/1.1 var(--f-body); letter-spacing: -.015em; overflow-wrap: anywhere; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.kb-key:hover .kb-cap { translate: 0 -1px; }
+.kb-key.down .kb-cap, .kb-key:active .kb-cap { translate: 0 4px; }
+.kb-key:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.kb-key.now .kb-cap { background: var(--c); }
+.kb-key.now { box-shadow: 0 0 0 3px var(--sun); }
+.kb-key.pair .kb-cap, .kb-key.lit .kb-cap { background: color-mix(in srgb, var(--c) 75%, #fffaf0); }
+.kb-key.pair { animation: kbpair 1.2s ease-in-out 2; }
+@keyframes kbpair { 50% { box-shadow: 0 0 16px 2px var(--c); } }
+.kb-mod { cursor: default; --c: #8e86a8; }
+.kb-mod .kb-cap { justify-content: flex-end; font: 700 10px var(--f-mono); text-transform: lowercase; color: #5d566f; }
+.kb-space .kb-cap { align-items: center; justify-content: center; }
+.kb-space .kb-cap b { font: 700 12px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; color: #5d566f; }
+.keyboard.wave .kb-key[data-i] .kb-cap { animation: kbwave .5s ease-out both; animation-delay: calc(var(--col) * 70ms + var(--ro, 0) * 0ms); }
+@keyframes kbwave { 40% { background: var(--c); translate: 0 3px; } }
+.kb-legend { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font: 700 12px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); }
+.kb-legend li { display: inline-flex; align-items: center; gap: 7px; cursor: default; }
+.kb-legend i { width: 12px; height: 12px; border-radius: 4px; background: var(--c); border: 2px solid var(--ink); }
+/* by night the board is backlit */
+[data-mode='night'] .kb-key[data-i] { box-shadow: 0 6px 16px -6px var(--c), 0 0 0 1px color-mix(in srgb, var(--c) 40%, transparent); }
+[data-mode='night'] .kb-key.now { box-shadow: 0 0 0 3px var(--sun), 0 0 22px var(--c); }
+[data-mode='night'] .kb-legend i { box-shadow: 0 0 8px var(--c); }
+
+/* phones and tablets: a split keyboard, left half above right half, no modifier keys */
+@media (max-width: 1120px) {
+  .keyboard { max-width: 600px; margin-inline: auto; }
+  .kb-case { --gap: 5px; padding: 12px 9px 14px; border-radius: 20px; box-shadow: 4px 6px 0 var(--ink); }
+  /* the screen sits between the two halves, never more than a couple of rows from the key you pressed */
+  .kb-case { display: flex; flex-direction: column; gap: var(--gap); }
+  .kb-board { display: contents !important; }
+  .kb-top { order: 5; margin: 7px 0; }
+  .kb-badge { display: none; }
+  .kb-screen { min-height: 132px; padding: 10px 12px; }
+  .ks-line { font-size: 20px; }
+  .ks-note { font-size: 13px; }
+  .kb-row { display: contents; }
+  .kb-half { display: flex; order: var(--ro); }
+  .kb-row-sp .kb-half, .kb-mod { display: none; }
+  .kb-key { flex: 1 1 0; height: 56px; }
+  .kb-space { order: 30; flex: none; margin-top: 12px; height: 48px; }
+  .kb-cap { justify-content: center; padding: 4px 3px 5px; text-align: center; }
+  .kb-ch { display: none; }
+  .kb-cap b { font-size: 10.5px; letter-spacing: -.02em; overflow-wrap: anywhere; line-height: 1.15; }
+}
+@media (max-width: 380px) { .kb-case { padding-inline: 8px; } .kb-cap b { font-size: 9.5px; } }
+
+
+/* ---------------- the cursor (cursor.js): a beacon dot, a trailing ring, labels where a click needs explaining ---------------- */
+html.has-cur, html.has-cur * { cursor: none !important; }
+html.has-cur input, html.has-cur textarea, html.has-cur select, html.has-cur [contenteditable='true'] { cursor: text !important; }
+.cur { position: fixed; inset: 0; z-index: 2147483000; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.cur.in { opacity: 1; }
+.cur[data-s='off'] { opacity: 0; }
+.cur-dot, .cur-ring { position: absolute; left: 0; top: 0; will-change: transform; }
+.cur-dot { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: var(--sun); border: 1.5px solid var(--ink); transition: scale .2s var(--spring), opacity .2s; }
+.cur-ring::before { content: ''; position: absolute; left: 0; top: 0; width: 34px; height: 34px; translate: -50% -50%; border-radius: 50%; border: 2px solid var(--ink); box-shadow: 0 0 0 1.5px rgba(255, 250, 240, .7), inset 0 0 0 1.5px rgba(255, 250, 240, .5); transition: width .35s var(--spring), height .35s var(--spring), background .25s, border-color .25s, opacity .2s, scale .2s; }
+.cur[data-s='hover'] .cur-ring::before { width: 54px; height: 54px; background: rgba(33, 28, 51, .06); border-color: var(--ink); }
+.cur[data-s='label'] .cur-ring::before { width: 10px; height: 10px; opacity: 0; }
+.cur-label { position: absolute; left: 14px; top: 16px; padding: 7px 12px; border-radius: 999px; background: var(--ink); color: #fff8e6; font: 800 13px/1 var(--f-body); white-space: nowrap; box-shadow: 0 0 0 2px #fffaf0, 3px 4px 0 rgba(33, 28, 51, .35); transform-origin: 0 0; scale: .2; opacity: 0; transition: scale .3s var(--spring), opacity .15s; }
+.cur[data-s='label'] .cur-label { scale: 1; opacity: 1; }
+.cur.down .cur-dot { scale: .55; }
+.cur.down .cur-ring::before { scale: .85; }
+[data-mode='night'] .cur-dot { box-shadow: 0 0 10px 3px rgba(255, 201, 74, .75); }
+[data-mode='night'] .cur-ring::before { border-color: #fff4dd; box-shadow: 0 0 12px rgba(255, 201, 74, .35); }
+[data-mode='night'] .cur[data-s='hover'] .cur-ring::before { border-color: var(--sun); }
+[data-mode='night'] .cur-label { background: var(--sun); color: var(--ink); box-shadow: 0 0 16px rgba(255, 201, 74, .5); }
