@@ -35,7 +35,7 @@ export const buildings = [
     role: 'Staff Software Engineer · AI agents',
     title: 'Walmart made me an AI advocate.',
     paras: [
-      'Walmart runs on a tech-driven, AI-first culture, with AI in front of customers too. I built **Grid**, a super agent that triages incidents right in the Slack thread, and **Delegation Hub**, so an agent can shop for you safely.',
+      'Walmart runs on a tech-driven, AI-first culture, with AI in front of customers too. I built **Grid**, a super agent that starts triaging the moment a bug or an incident comes in, and **Delegation Hub**, so an agent can shop for you safely.',
       'I shipped features for Walmart’s super agents **Wibey** and **Code Puppy**, and built tools like **token-OS** and **mimo**. That work is a big reason I was **promoted to Staff**.',
     ],
     stats: [['<5 min', 'to triage an incident, was 60–90'], ['~80%', 'fewer tokens with token-OS'], ['Finalist', 'global tech hackathon 2026']],
@@ -101,7 +101,7 @@ export const milestones = [
   { co: 'fidelity', y: '2022', place: 'Chennai', t: 'Tech lead', d: 'Led 12 engineers. Reusable platforms, ~90% faster time-to-market.' },
   { co: 'home', y: '2024', place: 'Chennai', t: 'Travel Planner AI', d: 'Built it to learn Convex, became a Convex Champion. Later acquired by Rutugo.' },
   { co: 'walmart', y: '2024', place: 'Bengaluru', t: 'Joined Walmart', d: 'Profile and payments, then identity: sign-in, passkeys, MFA and fraud checks for millions of customers.' },
-  { co: 'walmart', y: '2025', place: 'Bengaluru', t: 'Built Grid', d: 'A super agent that triages incidents in Slack. 60–90 minutes down to under 5.' },
+  { co: 'walmart', y: '2025', place: 'Bengaluru', t: 'Built Grid', d: 'A super agent that triages bugs and incidents before an engineer opens the laptop. 60–90 minutes down to under 5.' },
   { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Hackathon finalist', d: 'token-OS cuts ~80% of tokens on repeated tasks.' },
   { co: 'walmart', y: '2026', place: 'Bengaluru', t: 'Staff Software Engineer', d: 'Promoted for my work on AI. The road keeps going.' },
 ];

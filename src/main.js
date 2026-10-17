@@ -1,3 +1,4 @@
+import { edgeArrows } from './edgearrows.js';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -48,9 +49,12 @@ document.addEventListener('click', (e) => {
 const modeBtn = $('#mode');
 let wantNight = root.dataset.mode === 'night';
 let modeTimer = 0;
-const syncMode = () => modeBtn.setAttribute('aria-label', wantNight ? 'Switch to day' : 'Switch to night');
+const modeBtns = [modeBtn, $('#case-mode')].filter(Boolean);
+const syncMode = () => modeBtns.forEach((b) => b.setAttribute('aria-label', wantNight ? 'Switch to day' : 'Switch to night'));
 syncMode();
-modeBtn.addEventListener('click', () => {
+// the case-study sheet has its own switch; night spreads from whichever one was pressed
+modeBtns.forEach((b) => b.addEventListener('click', () => toggleMode(b)));
+function toggleMode(from) {
   wantNight = !wantNight;
   syncMode();
   try { localStorage.setItem('hv-mode', wantNight ? 'night' : 'day'); } catch (_) {}
@@ -59,13 +63,13 @@ modeBtn.addEventListener('click', () => {
   if (reduced) { settle(); return; }
   // on the hero, dusk (or dawn) first so the sky, lights and paper fade through in stages;
   // further down the page, night spreads as a circle from the switch (View Transitions)
-  const heroInView = $('#town').getBoundingClientRect().bottom > innerHeight * 0.35;
+  const heroInView = !root.classList.contains('case-open') && $('#town').getBoundingClientRect().bottom > innerHeight * 0.35;
   if (heroInView || !document.startViewTransition) {
     root.dataset.mode = wantNight ? 'dusk' : 'dawn';
     modeTimer = setTimeout(settle, wantNight ? 1100 : 900);
     return;
   }
-  const r = modeBtn.getBoundingClientRect();
+  const r = from.getBoundingClientRect();
   const x = r.left + r.width / 2, y = r.top + r.height / 2;
   const R = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
   // the new theme renders settled underneath; the circle is the only motion
@@ -76,7 +80,7 @@ modeBtn.addEventListener('click', () => {
     { duration: 1500, easing: 'cubic-bezier(.65, 0, .35, 1)', pseudoElement: '::view-transition-new(root)' },
   )).catch(() => {}); // skipped transitions (hidden tab, rapid clicks) still switch the theme
   vt.finished.finally(() => root.classList.remove('theme-snap'));
-});
+}
 const clock = $('#clock');
 const tick = () => {
   const t = new Intl.DateTimeFormat('en-GB', { timeZone: identity.tz, hour: '2-digit', minute: '2-digit' }).format(new Date());
@@ -120,53 +124,15 @@ if (fine && !reduced) {
   });
 }
 
-// portrait screens: the town is wider than the screen, so it becomes a street you swipe along,
-// one building at a time, with a stepper bar that says where you are and opens that chapter
-const portrait = matchMedia('(max-aspect-ratio: 1/1)');
+// upright screens: the whole street fits across the screen (no sideways swiping), and a small directory
+// above it names each building, with the same logo as the tag on its roof; tap one to open that chapter
 const STOPS = ['tcs', 'fidelity', 'lab', 'tower', 'press', 'home'];
-let pan = 0, stop = 0, dragMoved = false;
-const panLimit = () => Math.max(0, (scene.offsetWidth - innerWidth) / 2);
-const panFor = (id) => { const b = buildings.find((x) => x.id === id); return Math.max(-panLimit(), Math.min(panLimit(), scene.offsetWidth / 2 - (b.x / 1600) * scene.offsetWidth)); };
-const setPan = (v) => { pan = v; scene.style.setProperty('--pan', `${v}px`); };
-$('#sn-dots').innerHTML = STOPS.map(() => '<i></i>').join('');
-function goStop(i, animate = true) {
-  stop = (i + STOPS.length) % STOPS.length;
-  const b = buildings.find((x) => x.id === STOPS[stop]);
-  $('#sn-now').innerHTML = `${mark(pinMarks[b.id], 'sn-mk')}<span><b>${esc(b.name.replace('Walmart · ', 'Walmart ').replace('Walmart AI agents', 'AI agent lab').replace('Walmart Identity', 'Walmart identity'))}</b>${b.when ? `<small>${esc(b.when)}</small>` : ''}</span><em>Open</em>`;
-  $('#sn-now').setAttribute('aria-label', `Open ${b.name}`);
-  $$('#sn-dots i').forEach((d, k) => d.classList.toggle('on', k === stop));
-  if (!portrait.matches) return;
-  const to = panFor(b.id);
-  if (animate && !reduced) gsap.to({ v: pan }, { v: to, duration: 0.6, ease: 'power3.out', onUpdate() { setPan(this.targets()[0].v); } });
-  else setPan(to);
-}
-$('#street-nav').addEventListener('click', (e) => {
-  const a = e.target.closest('.sn-arrow');
-  if (a) goStop(stop + +a.dataset.step);
-  else if (e.target.closest('#sn-now')) openBuilding(STOPS[stop]);
-});
-{
-  let sx = 0, base = 0, drag = false;
-  stage.addEventListener('pointerdown', (e) => { if (!portrait.matches || e.target.closest('button,a,.tpanel,.street-nav')) return; drag = true; dragMoved = false; sx = e.clientX; base = pan; });
-  stage.addEventListener('pointermove', (e) => {
-    if (!drag || townOpen) return;
-    if (Math.abs(e.clientX - sx) > 6) dragMoved = true;
-    setPan(Math.max(-panLimit(), Math.min(panLimit(), base + (e.clientX - sx))));
-  });
-  addEventListener('pointerup', () => {
-    if (!drag) return;
-    drag = false;
-    if (!dragMoved) return;
-    // snap to the building nearest the middle of the screen
-    let best = 0, bd = Infinity;
-    STOPS.forEach((id, k) => { const d = Math.abs(panFor(id) - pan); if (d < bd) { bd = d; best = k; } });
-    goStop(best);
-  });
-  const sync = () => { if (portrait.matches) goStop(stop, false); else setPan(0); };
-  portrait.addEventListener('change', sync);
-  addEventListener('resize', sync);
-  goStop(0, false);
-}
+const shortName = { lab: 'AI agent lab', tower: 'Walmart identity', home: 'After hours' };
+$('#town-dir').innerHTML = '<p class="td-k">Tap a building</p>' + STOPS.map((id) => {
+  const b = buildings.find((x) => x.id === id);
+  return `<button type="button" data-id="${id}" aria-label="Open ${esc(b.name)}">${mark(pinMarks[id], 'td-mk')}<span><b>${esc(shortName[id] || b.name)}</b>${b.when ? `<small>${esc(b.when)}</small>` : ''}</span></button>`;
+}).join('');
+$('#town-dir').addEventListener('click', (e) => { const t = e.target.closest('button'); if (t) openBuilding(t.dataset.id); });
 
 // leaving town: no pin, no zoom. The layers just slide away at different speeds, so the street feels deep.
 if (!reduced) {
@@ -194,7 +160,7 @@ function openBuilding(id) {
   const px = (b.x / 1600) * W, py = (((b.y + (withAuto ? 860 : 700)) / 2) / 900) * H;
   const sx = narrow ? innerWidth * 0.5 : innerWidth * 0.66, sy = narrow ? innerHeight * 0.3 : innerHeight * (withAuto ? 0.52 : 0.56);
   gsap.to(cam, { x: sx - r.left - px * scale, y: sy - r.top - py * scale, scale, duration: 1.3, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#street-nav'], { autoAlpha: 0, duration: 0.4 });
+  gsap.to(['#hero-copy', '#fly-cue', '#town-dir'], { autoAlpha: 0, duration: 0.4 });
   cam.classList.add('focus');
   $$('.bld, .pin', cam).forEach((el) => el.classList.toggle('on', el.dataset.id === id));
   panel.innerHTML = `
@@ -226,7 +192,7 @@ function closeBuilding() {
   const was = townOpen;
   townOpen = null;
   gsap.to(cam, { x: 0, y: 0, scale: 1, duration: 1.1, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#street-nav'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
+  gsap.to(['#hero-copy', '#fly-cue', '#town-dir'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
   cam.classList.remove('focus');
   panel.classList.remove('open');
   panel.setAttribute('inert', '');
@@ -313,7 +279,6 @@ $('#tour-btn').addEventListener('click', () => {
   if (scrollY > 40) { scrollToEl(document.body); setTimeout(go, 900); } else go();
 });
 cam.addEventListener('click', (e) => {
-  if (dragMoved) { dragMoved = false; return; }
   const t = e.target.closest('.pin, .bld');
   if (t) openBuilding(t.dataset.id);
 });
@@ -646,6 +611,7 @@ function hangPolaroids() {
 }
 hangPolaroids();
 addEventListener('resize', hangPolaroids);
+edgeArrows($('#line'), { label: 'project' });
 document.fonts?.ready.then(hangPolaroids);
 
 /* =====================================================================

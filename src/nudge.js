@@ -134,6 +134,8 @@ export function initNudge({ reduced, scrollToEl }) {
   function show() {
     const k = current(), last = k === NEXT.length;
     if (busy()) return;
+    // on an upright phone the hero's own stepper is the guide; a bubble there only covers the street
+    if (k === 0 && matchMedia('(max-width: 600px) and (max-aspect-ratio: 1/1)').matches) return;
     if (last ? parkAsks >= 3 || stall?.classList.contains('serving') : seen.has(k)) return;
     if (scrollY + innerHeight >= root.scrollHeight - 40) return;
     anchor = findAnchor();

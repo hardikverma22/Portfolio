@@ -4,8 +4,9 @@
 // Turn the crank (tap it, or drag it round): it clicks every quarter turn, the capsules jostle, one drops
 // down the chute, bounces into the tray and pops open; its slip prints on the side with the tool, where
 // I used it and what for. A new capsule of the same tool drops back in from the top so the globe stays full.
-// Pick a flavour to choose the tier the next capsule comes from. Not everyone wants to play, so every
-// tool is also listed by tier underneath; tap one to print its slip (and its capsule hops in the globe).
+// On a narrow screen the slip is below the machine, so the page brings it into view as it prints.
+// Not everyone wants to play, so every tool is also listed by tier underneath; tap one to print its slip
+// (and its capsule hops in the globe).
 //
 // Medals: each hangs from a peg on its ribbon and swings like a pendulum when the cursor brushes past.
 // Tap one and the coin flips to its back, engraved with what it was for.
@@ -102,14 +103,11 @@ function initGumball(reduced) {
       <!-- the plate the crank sits on -->
       <rect x="124" y="386" width="112" height="92" rx="16" fill="url(#gb-steel)" stroke="${INK}" stroke-width="4"/>
       <circle cx="180" cy="432" r="34" fill="#c9c3d6" stroke="${INK}" stroke-width="3"/>
-      <!-- price tag -->
-      <rect x="138" y="396" width="84" height="0" fill="none"/>
       <!-- chute, flap and tray -->
       <rect x="146" y="488" width="68" height="40" rx="10" fill="#2a2440" stroke="${INK}" stroke-width="4"/>
       <path class="gb-flap" transform="rotate(0 180 492)" d="M150 492 H210 V512 Q180 518 150 512 Z" fill="url(#gb-steel)" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
       <path d="M136 526 Q136 548 160 548 H200 Q224 548 224 526" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>
     </svg>
-    <span class="gb-price" aria-hidden="true">₹0 · 1 tool</span>
     <button class="gb-crank" id="gb-crank" aria-label="Turn the crank for a random tool from my stack">
       <svg viewBox="-40 -40 80 80" aria-hidden="true"><circle r="27" fill="url(#gb-knob)" stroke="${INK}" stroke-width="4"/>
         <defs><radialGradient id="gb-knob" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#a9a2bb"/></radialGradient></defs>
@@ -119,11 +117,6 @@ function initGumball(reduced) {
     <div class="gb-cap" id="gb-cap" aria-hidden="true"><span class="gb-cap-top"></span><span class="gb-cap-bot"></span><span class="gb-cap-paper"></span></div>
   </div>
   <div class="gb-side">
-    <div class="gb-flav" role="group" aria-label="Choose a flavour">
-      <span class="gb-flav-k">Flavour</span>
-      <button class="on" data-t="any">Surprise me</button>
-      ${tiffin.map((t) => `<button data-t="${t.g}" style="--c:${colour[t.g]}"><i></i>${esc(t.label)}</button>`).join('')}
-    </div>
     <div class="gb-printer"><div class="gb-slot" aria-hidden="true"></div>
       <div class="gb-slip" id="gb-slip" aria-live="polite">
         <p class="gs-k">Your capsule</p>
@@ -140,7 +133,6 @@ function initGumball(reduced) {
   const machine = $('#gb-machine'), canvas = $('#gb-balls'), ctx = canvas.getContext('2d');
   const crank = $('#gb-crank'), cap = $('#gb-cap'), slip = $('#gb-slip'), flap = root.querySelector('.gb-flap');
   const opened = new Set();
-  let flavour = 'any';
 
   // ---- physics: all in the globe's own units (the glass is a circle of radius 135 centred at 135,135)
   const C = 135, RIN = 131, R = 15.5, G = 980;
@@ -220,13 +212,12 @@ function initGumball(reduced) {
     const n = Math.max(1, Math.round(dt / (1 / 120)));
     for (let s = 0; s < n; s++) step(dt / n);
     let moving = 0;
-    for (const b of balls) { moving = Math.max(moving, Math.abs(b.vx) + Math.abs(b.vy)); if (b.glow > 0 && !flavourGlow(b)) { b.glow = Math.max(0, b.glow - dt * 1.2); moving = Math.max(moving, 7); } }
+    for (const b of balls) { moving = Math.max(moving, Math.abs(b.vx) + Math.abs(b.vy)); if (b.glow > 0) { b.glow = Math.max(0, b.glow - dt * 1.2); moving = Math.max(moving, 7); } }
     draw();
     still = moving < 6 && !busy ? still + 1 : 0;
     if (inView && still < 40) raf = requestAnimationFrame(frame);
   }
   const wake = () => { still = 0; if (!raf && inView) { last = 0; raf = requestAnimationFrame(frame); } };
-  const flavourGlow = (b) => flavour !== 'any' && tools[b.i].tier === flavour;
 
   // ---- fill the globe the first time it comes into view: capsules pour in through the lid
   let filled = false;
@@ -276,19 +267,6 @@ function initGumball(reduced) {
     for (const b of balls) { b.vx += (Math.random() - 0.5) * 260 * f; b.vy -= (150 + Math.random() * 260) * f; }
     wake();
   }
-
-  // ---- flavours
-  root.querySelector('.gb-flav').addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    flavour = btn.dataset.t;
-    root.querySelectorAll('.gb-flav button').forEach((b) => b.classList.toggle('on', b === btn));
-    for (const b of balls) {
-      b.glow = flavourGlow(b) ? 1 : 0;
-      if (flavourGlow(b) && !reduced) { b.vy -= 220 + Math.random() * 120; b.vx += (Math.random() - 0.5) * 80; }
-    }
-    wake();
-  });
 
   // ---- the crank: tap for a full turn, or drag it round yourself
   let busy = false, turned = 0, dragging = null;
@@ -342,7 +320,7 @@ function initGumball(reduced) {
 
   // ---- one capsule out
   function pick() {
-    const pool = balls.filter((b) => !b.exit && (flavour === 'any' || tools[b.i].tier === flavour));
+    const pool = balls.filter((b) => !b.exit);
     const fresh = pool.filter((b) => !opened.has(b.i));
     const from = fresh.length ? fresh : pool;
     // prefer one near the bottom, so it looks like it fell through the hole
@@ -400,6 +378,9 @@ function initGumball(reduced) {
       <p class="gs-w">${places.map(([id, n]) => `<span>${id ? mark(id, 'gs-mk') : '<i class="gs-me">me</i>'}${esc(n)}</span>`).join('')}</p>
       ${pairs.length ? `<p class="gs-p"><span>pairs with</span>${pairs.map((p) => `<b style="--c:${p.c}">${esc(p.name)}</b>`).join('')}</p>` : ''}`;
     if (!reduced) gsap.fromTo(slip, { yPercent: -100, rotation: -1.5 }, { yPercent: 0, rotation: 0, duration: 0.7, ease: 'power3.out' });
+    // if the slip is off screen (below the machine on a phone, or above the list), bring it into view
+    const r = slip.getBoundingClientRect();
+    if (r.top < 70 || r.bottom > innerHeight - 10) slip.closest('.gb-printer').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
   }
   root.querySelector('.gb-all').addEventListener('click', (e) => {
     const btn = e.target.closest('button');

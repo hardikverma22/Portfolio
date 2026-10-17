@@ -1,6 +1,8 @@
 // Inside the Agent Lab: a workbench of four live devices, and a case page for each one.
 // Case pages have their own URL (#/lab/<id>), so they can be shared and the browser's Back button closes them.
 import { gsap } from 'gsap';
+import { gridFlowHTML, mountGridFlow } from './gridflow.js';
+import { delegateFlowHTML, mountDelegateFlow } from './delegateflow.js';
 import { lab } from './labdata.js';
 import { tokenos } from './data.js';
 import { mark } from './marks.js';
@@ -16,17 +18,17 @@ const fmt = (n) => Math.round(n).toLocaleString('en-US');
 const devices = {
   grid: () => `
     <div class="dv-screen dv-slack" aria-hidden="true">
-      <div class="dvs-top"><i></i><i></i><i></i><span># oncall</span></div>
+      <div class="dvs-top"><i></i><i></i><i></i><span># triage</span></div>
       <div class="dvs-feed">
-        <p class="dvs-msg alert"><b>Alerts</b> SEV-2 · OTP 5xx spike</p>
-        <p class="dvs-msg"><b>Priya</b> <em>@grid</em> can you take a look?</p>
-        <p class="dvs-msg bot"><b>Grid</b> On it. 5 sub-agents dispatched</p>
+        <p class="dvs-msg alert"><b>Jira</b> QA-2187 · can’t add a card</p>
+        <p class="dvs-msg bot"><b>Grid</b> Webhook received. Plan ready</p>
+        <p class="dvs-msg bot"><b>Grid</b> Logs, repro, then GitHub</p>
         <p class="dvs-msg bot ok"><b>Grid</b> Root cause found ✓</p>
       </div>
     </div>`,
   delegate: () => `
     <div class="dv-screen dv-gate" aria-hidden="true">
-      <div class="dvg-card"><span>agent</span><b>ShopBot</b></div>
+      <div class="dvg-card"><span>agent</span><b>Purchase Assistant</b></div>
       <div class="dvg-slot"></div>
       <div class="dvg-checks">${['profile', 'consent', 'token', 'scope', 'policy'].map((c, i) => `<i style="--i:${i}" title="${c}"></i>`).join('')}</div>
       <div class="dvg-switch"><span>access</span><i></i></div>
@@ -80,24 +82,14 @@ function caseHTML(p) {
     <div class="cs-stage" id="cs-stage"></div>
   </section>
   <section class="cs-nums">${p.numbers.map(([k, v]) => `<div><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join('')}</section>
-  ${p.id === 'grid' ? gridArch() : ''}
+  ${p.id === 'grid' ? gridArch() : ''}${p.id === 'delegate' ? `<section class="cs-arch"><h3>How the Hub keeps the agent honest</h3>${delegateFlowHTML()}</section>` : ''}
   <section class="cs-built"><h3>What I built</h3><ol>${p.built.map(([t, d]) => `<li><b>${esc(t)}</b><p>${esc(d)}</p></li>`).join('')}</ol></section>
   <section class="cs-stack"><h3>Stack</h3><ul>${p.stack.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></section>
   <footer class="cs-next"><button type="button" data-case="${next.id}"><span>Next in the lab</span><b>${esc(next.name)} →</b><small>${esc(next.hook)}</small></button></footer>`;
 }
 
 function gridArch() {
-  const agents = [['LogIQ', 'logs and traces', 'log & trace MCP · built from scratch'], ['CodeScout', 'code and recent changes', 'code search MCP'], ['Repro', 'reproduce in a browser', 'Playwright MCP'], ['Serviceability', 'service health', 'metrics and cluster MCP'], ['Communication', 'stakeholder updates', 'chat and email MCP']];
-  return `<section class="cs-arch"><h3>How Grid thinks</h3>
-    <div class="ga">
-      <div class="ga-col ga-in"><p class="ga-h">Tagged from</p>${['Slack', 'Teams', 'ServiceNow', 'JIRA', 'Outlook', 'Spotlight'].map((c) => `<span>${c}</span>`).join('')}</div>
-      <div class="ga-col ga-core">
-        <div class="ga-sup"><b>Supervisor</b><small>LangGraph · plans, dispatches, decides</small></div>
-        <div class="ga-mem"><div><b>Short-term memory</b><small>the thread’s working state</small></div><div><b>Long-term memory</b><small>past incidents and what fixed them</small></div><div><b>Knowledge base</b><small>RAG over runbooks, service maps, past fixes</small></div></div>
-        <div class="ga-human"><b>Human in the loop</b><small>approves, redirects, or steps in</small></div>
-      </div>
-      <div class="ga-col ga-agents"><p class="ga-h">Five sub-agents, in parallel</p>${agents.map(([n, d, m]) => `<div><b>${n}</b><small>${d}</small><code>${m}</code></div>`).join('')}</div>
-    </div></section>`;
+  return `<section class="cs-arch"><h3>How Grid thinks</h3>${gridFlowHTML()}</section>`;
 }
 
 /* =====================================================================
@@ -106,25 +98,35 @@ function gridArch() {
 const typing = '<span class="typing"><i></i><i></i><i></i></span>';
 
 function gridReplay(st) {
-  const subs = [['LogIQ', '412 errors in 10 min, 96% from one upstream'], ['CodeScout', 'retries set to 0 in yesterday’s config change'], ['Repro', 'verify returns 504 after 3.0 s in a real browser'], ['Serviceability', 'upstream p99 2.9 s, baseline 0.4 s'], ['Communication', 'status update drafted for #identity-leads']];
+  // sample run: a QA ticket for a card that won't save in the test environment
+  const subs = [
+    ['LogIQ', 'OpenObserve MCP: the save for card ••1111 failed with 400 card_expiry_invalid', 'run'],
+    ['Repro', 'Playwright MCP: reproduced in stage, the save fails, screenshot attached', 'run'],
+    ['GitHub', 'GitHub MCP: PR #482, merged yesterday, now expects the expiry as MM/YYYY', 'run'],
+    ['Serviceability', 'not needed: no sign of an outage or a deployment in progress', 'skip'],
+    ['Communication', 'ticket updated with the findings, PR author notified', 'run'],
+  ];
   st.innerHTML = `<div class="sk">
-    <aside class="sk-side"><p class="sk-ws">Walmart</p><p class="sk-sec">Channels</p><p># general</p><p class="on"># identity-oncall</p><p># identity-leads</p><p class="sk-sec">Apps</p><p><span class="sk-app">G</span> Grid</p></aside>
+    <aside class="sk-side"><p class="sk-ws">Walmart</p><p class="sk-sec">Channels</p><p># general</p><p class="on"># triage</p><p># releases</p><p class="sk-sec">Apps</p><p><span class="sk-app">G</span> Grid</p><p><span class="sk-app sk-app-j">J</span> Jira</p></aside>
     <div class="sk-main">
-      <header class="sk-head"># identity-oncall <small>on-call for sign-in and sign-up</small></header>
-      <div class="sk-msg sk-alert" data-s="0"><span class="sk-av av-alert">!</span><div><p class="sk-who">Alerts <span class="sk-tag">APP</span><time>2:14 AM</time></p><p><span class="sev">SEV-2</span> OTP verification 5xx spiking · Chile storefront</p><p class="sk-replies" data-s="1">5 replies · last reply just now</p></div></div>
+      <header class="sk-head"># triage <small>bugs and incidents, picked up by Grid</small></header>
+      <div class="sk-msg sk-alert" data-s="0"><span class="sk-av av-j">J</span><div><p class="sk-who">Jira <span class="sk-tag">APP</span><time>10:32 AM</time></p>
+        <p><span class="sev">QA-2187</span> Can’t add a credit card in stage</p>
+        <p class="sk-steps">Steps: Account → Wallet → Add card → Save<br/>Test card: 4111 1111 1111 1111 · 12/30 · CVV 123</p>
+        <p class="sk-replies" data-s="1">6 replies · last reply just now</p></div></div>
     </div>
     <div class="sk-thread">
-      <header class="sk-head">Thread <small># identity-oncall</small></header>
-      <div class="sk-msg" data-s="1"><span class="sk-av av-p">P</span><div><p class="sk-who">Priya<time>2:14 AM</time></p><p><span class="mention">@grid</span> can you take a look? I’m 10 minutes away</p></div></div>
-      <div class="sk-msg" data-s="2"><span class="sk-av av-g">G</span><div><p class="sk-who">Grid <span class="sk-tag">APP</span><time>2:14 AM</time></p><p class="sk-typing">${typing}</p><div class="sk-body"><p>On it. My plan:</p>
-        <ul class="sk-plan">${subs.map(([n, f], i) => `<li data-sub="${i}"><span class="sk-st"><i class="sp"></i><i class="ck">✓</i></span><b>${n}</b><em>${f}</em></li>`).join('')}</ul></div></div></div>
-      <div class="sk-msg" data-s="3"><span class="sk-av av-g">G</span><div><p class="sk-who">Grid <span class="sk-tag">APP</span><time>2:15 AM</time></p>
-        <div class="sk-card mem"><b>From long-term memory</b><p>A similar spike 3 weeks ago (INC-0388) was fixed by restoring upstream retries.</p></div>
-        <div class="sk-card kb"><b>From the knowledge base</b><p>Runbook “OTP upstream timeouts”, step 4: check retry config before scaling.</p></div></div></div>
-      <div class="sk-msg" data-s="4"><span class="sk-av av-g">G</span><div><p class="sk-who">Grid <span class="sk-tag">APP</span><time>2:17 AM</time></p>
-        <div class="sk-card verdict"><b>Likely root cause</b><p>Retries were set to 0 in yesterday’s config change, so slow upstream calls now fail verification.</p><b>Suggested fix</b><p>Restore <code>retries: 3</code> and roll the config back.</p><div class="sk-btns"><span class="sk-btn primary">Approve rollback</span><span class="sk-btn">Dig deeper</span></div></div></div></div>
-      <div class="sk-msg" data-s="5"><span class="sk-av av-r">R</span><div><p class="sk-who">Rohan<time>2:21 AM</time></p><p>Just joined. It’s already triaged? Approving the rollback.</p></div></div>
-      <p class="sk-foot" data-s="5"><b>3 minutes</b> to a root cause · by hand, 60 to 90</p>
+      <header class="sk-head">Thread <small># triage</small></header>
+      <div class="sk-msg" data-s="1"><span class="sk-av av-g">G</span><div><p class="sk-who">Grid <span class="sk-tag">APP</span><time>10:32 AM</time></p><p>Webhook received QA-2187. Reading the ticket: steps to reproduce and test card data included.</p></div></div>
+      <div class="sk-msg" data-s="2"><span class="sk-av av-g">G</span><div><p class="sk-who">Grid <span class="sk-tag">APP</span><time>10:33 AM</time></p><p class="sk-typing">${typing}</p><div class="sk-body"><p>Supervisor’s plan: check the logs and reproduce first, then decide.</p>
+        <ul class="sk-plan">${subs.map(([n, fnd, k], i) => `<li data-sub="${i}" data-kind="${k}"><span class="sk-st"><i class="sp"></i><i class="ck">${k === 'skip' ? '–' : '✓'}</i></span><b>${n}</b><em>${fnd}</em></li>`).join('')}</ul></div></div></div>
+      <div class="sk-msg" data-s="3"><span class="sk-av av-g">G</span><div><p class="sk-who">Grid <span class="sk-tag">APP</span><time>10:35 AM</time></p>
+        <div class="sk-card mem"><b>Supervisor’s call</b><p>It reproduces, and the logs point at our own validation code, not a downstream system or an outage. Sending the GitHub agent to find the change.</p></div>
+        <div class="sk-card kb"><b>From the knowledge base</b><p>Earlier card_expiry_invalid errors came from date-format changes in the card form.</p></div></div></div>
+      <div class="sk-msg" data-s="4"><span class="sk-av av-g">G</span><div><p class="sk-who">Grid <span class="sk-tag">APP</span><time>10:37 AM</time></p>
+        <div class="sk-card verdict"><b>Likely root cause</b><p>PR #482 changed expiry parsing to MM/YYYY, but the add-card form still sends MM/YY.</p><b>Suggested fix</b><p>Accept both formats, or revert the parsing change in #482.</p><b>In plain words</b><p>Saving a card fails in the test environment because a recent code change expects a four-digit expiry year.</p><div class="sk-btns"><span class="sk-btn primary">Approve and notify</span><span class="sk-btn">Dig deeper</span></div></div></div></div>
+      <div class="sk-msg" data-s="5"><span class="sk-av av-r">D</span><div><p class="sk-who">Dev<time>10:41 AM</time></p><p>Picked up the ticket and it’s already triaged. Fixing in #489.</p></div></div>
+      <p class="sk-foot" data-s="5"><b>5 minutes</b> from ticket to root cause · by hand, 60 to 90</p>
     </div>
   </div>`;
   const th = $('.sk-thread', st);
@@ -134,34 +136,40 @@ function gridReplay(st) {
   tl.call(() => show(0), null, 0.3).call(() => show(1), null, 1.4)
     .call(() => { show(2); $('[data-s="2"]', st).classList.add('is-typing'); }, null, 2.6)
     .call(() => $('[data-s="2"]', st).classList.remove('is-typing'), null, 3.6);
-  subs.forEach((_, i) => {
-    tl.call(() => $(`[data-sub="${i}"]`, st).classList.add('run'), null, 3.9 + i * 0.25)
-      .call(() => { $(`[data-sub="${i}"]`, st).classList.add('done'); follow(); }, null, 5.2 + i * 0.55);
-  });
-  tl.call(() => show(3), null, 8.2).call(() => show(4), null, 9.8).call(() => show(5), null, 11.6).to({}, { duration: 0.5 });
+  // logs and repro first, in parallel; then the supervisor decides; then the GitHub agent, a skipped check, and the update
+  const run = (i, t0, t1) => tl.call(() => $(`[data-sub="${i}"]`, st).classList.add('run'), null, t0).call(() => { $(`[data-sub="${i}"]`, st).classList.add(subs[i][2] === 'skip' ? 'skip' : 'done'); follow(); }, null, t1);
+  run(0, 3.9, 5.4); run(1, 4.1, 6.0);
+  tl.call(() => show(3), null, 6.8);
+  run(2, 7.6, 8.8); run(3, 8.9, 9.3); run(4, 9.4, 10.2);
+  tl.call(() => show(4), null, 11.0).call(() => show(5), null, 12.8).to({}, { duration: 0.5 });
   return tl;
 }
 
 function delegateReplay(st) {
   const checks = ['Agent profile', 'Your consent', 'Token exchange', 'Tool scope', 'Payload policy'];
+  // [request, checks passed, result, note]; the TV waits for you because it is over the spend limit
   const reqs = [
-    ['Add milk and eggs · $9.40', 5, 'ok', 'added to cart'],
-    ['Add a bottle of wine', 4, 'no', 'blocked: alcohol is off-limits'],
-    ['Add a $240 TV stand', 4, 'no', 'blocked: over your $200 cap'],
-    ['Submit order · $9.40', 5, 'wait', 'waiting for your approval'],
+    ['Find JLab earbuds', 5, 'ok', 'allowed: purchase_read'],
+    ['Add JLab earbuds · $49 · ship to Home', 5, 'ok', 'added to cart'],
+    ['Add a bottle of wine', 4, 'no', 'denied: alcohol on an under-age account'],
+    ['Check tomorrow’s weather', 1, 'no', 'skipped: you didn’t share weather'],
+    ['Buy a $5,400 TV', 4, 'wait', 'over your $5,000 limit: asking you'],
   ];
+  const WAIT = 4, LAST = reqs.length;
   st.innerHTML = `<div class="dg">
     <aside class="dg-policy">
-      <p class="dg-h">Your rules for <b>ShopBot</b></p>
-      <div class="dg-row"><span>Spend cap</span><b>$200</b></div><div class="dg-slider"><i style="width:40%"></i></div>
-      <div class="dg-row"><span>Never buy</span></div><div class="dg-chips"><span>Alcohol</span><span>Gift cards</span></div>
-      <div class="dg-row"><span>Can use</span></div><div class="dg-scopes"><span class="y">cart</span><span class="y">orders</span><span class="n">payments</span></div>
+      <p class="dg-h">Delegate access to <b>Purchase Assistant</b></p>
+      <div class="dg-row"><span>Spend limit</span><b>$5,000</b></div><div class="dg-slider"><i style="width:42%"></i></div>
+      <div class="dg-row"><span>Ask me beyond the limit</span><b>on</b></div>
+      <div class="dg-row"><span>Scopes</span></div><div class="dg-scopes"><span class="y">purchase read</span><span class="y">purchase admin</span><span class="n">weather</span></div>
+      <div class="dg-row"><span>Pays with</span><b>credit card</b></div>
+      <div class="dg-row"><span>Ships to</span><b>Home</b></div>
       <button class="dg-revoke" type="button" aria-pressed="false"><span>Access</span><i></i><em>on</em></button>
     </aside>
     <div class="dg-flow">
       <div class="dg-heads"><span>Request from the agent</span>${checks.map((c) => `<span>${c}</span>`).join('')}</div>
-      ${reqs.map(([t], i) => `<div class="dg-req" data-r="${i}"><span class="dg-t">${esc(t)}</span>${checks.map((_, k) => `<i data-k="${k}"></i>`).join('')}<em class="dg-out"></em></div>`).join('')}
-      <div class="dg-req dg-last" data-r="4"><span class="dg-t">Add bread</span>${checks.map((_, k) => `<i data-k="${k}"></i>`).join('')}<em class="dg-out"></em></div>
+      ${reqs.map(([q], i) => `<div class="dg-req" data-r="${i}"><span class="dg-t">${esc(q)}</span>${checks.map((_, k) => `<i data-k="${k}"></i>`).join('')}<em class="dg-out"></em></div>`).join('')}
+      <div class="dg-req dg-last" data-r="${LAST}"><span class="dg-t">Add bread</span>${checks.map((_, k) => `<i data-k="${k}"></i>`).join('')}<em class="dg-out"></em></div>
     </div>
   </div>`;
   const tl = gsap.timeline();
@@ -179,11 +187,11 @@ function delegateReplay(st) {
     t = end + 0.55;
   };
   reqs.forEach(([, upto, res, note], i) => runReq(i, upto === 5 && res !== 'wait' ? 5 : upto, res, note));
-  tl.call(() => { const row = $('[data-r="3"]', st); row.classList.remove('wait'); row.classList.add('ok'); $('.dg-out', row).textContent = 'approved by you · order placed'; $('[data-r="3"] [data-k="4"]', st).classList.replace('hold', 'pass'); }, null, t + 0.6);
+  tl.call(() => { const row = $(`[data-r="${WAIT}"]`, st); row.classList.remove('wait'); row.classList.add('ok'); $('.dg-out', row).textContent = 'approved by you · order placed'; $(`[data-r="${WAIT}"] [data-k="4"]`, st).classList.replace('hold', 'pass'); }, null, t + 0.6);
   t += 1.4;
   tl.call(() => { const b = $('.dg-revoke', st); b.classList.add('off'); b.setAttribute('aria-pressed', 'true'); $('em', b).textContent = 'revoked'; }, null, t);
   t += 0.8;
-  runReq(4, 2, 'no', 'invalid_grant: access revoked, agent cut off');
+  runReq(LAST, 2, 'no', 'token exchange failed: access revoked, agent cut off');
   tl.to({}, { duration: 0.4 });
   return tl;
 }
@@ -284,7 +292,7 @@ export function initLab({ reduced, lenis }) {
   }
 
   const sheet = $('#case'), body = $('#case-body'), scroller = $('#case-scroll');
-  let current = null, tl = null, opener = null, pushed = false, hiding = false;
+  let current = null, tl = null, opener = null, pushed = false, hiding = false, flow = null;
 
   let watch = null;
   function play(p, now = false) {
@@ -302,7 +310,10 @@ export function initLab({ reduced, lenis }) {
     const p = lab.find((x) => x.id === id);
     if (!p) return false;
     current = id;
+    flow?.kill(); flow = null;
     body.innerHTML = caseHTML(p);
+    if (p.id === 'grid') flow = mountGridFlow(body, { reduced, scroller });
+    if (p.id === 'delegate') flow = mountDelegateFlow(body, { reduced, scroller });
     $('#case-crumb').textContent = `${p.kind} · ${p.name}`;
     scroller.scrollTop = 0;
     play(p);
