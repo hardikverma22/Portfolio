@@ -655,32 +655,148 @@ $('#medals').innerHTML = awards.map(([y, t, w], i) => `<li style="--r:${[-3, 2, 
   <p class="md-t">${esc(t)}</p><p class="md-w">${mark(medalCo[w], 'md-mk')}${esc(w)}</p></li>`).join('');
 
 /* =====================================================================
-   CONTACT: copy, the postbox, and the town at night
+   CONTACT: the chai stall at the end of the road, and the town at night
    ===================================================================== */
 $('#mail').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(identity.email); $('#mail-s').textContent = 'copied!'; }
   catch (_) { location.href = `mailto:${identity.email}`; }
   setTimeout(() => { $('#mail-s').textContent = 'copy'; }, 1800);
 });
-$('#pb-svg').innerHTML = `<svg viewBox="0 0 200 330" aria-hidden="true">
-  <ellipse cx="100" cy="318" rx="80" ry="10" fill="rgba(0,0,0,.18)"/>
-  <rect x="44" y="284" width="112" height="30" rx="6" fill="#2a2638" stroke="#211c33" stroke-width="4"/>
-  <path d="M40 120 Q40 286 52 290 H148 Q160 286 160 120 Z" fill="#d93a2b" stroke="#211c33" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M30 118 Q30 40 100 36 Q170 40 170 118 Z" fill="#c22f22" stroke="#211c33" stroke-width="4" stroke-linejoin="round"/>
-  <rect x="26" y="112" width="148" height="16" rx="6" fill="#2a2638" stroke="#211c33" stroke-width="4"/>
-  <circle cx="100" cy="30" r="10" fill="#c22f22" stroke="#211c33" stroke-width="4"/>
-  <rect x="62" y="146" width="76" height="12" rx="6" fill="#211c33"/>
-  <rect x="62" y="176" width="76" height="46" rx="4" fill="#fff4e0" stroke="#211c33" stroke-width="3"/>
-  <text x="100" y="196" text-anchor="middle" font-family="Space Mono, monospace" font-weight="700" font-size="12" fill="#211c33">LETTERS</text>
-  <text x="100" y="212" text-anchor="middle" font-family="Space Mono, monospace" font-weight="700" font-size="8.5" fill="#5d566f">to Hardik</text>
-  <path d="M60 64 Q80 50 100 50" fill="none" stroke="#ff8a7a" stroke-width="5" stroke-linecap="round"/>
-  <path d="M54 140 V270" stroke="#ff8a7a" stroke-width="5" stroke-linecap="round"/>
+/* The road ends at a chai stall, the classic place for a conversation. Every way to reach me is a glass
+   on the counter with a note on what it's for. Tap one and the bot behind the counter walks over, tilts
+   the kettle and pours; the glass fills and steams, and then that channel opens. */
+const GLASSES = [
+  { id: 'mail', tag: '@', name: 'Email', note: 'roles, projects, or just hi', href: `mailto:${identity.email}?subject=${encodeURIComponent('Hello from Agent Town')}` },
+  { id: 'linkedin', tag: 'in', name: 'LinkedIn', note: 'the work, and what I learned', href: identity.links?.linkedin || 'https://www.linkedin.com/in/hardikverma22/' },
+  { id: 'github', tag: 'gh', name: 'GitHub', note: 'the code behind it all', href: identity.links?.github || 'https://github.com/hardikverma22' },
+  { id: 'medium', tag: 'M', name: 'Medium', note: 'what I’m learning, written down', href: identity.links?.medium || 'https://medium.com/@hardikverma22' },
+];
+const glassSvg = (i) => `<svg viewBox="0 0 64 92" aria-hidden="true">
+  <defs><clipPath id="gl-in-${i}"><path d="M15 30 L49 30 L45.5 82 Q32 86 18.5 82 Z"/></clipPath>
+  <linearGradient id="gl-chai-${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9a066"/><stop offset="1" stop-color="#a8663a"/></linearGradient></defs>
+  <g class="gl-steam" fill="none" stroke="#fffaf0" stroke-width="3" stroke-linecap="round"><path d="M24 24 q-5 -7 0 -13 q5 -6 0 -12"/><path d="M33 22 q-5 -7 0 -13 q5 -6 0 -12"/><path d="M42 24 q-5 -7 0 -13 q5 -6 0 -12"/></g>
+  <g clip-path="url(#gl-in-${i})"><rect class="gl-chai" x="10" y="74" width="44" height="40" fill="url(#gl-chai-${i})"/><ellipse class="gl-foam" cx="32" cy="74" rx="20" ry="3.2" fill="#f1d3ad"/></g>
+  <path d="M15 30 L49 30 L45.5 82 Q32 86 18.5 82 Z" fill="rgba(255,255,255,.28)" stroke="#211c33" stroke-width="2.8" stroke-linejoin="round"/>
+  <path d="M22 33 L23.5 80 M32 33 V83 M42 33 L40.5 80" stroke="#211c33" stroke-width="1.2" opacity=".18"/>
+  <path d="M18 34 L20 76" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+  <ellipse cx="32" cy="30" rx="17" ry="2.6" fill="none" stroke="#211c33" stroke-width="2.4"/>
 </svg>`;
-$('#postbox').addEventListener('click', () => {
-  const pb = $('#postbox');
-  pb.classList.add('posting');
-  setTimeout(() => { location.href = `mailto:${identity.email}?subject=${encodeURIComponent('Hello from Agent Town')}`; }, 950);
-  setTimeout(() => pb.classList.remove('posting'), 1800);
+$('#st-counter').innerHTML = GLASSES.map((g, i) => `<li><a class="glass" href="${g.href}" ${g.id === 'mail' ? '' : 'target="_blank" rel="noopener"'} data-i="${i}" aria-label="${g.name}: ${g.note}">
+  <span class="gl-cup">${glassSvg(i)}<i class="gl-tag">${g.tag}</i></span>
+  <b>${g.name}</b><span class="gl-note hand">${g.note}</span></a></li>`).join('');
+// the chaiwala: the same bot, behind the counter, holding a kettle. Hover (or tap) and it says hello.
+$('#st-vendor').innerHTML = `<span class="sv-bubble hand">Ek chai? Pick a glass!</span><svg viewBox="-50 -96 130 110" aria-hidden="true">
+  <g class="sv-bot">
+    <path d="M-8 0 v10 M8 0 v10" stroke="#211c33" stroke-width="5" stroke-linecap="round"/>
+    <rect x="-17" y="-24" width="34" height="26" rx="8" fill="#7cc4a8" stroke="#211c33" stroke-width="3"/>
+    <path d="M-10 -24 v26 M10 -24 v26" stroke="#fff8e6" stroke-width="3" opacity=".8"/>
+    <path class="sv-arm" d="M-17 -16 q-12 4 -12 -12" fill="none" stroke="#211c33" stroke-width="4" stroke-linecap="round"/>
+    <path d="M17 -16 q14 -4 14 -36" fill="none" stroke="#211c33" stroke-width="4" stroke-linecap="round"/>
+    <g class="sv-head">
+      <path d="M0 -64 v-10" stroke="#211c33" stroke-width="3" stroke-linecap="round"/><circle class="sv-bulb" cx="0" cy="-76" r="4.5" fill="#ffc94a" stroke="#211c33" stroke-width="2.4"/>
+      <rect x="-23" y="-64" width="46" height="38" rx="11" fill="#fff8e6" stroke="#211c33" stroke-width="3"/>
+      <rect x="-17" y="-58" width="34" height="23" rx="6" fill="#211c33"/>
+      <g class="sv-eyes"><circle cx="-6.5" cy="-46.5" r="3.4" fill="#7dffb0"/><circle cx="6.5" cy="-46.5" r="3.4" fill="#7dffb0"/></g>
+      <g class="sv-happy" fill="none" stroke="#7dffb0" stroke-width="2.6" stroke-linecap="round"><path d="M-10 -45 q3.5 -5 7 0"/><path d="M3 -45 q3.5 -5 7 0"/></g>
+      <g class="sv-cheeks" fill="#ff8fa3"><ellipse cx="-12" cy="-39" rx="3" ry="1.8"/><ellipse cx="12" cy="-39" rx="3" ry="1.8"/></g>
+    </g>
+  </g>
+  <g class="sv-kettle" transform="translate(0 -28)"><g class="sv-kbody">
+    <g class="sv-ksteam" fill="none" stroke="#fffaf0" stroke-width="2.2" stroke-linecap="round"><path d="M78 -62 q-4 -5 0 -10 q4 -5 0 -10"/><path d="M84 -60 q-4 -5 0 -10 q4 -5 0 -10"/></g>
+    <path d="M30 -46 h26 l4 26 q-17 6 -34 0 Z" fill="#c9c3d6" stroke="#211c33" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M58 -40 q14 -2 18 -16" fill="none" stroke="#211c33" stroke-width="4" stroke-linecap="round"/>
+    <circle class="sv-tip" cx="77" cy="-57" r="1" fill="none"/>
+    <path d="M29 -42 q-9 6 -1 16" fill="none" stroke="#211c33" stroke-width="3.5" stroke-linecap="round"/>
+    <rect x="34" y="-52" width="18" height="6" rx="3" fill="#a9a2bb" stroke="#211c33" stroke-width="2.4"/>
+    <path d="M36 -34 h20" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+  </g></g>
+</svg>`;
+// what every tea stall has: snack packets clipped to a string, and jars of rusk, biscuits and toffees on a shelf
+$('#st-decor').innerHTML = (() => {
+  const packs = [['#ef6a5b', '#ffc94a'], ['#ffc94a', '#2e6fb7'], ['#4fb06d', '#fffaf0'], ['#2e6fb7', '#ffc94a'], ['#c04a8c', '#fffaf0']];
+  const zig = 'l3 -3 l3 3 l3 -3 l3 3 l3 -3 l3 3 l3 -3';
+  const pk = packs.map(([c, d], i) => `<g transform="translate(${18 + i * 40} ${12 + Math.sin((i + 0.5) / 5 * Math.PI) * 9})"><g class="sd-pack" style="--i:${i}">
+    <rect x="-3" y="-3" width="6" height="7" rx="1" fill="#a9a2bb" stroke="#211c33" stroke-width="1.4"/>
+    <path d="M-10.5 4 ${zig} V34 l-3 3 l-3 -3 l-3 3 l-3 -3 l-3 3 l-3 -3 l-3 3 Z" fill="${c}" stroke="#211c33" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="0" cy="18" r="5" fill="${d}" stroke="#211c33" stroke-width="1.4"/><path d="M-6 28 h12" stroke="${d}" stroke-width="2" stroke-linecap="round"/></g></g>`).join('');
+  const jar = (x, lid, fill) => `<g transform="translate(${x} 96)"><rect x="-15" y="-36" width="30" height="36" rx="7" fill="rgba(255,255,255,.22)" stroke="#211c33" stroke-width="2.2"/>${fill}
+    <rect x="-12" y="-42" width="24" height="7" rx="3" fill="${lid}" stroke="#211c33" stroke-width="2"/><path d="M-10 -30 v20" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/></g>`;
+  const rusk = '<g fill="#d99a52" stroke="#8a5a2b" stroke-width="1"><rect x="-11" y="-14" width="22" height="7" rx="2"/><rect x="-11" y="-7" width="22" height="6" rx="2"/><rect x="-10" y="-21" width="20" height="7" rx="2" transform="rotate(-8)"/></g>';
+  const bisc = '<g fill="#e8b04a" stroke="#8a5a2b" stroke-width="1"><circle cx="-6" cy="-6" r="6"/><circle cx="6" cy="-6" r="6"/><circle cx="0" cy="-16" r="6"/><circle cx="-7" cy="-26" r="5"/></g>';
+  const tof = '<g stroke="#211c33" stroke-width=".8"><circle cx="-7" cy="-5" r="3.5" fill="#ef6a5b"/><circle cx="0" cy="-6" r="3.5" fill="#ffc94a"/><circle cx="7" cy="-5" r="3.5" fill="#4fb06d"/><circle cx="-4" cy="-12" r="3.5" fill="#2e6fb7"/><circle cx="4" cy="-12" r="3.5" fill="#c04a8c"/><circle cx="0" cy="-18" r="3.5" fill="#ef6a5b"/></g>';
+  return `<svg viewBox="0 0 220 110" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">
+    <path d="M0 10 Q110 30 220 10" fill="none" stroke="#211c33" stroke-width="1.6"/>${pk}
+    ${jar(118, '#ef6a5b', rusk)}${jar(158, '#ffc94a', bisc)}${jar(198, '#4fb06d', tof)}
+    <rect x="98" y="96" width="122" height="7" rx="2" fill="#9a6438" stroke="#211c33" stroke-width="2"/>
+    <path d="M110 103 l6 8 M208 103 l-6 8" stroke="#211c33" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+})();
+$('.st-lights').innerHTML = Array.from({ length: 9 }, (_, i) => `<i style="--i:${i}"></i>`).join('');
+
+const stall = $('#stall'), vendor = $('#st-vendor'), stream = $('#st-stream'), pourSvg = $('#st-pour');
+let pouring = false;
+function serve() { stall.classList.add('serving'); }
+vendor.addEventListener('click', () => { if (pouring) return; vendor.classList.add('greet'); clearTimeout(vendor._g); vendor._g = setTimeout(() => vendor.classList.remove('greet'), 1800); });
+document.addEventListener('stall', (e) => { if (e.detail === 'arrive') serve(); else if (e.detail === 'leave' && !pouring) stall.classList.remove('serving'); });
+function pour(glass) {
+  const i = +glass.dataset.i, g = GLASSES[i];
+  // opens once the glass is full and has had a moment to steam
+  const open = () => {
+    if (g.id === 'mail') { location.href = g.href; return; }
+    const w = window.open(g.href, '_blank');
+    if (w) w.opener = null; else location.href = g.href;
+  };
+  if (reduced) { open(); return; }
+  pouring = true;
+  stall.classList.add('pouring');
+  serve();
+  gsap.killTweensOf(vendor);
+  const sr = stall.getBoundingClientRect(), cup = glass.querySelector('.gl-cup'), gr = cup.getBoundingClientRect(), vr = vendor.getBoundingClientRect();
+  const pr = pourSvg.getBoundingClientRect();
+  pourSvg.setAttribute('viewBox', `0 0 ${pr.width} ${pr.height}`);
+  // the vendor steps behind the chosen glass so that, once the kettle tips, the spout sits just off the rim
+  // (facing left for the left-hand glasses). 1.04 is where the tipped spout lands across the vendor's 130-unit box.
+  const glassX = gr.left + gr.width / 2 - sr.left, baseLeft = vr.left - sr.left - gsap.getProperty(vendor, 'x');
+  const flip = glassX < sr.width * 0.45, tipFrac = flip ? -0.04 : 1.04;
+  const shift = glassX + (flip ? 9 : -9) - (baseLeft + tipFrac * vr.width);
+  const chai = glass.querySelector('.gl-chai'), foam = glass.querySelector('.gl-foam');
+  const kettle = vendor.querySelector('.sv-kettle'), tip = vendor.querySelector('.sv-tip');
+  const shine = $('#st-shine'), drops = $('#st-drops');
+  let L = 0, wobble = null;
+  gsap.timeline({ onComplete: () => { pouring = false; stall.classList.remove('pouring'); } })
+    .set(vendor, { scaleX: flip ? -1 : 1 })
+    .to(vendor, { x: shift, duration: Math.min(0.45, 0.15 + Math.abs(shift - gsap.getProperty(vendor, 'x')) / 1000), ease: 'power2.inOut' })
+    .to(kettle, { rotation: 38, svgOrigin: '44 -58', duration: 0.25, ease: 'power2.out' })
+    // chai leaves the spout moving sideways, then gravity takes it straight down into the glass
+    .call(() => {
+      const t = tip.getBoundingClientRect();
+      const sx = t.left + t.width / 2 - pr.left, sy = t.top + t.height / 2 - pr.top;
+      const ex = gr.left + gr.width / 2 - pr.left + (flip ? 3 : -3), ey = gr.top - pr.top + gr.height * 0.62;
+      const d = `M${sx} ${sy} C${sx + (flip ? -5 : 5)} ${sy + 2} ${ex} ${sy + 6} ${ex} ${ey}`;
+      stream.setAttribute('d', d);
+      shine.setAttribute('d', `M${sx} ${sy + 1} C${sx + (flip ? -4 : 4)} ${sy + 3} ${ex - 1.5} ${sy + 8} ${ex - 1.5} ${ey}`);
+      L = stream.getTotalLength();
+      gsap.fromTo([stream, shine], { strokeDasharray: L + 2, strokeDashoffset: L + 2, opacity: 1 }, { strokeDashoffset: 0, duration: 0.22, ease: 'power2.in' });
+      wobble = gsap.to(stream, { strokeWidth: 4.6, duration: 0.09, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+      // a few splashes where it lands
+      drops.innerHTML = Array.from({ length: 4 }, () => `<circle cx="${ex}" cy="${gr.top - pr.top + gr.height * 0.36}" r="1.8"/>`).join('');
+      gsap.fromTo(drops.children, { x: 0, y: 0, opacity: 0 }, { keyframes: [{ opacity: 1, duration: 0.01 }, { x: () => gsap.utils.random(-9, 9), y: () => gsap.utils.random(-12, -5), duration: 0.22, ease: 'power2.out' }, { y: 0, opacity: 0, duration: 0.2, ease: 'power2.in' }], delay: 0.22, stagger: { each: 0.14, repeat: 2 } });
+    })
+    .to(chai, { attr: { y: 36 }, duration: 0.85, ease: 'power1.out' }, '+=0.2')
+    .to(foam, { attr: { cy: 36 }, duration: 0.85, ease: 'power1.out' }, '<')
+    // the stream breaks at the spout and its tail falls into the glass
+    .add(() => { wobble?.kill(); gsap.to([stream, shine], { strokeDashoffset: -(L + 2), duration: 0.22, ease: 'power2.in' }); })
+    .to(kettle, { rotation: 0, svgOrigin: '44 -58', duration: 0.35, ease: 'power2.inOut' }, '+=0.05')
+    .call(() => glass.classList.add('steaming'))
+    .to(cup, { y: -8, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 1 }, '<+0.1')
+    // let it steam for a beat, then open the channel
+    .call(open, null, '+=0.9')
+    .call(() => { setTimeout(() => { glass.classList.remove('steaming'); gsap.set([stream, shine], { opacity: 0 }); gsap.set(chai, { attr: { y: 74 } }); gsap.set(foam, { attr: { cy: 74 } }); gsap.to(vendor, { x: 0, duration: 0.5, ease: 'power2.inOut', delay: 0.6, onComplete: () => gsap.set(vendor, { scaleX: 1 }) }); }, 1500); });
+}
+$('#st-counter').addEventListener('click', (e) => {
+  const glass = e.target.closest('.glass');
+  if (!glass) return;
+  e.preventDefault();
+  if (!pouring) pour(glass);
 });
 (() => {
   let b = '', w = '';

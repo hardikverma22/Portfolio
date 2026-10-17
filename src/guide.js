@@ -1,6 +1,6 @@
 // One auto ride. Below the town a wide road curves in from off the edge of the screen and sweeps across
 // the page behind the content, then curves away again before the journey (which has a highway of its
-// own). After the journey it curves back in and ends in a parking bay beside the postbox. The bot's auto
+// own). After the journey it curves back in and ends in a parking bay beside the chai stall. The bot's auto
 // drives it as you scroll, easing toward where it should be every frame, like a vehicle would.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -78,7 +78,7 @@ function road(svg, d, w, paint, extra = '') {
 
 export function initGuide({ reduced }) {
   const route = $('#route'), svg = $('#route-svg'), junction = $('#junction'), ride = $('#ride');
-  const town = $('#town'), journey = $('#journey'), postbox = $('#postbox');
+  const town = $('#town'), journey = $('#journey'), stall = $('#stall');
   ride.innerHTML = AUTO;
   const autoSvg = ride.firstElementChild;
   const STEP = 4;
@@ -112,8 +112,10 @@ export function initGuide({ reduced }) {
     if (!midA.length) midA = [[lo, (yB + jTop) / 2]];
     if (midA[midA.length - 1][0] === lo && midA.length > 1) midA.pop();
     const dA = enter(yB + vh * 0.12, midA[0]) + smooth(midA) + leave(midA[midA.length - 1], jTop - vh * 0.08);
-    // B: after the journey, off-screen right → … → the parking bay by the postbox
-    const park = [Math.max(lo, postbox.getBoundingClientRect().left + scrollX - w * 1.2), pageTop(postbox) + postbox.offsetHeight - w * 0.6];
+    // B: after the journey, off-screen right → … → the parking bay by the chai stall (beside it, or under it on a phone)
+    const sb = stall.getBoundingClientRect(), stallLeft = sb.left + scrollX, stallBot = pageTop(stall) + stall.offsetHeight;
+    const stacked = vw < 860;
+    const park = stacked ? [sb.left + scrollX + sb.width / 2, stallBot + w * 1.25] : [Math.max(lo, stallLeft - w * 1.2), stallBot - w * 0.6];
     let midB = swings(jBot + vh * 0.1, park[1], lo);
     if (!midB.length) midB = [[lo, (jBot + park[1]) / 2]];
     const ptsB = [...midB, park];
@@ -129,7 +131,7 @@ export function initGuide({ reduced }) {
       t.setAttribute('d', d); t.setAttribute('class', 'r-trail'); t.setAttribute('stroke-width', phone ? 5 : 7); t.dataset.piece = id;
       svg.appendChild(t);
     }
-    junction.insertAdjacentHTML('beforeend', `<g class="r-sign" transform="translate(${(park[0] + w * 1.25).toFixed(1)} ${(park[1] - w * 0.2).toFixed(1)})"><path d="M0 0 V-46" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/><rect x="-15" y="-78" width="30" height="34" rx="6" fill="#2e6fb7" stroke="var(--ink)" stroke-width="3"/><text x="0" y="-53" text-anchor="middle">P</text></g>`);
+    junction.insertAdjacentHTML('beforeend', `<g class="r-sign" transform="translate(${(park[0] + (stacked ? w * 1.4 : w * 0.78)).toFixed(1)} ${(park[1] + (stacked ? w * 0.95 : -w * 0.62)).toFixed(1)})"><ellipse cx="0" cy="2" rx="15" ry="4" fill="rgba(33,28,51,.14)"/><rect x="-3" y="-60" width="6" height="61" rx="3" fill="#c9c3d6" stroke="var(--ink)" stroke-width="2.4"/><rect x="-7" y="-4" width="14" height="6" rx="2" fill="#a9a2bb" stroke="var(--ink)" stroke-width="2"/><g class="r-plate"><rect x="-19" y="-104" width="38" height="40" rx="9" fill="#2e6fb7" stroke="var(--ink)" stroke-width="3"/><rect x="-15" y="-100" width="30" height="32" rx="6" fill="none" stroke="#fff" stroke-width="1.6" opacity=".9"/><text x="0" y="-75" text-anchor="middle">P</text><rect x="-29" y="-62" width="58" height="15" rx="4" fill="var(--sun)" stroke="var(--ink)" stroke-width="2.4"/><text class="r-sub" x="0" y="-51.5" text-anchor="middle">AUTO STAND</text></g></g>`);
     A = sample(dA, STEP);
     B = sample(dB, STEP);
     gsap.set(ride, { scale: phone ? 0.62 : 1 });
@@ -277,54 +279,41 @@ export function initGuide({ reduced }) {
     });
   });
 
-  // 3. The end of the road: parked in the bay, the bot hops out, walks to the postbox and posts a letter
+  // 3. The end of the road: parked by the chai stall, the bot hops out, walks over and takes its place behind the counter
   const walker = document.createElement('div');
   walker.className = 'ride-walker';
   walker.setAttribute('aria-hidden', 'true');
   walker.innerHTML = buddySvg();
-  const letter = document.createElement('div');
-  letter.className = 'ride-letter';
-  letter.setAttribute('aria-hidden', 'true');
-  letter.innerHTML = '<svg viewBox="0 0 30 20"><rect x="1.5" y="1.5" width="27" height="17" rx="2" fill="#fffaf0" stroke="#211c33" stroke-width="2"/><path d="M2.5 3 L15 11.5 L27.5 3" fill="none" stroke="#211c33" stroke-width="1.8" stroke-linejoin="round"/><rect x="21" y="4" width="5" height="6" rx="1" fill="#ef6a5b"/></svg>';
-  document.body.append(walker, letter);
+  document.body.append(walker);
   let endState = 'away', parkedSince = 0, endTl = null;
+  const tellStall = (detail) => document.dispatchEvent(new CustomEvent('stall', { detail }));
   function resetEnding() {
     endTl?.kill(); endTl = null;
-    gsap.set([walker, letter], { autoAlpha: 0 });
+    gsap.set(walker, { autoAlpha: 0 });
     walker.classList.remove('walking');
     endState = 'away';
   }
   function playEnding() {
     endState = 'playing';
-    if (reduced || !postbox) { endState = 'done'; return; }
-    const car = where(A.L + B.L), pb = postbox.getBoundingClientRect();
-    const ground = pb.bottom + scrollY - 6;
-    const from = car.x + 22, to = pb.left + scrollX + pb.width * 0.22;
-    const slot = { x: pb.left + scrollX + pb.width / 2, y: pb.top + scrollY + pb.height * 0.44 };
+    // once the chaiwala is behind the counter it stays there; no second walk on later visits
+    if (reduced || !stall || stall.classList.contains('serving')) { endState = 'done'; tellStall('arrive'); return; }
+    const car = where(A.L + B.L), sb = stall.getBoundingClientRect();
+    const stacked = document.documentElement.clientWidth < 860;
+    const ground = stacked ? car.y + 10 : sb.bottom + scrollY - 6;
+    const from = car.x + 22, to = stacked ? sb.left + scrollX + sb.width * 0.5 : sb.left + scrollX + 14;
     const walk = Math.abs(to - from) / 170;
     endTl = gsap.timeline({ onComplete: () => { endState = 'done'; } })
-      .set(walker, { x: from, y: ground, scaleX: 1, autoAlpha: 0, scale: 0.5 })
+      .set(walker, { x: from, y: ground, scaleX: to < from ? -1 : 1, autoAlpha: 0, scale: 0.5 })
       // hops out of the auto
       .to(walker, { autoAlpha: 1, scale: 1, y: ground - 16, duration: 0.25, ease: 'power2.out' })
       .to(walker, { y: ground, duration: 0.3, ease: 'bounce.out' })
-      // walks over to the postbox
+      // walks over to the stall and slips round the back
       .call(() => walker.classList.add('walking'))
       .to(walker, { x: to, duration: walk, ease: 'none' })
       .call(() => walker.classList.remove('walking'))
-      // throws the letter in an arc into the slot
-      .set(letter, { x: to + 10, y: ground - 40, autoAlpha: 1, scale: 1, rotation: -10 })
-      .to(letter, { x: slot.x, rotation: 340, scale: 0.6, duration: 0.75, ease: 'none' }, '>')
-      .to(letter, { y: Math.min(slot.y, ground - 40) - 70, duration: 0.38, ease: 'power2.out' }, '<')
-      .to(letter, { y: slot.y, duration: 0.37, ease: 'power2.in' }, '>')
-      .set(letter, { autoAlpha: 0 })
-      .call(() => { postbox.classList.add('posting'); setTimeout(() => postbox.classList.remove('posting'), 1300); postbox.classList.add('tip-nudge'); setTimeout(() => postbox.classList.remove('tip-nudge'), 1600); })
-      // a happy hop, then back into the auto
-      .to(walker, { y: ground - 18, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 1 }, '+=0.25')
-      .set(walker, { scaleX: -1 })
-      .call(() => walker.classList.add('walking'))
-      .to(walker, { x: from, duration: walk, ease: 'none' }, '+=0.2')
-      .call(() => walker.classList.remove('walking'))
-      .to(walker, { autoAlpha: 0, scale: 0.5, y: ground - 10, duration: 0.25, ease: 'power2.in' });
+      .to(walker, { autoAlpha: 0, scale: 0.8, duration: 0.25, ease: 'power2.in' })
+      // and pops up behind the counter, ready to pour
+      .call(() => tellStall('arrive'));
   }
   function ending(want) {
     const total = A.L + B.L, parked = want >= total - 1 && Math.abs(u - total) < 1.5;
