@@ -86,7 +86,6 @@ function far() {
   <g>${city}
     <g fill="var(--city-far)"><path d="M1370 640 V560 H1440 V640 Z M1378 560 V528 H1432 V560 Z M1386 528 V500 H1424 V528 Z M1394 500 V476 H1416 V500 Z M1400 476 l5 -16 l5 16 Z"/>
     <path d="M200 640 V552 Q240 500 280 552 V640 Z"/></g>
-    <g fill="var(--city-far)"><path d="M520 640 Q522 560 530 520" stroke="var(--city-far)" stroke-width="6" fill="none"/><path d="M530 520 q-30 -4 -44 10 q24 -16 44 -10 q-20 -24 -42 -24 q28 -2 42 24 q8 -26 34 -30 q-24 12 -34 30 q30 -10 46 4 q-30 -8 -46 -4Z"/></g>
   </g>
   <defs><linearGradient id="g-haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--haze)" stop-opacity="0"/><stop offset="1" style="stop-color:var(--haze)" stop-opacity=".75"/></linearGradient></defs>
   <rect x="-1600" y="380" width="4800" height="280" fill="url(#g-haze)"/>
@@ -219,7 +218,7 @@ function tower() {
     <rect x="1014" y="258" width="152" height="10" fill="#3f63cf" ${s2(2.5)}/>
     <path d="M1090 270 V640" stroke="#3f63cf" stroke-width="6"/>
     <path d="M1024 270 V640 M1156 270 V640" stroke="#6f95ff" stroke-width="3" opacity=".7"/>
-    ${windows(1034, 278, 2, 13, 20, 18, 12, 11, { glint: true })}${windows(1102, 278, 2, 13, 20, 18, 12, 11, { glint: true })}
+    ${windows(1034, 278, 2, 12, 20, 18, 12, 11, { glint: true })}${windows(1102, 278, 2, 12, 20, 18, 12, 11, { glint: true })}
     <rect x="1030" y="636" width="120" height="10" fill="#3f63cf" ${s2(2.5)}/>
     <rect x="1060" y="646" width="60" height="54" fill="var(--door-glow)" ${S}/>
     <g class="revolve"><path d="M1090 652 v48" ${s2(2.5)}/><path d="M1072 676 h36" ${s2(2.5)}/></g>
@@ -236,7 +235,7 @@ function press() {
     <rect x="1225" y="560" width="160" height="140" fill="#e2725b" ${S}/>
     <defs><clipPath id="cp-tick"><rect x="1234" y="568" width="142" height="18"/></clipPath></defs>
     <rect x="1232" y="566" width="146" height="22" rx="3" fill="#2a2234" ${s2(2.5)}/>
-    <g clip-path="url(#cp-tick)"><g class="ticker"><text x="1380" y="582" class="tick-t">${titles}${titles}</text></g></g>
+    <g clip-path="url(#cp-tick)"><g class="ticker"><text x="1238" y="582" class="tick-t">${titles}${titles}</text></g></g>
     <path d="M1218 600 H1392 L1380 626 H1230 Z" fill="#fff4e0" ${S}/>
     ${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${1236 + i * 26} 600 h13 l-2 26 h-13 Z" fill="#e2725b"/>`).join('')}
     <path d="M1218 600 H1392 L1380 626 H1230 Z" fill="none" ${S}/>
@@ -249,24 +248,45 @@ function press() {
   return s;
 }
 function home() {
+  // a Bengaluru house: two floors, a terrace with the black water tank, sunshades over the windows and
+  // potted plants on the parapet. By day the bot flies a kite off the terrace; at night the kite is put away
+  // and the study window glows: that's where the side projects happen.
   const s = `<g class="bld" data-id="home">
-    <path d="M1520 278 Q1586 430 1555 576" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
-    <g transform="translate(1520 200)"><g>
-      <path d="M0 0 L26 34 L0 78 L-26 34 Z" fill="var(--rose)" ${S}/><path d="M0 0 V78 M-26 34 H26" ${s2(2)}/><path d="M0 0 L26 34 L0 34 Z" fill="#ffd25e" opacity=".9"/>
-      <path d="M0 78 C10 96 -10 110 4 128 C14 142 -4 152 6 166" fill="none" ${s2(2)}/>
-      <path d="M2 100 l9 -5 l-2 10 Z M3 144 l-9 -5 l2 10 Z" fill="var(--sun)" ${s2(1.8)}/>
-      ${swing(0, 34, -6, 7, 5)}</g></g>
-    <path d="M1424 612 L1495 560 L1566 612 Z" fill="#c2593a" ${S}/><path d="M1446 596 L1495 560 L1544 596" fill="none" stroke="#e07a52" stroke-width="3"/>
-    <rect x="1536" y="560" width="14" height="30" fill="#9a3f2a" ${s2(2.5)}/>
-    <g transform="translate(1546 600)"><g class="flier">${bot('', '#ffd25e', 'none')}<path d="M10 -12 L9 -24" ${s2(3)}/></g></g>
-    <rect x="1432" y="610" width="126" height="90" fill="#fff4e0" ${S}/>
-    <path d="M1432 622 H1558" stroke="#f2d9b8" stroke-width="3"/>
-    <rect x="1444" y="632" width="52" height="38" rx="2" fill="var(--glass)" ${S}/><path d="M1470 632 v38 M1444 651 h52" stroke="${INK}" stroke-width="2"/>
-    <g transform="translate(1458 666)"><path d="M0 0 l4 -12 l8 -2" fill="none" ${s2(2)}/><path d="M10 -18 l8 2 l-3 6 Z" fill="#ffd25e" ${s2(1.6)}/><rect x="-6" y="0" width="12" height="3" fill="${INK}"/></g>
-    <rect x="1508" y="642" width="34" height="58" fill="#5a7bd8" ${S}/><circle cx="1536" cy="672" r="2.2" fill="#ffd25e"/>
-    <rect x="1440" y="672" width="60" height="8" rx="2" fill="#c9935a" ${s2(2)}/><circle cx="1452" cy="668" r="5" fill="var(--leaf-1)" ${s2(1.8)}/><circle cx="1488" cy="667" r="6" fill="#ef6a5b" ${s2(1.8)}/>
+    <g class="dayonly">
+      <path d="M1520 286 Q1576 430 1543 532" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+      <g transform="translate(1520 208)"><g>
+        <path d="M0 0 L26 34 L0 78 L-26 34 Z" fill="var(--rose)" ${S}/><path d="M0 0 V78 M-26 34 H26" ${s2(2)}/><path d="M0 0 L26 34 L0 34 Z" fill="#ffd25e" opacity=".9"/>
+        <path d="M0 78 C10 96 -10 110 4 128 C14 142 -4 152 6 166" fill="none" ${s2(2)}/>
+        <path d="M2 100 l9 -5 l-2 10 Z M3 144 l-9 -5 l2 10 Z" fill="var(--sun)" ${s2(1.8)}/>
+        ${swing(0, 34, -6, 7, 5)}</g></g>
+    </g>
+    <!-- terrace: water tank and the kite flier -->
+    <g transform="translate(1462 566)"><rect x="-13" y="-24" width="26" height="24" rx="5" fill="#2f2d3b" ${s2(2.5)}/><path d="M-13 -16 h26 M-13 -8 h26" stroke="#4a4758" stroke-width="2"/><rect x="-6" y="-29" width="12" height="6" rx="2" fill="#2f2d3b" ${s2(2)}/></g>
+    <g transform="translate(1532 556)"><g class="flier">${bot('', '#ffd25e', 'none')}<g class="dayonly"><path d="M11 -12 L12 -24" ${s2(3)}/></g></g></g>
+    <!-- first floor -->
+    <rect x="1446" y="572" width="100" height="50" fill="#f3c98b" ${S}/>
+    <rect x="1462" y="584" width="30" height="26" rx="2" fill="var(--glass)" ${s2(2.5)}/><path d="M1477 584 v26" stroke="${INK}" stroke-width="2"/>
+    <path d="M1458 582 h38" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+    <rect x="1506" y="584" width="30" height="26" rx="2" fill="var(--glass)" ${s2(2.5)}/><path d="M1521 584 v26" stroke="${INK}" stroke-width="2"/>
+    <path d="M1502 582 h38" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+    <!-- parapet with a grill and plants -->
+    <rect x="1440" y="564" width="112" height="9" fill="#fff4e0" ${s2(2.5)}/>
+    <path d="M1446 573 v-9 M1458 573 v-9 M1470 573 v-9 M1482 573 v-9 M1494 573 v-9 M1506 573 v-9 M1518 573 v-9 M1530 573 v-9 M1542 573 v-9" stroke="${INK}" stroke-width="1.2" opacity=".35"/>
+    <g transform="translate(1500 564)"><path d="M-6 0 l2 -8 h8 l2 8 Z" fill="#c2593a" ${s2(1.8)}/><path d="M0 -8 q-6 -8 -8 -12 M0 -8 q2 -10 6 -13 M0 -8 q-1 -9 -1 -14" fill="none" stroke="#4f9a58" stroke-width="2.4" stroke-linecap="round"/></g>
+    <!-- ground floor -->
+    <rect x="1436" y="622" width="120" height="78" fill="#fff4e0" ${S}/>
+    <path d="M1436 626 H1556" stroke="#f2d9b8" stroke-width="3"/>
+    <rect x="1448" y="642" width="46" height="34" rx="2" fill="var(--glass)" ${S}/><path d="M1460 642 v34 M1471 642 v34 M1482 642 v34" stroke="${INK}" stroke-width="1.6" opacity=".55"/>
+    <path d="M1444 638 h54" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+    <g transform="translate(1471 676)"><path d="M-20 -6 h40" ${s2(2.4)}/><rect x="-9" y="-19" width="16" height="11" rx="1.5" fill="#2f2d3b" ${s2(1.8)}/><rect x="-7" y="-17" width="12" height="7" rx="1" fill="#9fd0ff"/><path d="M-11 -7 h20" ${s2(2.4)}/><path d="M11 -11 h5 v5 h-5 Z" fill="#fff" ${s2(1.4)}/></g>
+    <rect x="1508" y="646" width="32" height="54" rx="2" fill="#5a7bd8" ${S}/><path d="M1524 646 v54" stroke="${INK}" stroke-width="1.6" opacity=".4"/><circle cx="1534" cy="674" r="2" fill="#ffd25e"/>
+    <path d="M1502 642 h44" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
+    <rect x="1504" y="698" width="40" height="5" rx="1.5" fill="#d8cdb8" ${s2(1.8)}/>
+    <g transform="translate(1440 700)"><path d="M-5 0 l1.5 -9 h11 l1.5 9 Z" fill="#c2593a" ${s2(1.8)}/><circle cx="2" cy="-14" r="7" fill="var(--leaf-1)" ${s2(1.8)}/></g>
   </g>`;
-  glow(`<rect class="soft" x="1444" y="632" width="52" height="38" rx="2"/>`, 0.2);
+  glow(`<rect class="soft" x="1448" y="642" width="46" height="34" rx="2"/>`, 0.2);
+  glow(`<rect class="soft" x="1462" y="584" width="30" height="26" rx="2"/>`, 0.35);
+  glow(`<rect class="soft" x="1506" y="584" width="30" height="26" rx="2"/>`, 0.5);
   return s;
 }
 function mid() {
@@ -278,7 +298,7 @@ function mid() {
   <rect x="-1600" y="696" width="4800" height="30" fill="var(--hill-near)"/>
   <g class="contact-shadows"><ellipse cx="250" cy="702" rx="120" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="530" cy="702" rx="140" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="830" cy="702" rx="140" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="1090" cy="702" rx="90" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="1305" cy="702" rx="95" ry="7" fill="#1d1745" opacity=".16"/><ellipse cx="1495" cy="702" rx="80" ry="7" fill="#1d1745" opacity=".16"/></g>
   ${body}
-  <g class="side-shade" style="mix-blend-mode:multiply"><rect x="161" y="563" width="30" height="136" fill="#1d1745" opacity=".11"/><rect x="441" y="557" width="22" height="142" fill="#1d1745" opacity=".11"/><rect x="707" y="573" width="40" height="126" fill="#1d1745" opacity=".11"/><rect x="1021" y="268" width="26" height="368" fill="#1d1745" opacity=".11"/><rect x="1045" y="213" width="16" height="48" fill="#1d1745" opacity=".11"/><rect x="1226" y="561" width="28" height="138" fill="#1d1745" opacity=".11"/><rect x="1433" y="623" width="22" height="76" fill="#1d1745" opacity=".11"/></g>
+  <g class="side-shade" style="mix-blend-mode:multiply"><rect x="161" y="563" width="30" height="136" fill="#1d1745" opacity=".11"/><rect x="441" y="557" width="22" height="142" fill="#1d1745" opacity=".11"/><rect x="707" y="573" width="40" height="126" fill="#1d1745" opacity=".11"/><rect x="1021" y="268" width="26" height="368" fill="#1d1745" opacity=".11"/><rect x="1045" y="213" width="16" height="48" fill="#1d1745" opacity=".11"/><rect x="1226" y="561" width="28" height="138" fill="#1d1745" opacity=".11"/><rect x="1437" y="623" width="18" height="76" fill="#1d1745" opacity=".11"/><rect x="1447" y="573" width="14" height="49" fill="#1d1745" opacity=".11"/></g>
   <rect class="dayonly sunwash" x="-1600" y="-400" width="4800" height="1100" fill="url(#g-sunwash)" style="mix-blend-mode:soft-light"/>
   </g>
   <g class="lights">
@@ -286,7 +306,7 @@ function mid() {
     <rect class="lit sign-lit" style="--wd:.8s" x="1244" y="534" width="108" height="26" rx="3"/><text class="lit lit-text" style="--wd:.8s" x="1298" y="553" text-anchor="middle">THE PRESS</text>
     <text class="lit lit-agent" style="--wd:.3s" x="840" y="596" text-anchor="middle">AGENT LAB</text>
     <g class="lit wm-lit" style="--wd:.15s"><text x="1102" y="236" text-anchor="middle" class="wm-sign">Walmart</text><g transform="translate(1046 229) scale(.95) translate(-12 -12)">${spark('#ffc220')}</g></g>
-    ${[[1426, 611], [1438, 602], [1450, 593], [1462, 584], [1474, 575], [1486, 566], [1504, 566], [1516, 575], [1528, 584], [1540, 593], [1552, 602], [1564, 611]].map(([x, y], i) => `<circle class="lit fairy" style="--wd:${(1 + i * 0.06).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0', '#9fd0ff'][i % 4]};--fd:${(i * 0.23).toFixed(2)}s" cx="${x}" cy="${y + 3}" r="3"/>`).join('')}
+    ${[[1444, 576], [1454, 579], [1464, 581], [1474, 582], [1484, 582], [1494, 581], [1504, 579], [1514, 577], [1524, 579], [1534, 581], [1544, 579]].map(([x, y], i) => `<circle class="lit fairy" style="--wd:${(1 + i * 0.06).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0', '#9fd0ff'][i % 4]};--fd:${(i * 0.23).toFixed(2)}s" cx="${x}" cy="${y + 3}" r="3"/>`).join('')}
     ${lights.join('')}
   </g>
 </svg>`;
@@ -299,8 +319,19 @@ function chaiCart() {
     <path d="M-40 -64 V-30 M40 -64 V-30" ${s2(3)}/>
     <g transform="translate(-6 -30)">
       <rect x="-10" y="-14" width="20" height="16" rx="5" fill="#f4f1ea" ${s2(2.2)}/>
-      <circle cx="0" cy="-22" r="8" fill="#a0643c" ${s2(2.2)}/><path d="M-8 -26 q8 -9 16 0 Z" fill="#2a2638"/><path d="M-4 -19 q4 2 8 0" fill="none" stroke="#2a2638" stroke-width="2" stroke-linecap="round"/><circle cx="3" cy="-23" r="1.1" fill="${INK}"/>
-      <g><path d="M8 -8 L20 -16" ${s2(2.6)}/><g transform="translate(20 -16)"><path d="M-6 0 q0 -10 6 -10 q6 0 6 10 Z" fill="#c9c3d6" ${s2(2)}/><path d="M6 -6 l7 4" ${s2(2.4)}/></g>${swing(8, -8, -4, -22, 3.2)}</g>
+      <circle cx="0" cy="-22" r="8" fill="#a0643c" ${s2(2.2)}/>
+      <path d="M-8.4 -23 q0 -9.6 8.4 -9.6 q8.4 0 8.4 9.6 q-3 -4.2 -8.4 -4.4 q-5.4 0.2 -8.4 4.4 Z" fill="#2a2638"/>
+      <circle cx="-3" cy="-22.6" r="1.15" fill="${INK}"/><circle cx="3" cy="-22.6" r="1.15" fill="${INK}"/>
+      <path d="M-4 -19.4 q2 -1.6 4 0 q2 -1.6 4 0" fill="none" stroke="#2a2638" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M-2.4 -16.6 q2.4 1.6 4.8 0" fill="none" stroke="#2a2638" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- a steel kettle: handle in his hand, spout out to the right; every few seconds he tips it toward the glasses -->
+      <g><path d="M7 -8 L14 -15" ${s2(2.6)}/><g transform="translate(20 -14)">
+        <path d="M-5 -10 h11 l2 10 q-7.5 2.6 -15 0 Z" fill="#c9c3d6" ${s2(1.8)}/>
+        <rect x="-3.5" y="-12.6" width="8" height="2.8" rx="1.2" fill="#a9a2bb" ${s2(1.4)}/><circle cx="0.5" cy="-13.8" r="1.2" fill="#a9a2bb" ${s2(1.2)}/>
+        <path d="M-5 -8 q-4.6 2.6 -0.6 7.4" fill="none" ${s2(1.8)}/>
+        <path d="M7.4 -5 q4.4 -0.6 6 -7" fill="none" ${s2(2.2)}/>
+        <path d="M-2.4 -7.6 v5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+      </g>${swing(7, -8, 0, 16, 3.2)}</g>
     </g>
     <path d="M-46 -64 h92 l-7 -16 h-78 Z" fill="#ef6a5b" ${s2(2.5)}/>${[0, 1, 2, 3].map((i) => `<path d="M${-38 + i * 20} -80 h10 l2 16 h-10 Z" fill="#fff4e0"/>`).join('')}<path d="M-46 -64 h92 l-7 -16 h-78 Z" fill="none" ${s2(2.5)}/>
     <rect x="-44" y="-32" width="88" height="26" rx="3" fill="#2a9d8f" ${S}/><text x="0" y="-15" text-anchor="middle" class="sign sign-s">CHAI ₹10</text>

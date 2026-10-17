@@ -7,6 +7,8 @@ import { townMarkup, autoRickshaw, skylines } from './town.js';
 import { mark } from './marks.js';
 import { initLab } from './lab.js';
 import { initGuide } from './guide.js';
+import { initStack } from './stack.js';
+import { initNudge } from './nudge.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -265,6 +267,13 @@ function cruise() {
 }
 placeAuto();
 cruise();
+// when the bot stands up to wave its flag (see nudge.js), the town auto pulls over, then carries on
+document.addEventListener('nudge', (e) => {
+  if (townAuto.classList.contains('touring')) return;
+  const tw = gsap.getTweensOf(ta);
+  if (e.detail.on && e.detail.auto === townAuto) tw.forEach((t) => gsap.to(t, { timeScale: 0, duration: 0.5, ease: 'power2.out' }));
+  else if (!e.detail.on) tw.forEach((t) => gsap.to(t, { timeScale: 1, duration: 0.8, ease: 'power1.in' }));
+});
 function driveAuto(x, done) {
   townAuto.classList.add('touring');
   gsap.killTweensOf(ta);
@@ -360,7 +369,17 @@ gsap.to('.rd-bot', { x: () => $('.rd-road').offsetWidth - 64, ease: 'none', scro
    LAB: the workbench, and a case page per project (see lab.js)
    ===================================================================== */
 initLab({ reduced, lenis });
-$('#mt-list').innerHTML = skillsBuilt.map(([t, d], i) => `<li style="--r:${[-1.5, 1, -0.5, 1.5][i % 4]}deg"><b>${esc(t)}</b><p>${esc(d)}</p></li>`).join('');
+// each smaller tool gets a little screen that loops what it does
+const mtScene = {
+  miner: () => `<div class="mts-rows">${['a', 'b', 'c', 'b', 'd', 'b'].map((k, i) => `<i class="r-${k}" style="--i:${i}"></i>`).join('')}</div><span class="mts-chip">3× seen → <b>skill.md</b></span>`,
+  clock: () => `<div class="mts-clock"><i class="h"></i><i class="m"></i></div><div class="mts-log">${['02:00', '02:00', '02:00'].map((t, i) => `<span style="--i:${i}">${['Mon', 'Tue', 'Wed'][i]} ${t} <b>✓</b></span>`).join('')}</div><span class="mts-moon"></span>`,
+  bars: () => `<div class="mts-bars">${[62, 38, 80, 50, 70, 30].map((h, i) => `<i style="--h:${h}%;--i:${i}"></i>`).join('')}</div><div class="mts-dora"><span>deploys</span><span>lead time</span><span>fail rate</span></div>`,
+  pipe: () => `<div class="mts-pipe">${['ticket', 'agent', 'verify', 'fix', 'report'].map((k, i) => `<span style="--i:${i}"><i></i>${k}</span>`).join('')}<b class="mts-dot"></b></div>`,
+};
+$('#mt-list').innerHTML = skillsBuilt.map(([t, d, scene, tag], i) => `<li class="mt-card" style="--r:${[-1.2, 0.8, -0.6, 1.2][i % 4]}deg">
+  <div class="mt-screen" data-scene="${scene}" aria-hidden="true">${mtScene[scene]()}</div>
+  <span class="mt-tag">${esc(tag)}</span><b>${esc(t)}</b><p>${esc(d)}</p></li>`).join('');
+ScrollTrigger.create({ trigger: '#mt-list', start: 'top 90%', end: 'bottom top', toggleClass: 'play' });
 
 /* =====================================================================
    JOURNEY: the auto drives past highway milestones
@@ -630,29 +649,9 @@ addEventListener('resize', hangPolaroids);
 document.fonts?.ready.then(hangPolaroids);
 
 /* =====================================================================
-   STACK: the tiffin + trophy shelf
+   STACK: the gumball machine + the medal rack (see stack.js)
    ===================================================================== */
-const groupOf = { ai: ['ai'], fe: ['fe'], be: ['be'], cloud: ['cloud', 'data', 'ship'], sec: ['sec'] };
-const colour = Object.fromEntries(toolboxGroups.map(([k, , c]) => [k, c]));
-$('#tiffin').innerHTML = '<div class="tf-handle"></div>' + tiffin.map((t, i) => {
-  const items = toolbox.filter(([g]) => groupOf[t.g].includes(g));
-  return `<div class="tier${i === 0 ? ' open' : ''}" style="--c:${colour[t.g]}">
-    <button class="tier-h" aria-expanded="${i === 0}"><span><b>${esc(t.label)}</b><br/><small>${esc(t.note)}</small></span><span class="tier-r"><span class="tier-n">${items.length}</span><i class="tier-chev" aria-hidden="true"></i></span></button>
-    <div class="tier-body"><div class="tier-in"><div class="tier-food">${items.map(([g, , name, note], k) => `<span class="food" tabindex="0" style="--c:${colour[g]}55;--i:${k}" data-tip="${esc(note)}">${esc(name)}</span>`).join('')}</div></div></div>
-  </div>`;
-}).join('');
-$('#tiffin').addEventListener('click', (e) => {
-  const h = e.target.closest('.tier-h');
-  if (!h) return;
-  const tier = h.parentElement, open = !tier.classList.contains('open');
-  $$('.tier').forEach((t) => { t.classList.remove('open'); $('.tier-h', t).setAttribute('aria-expanded', 'false'); });
-  if (open) { tier.classList.add('open'); h.setAttribute('aria-expanded', 'true'); }
-  setTimeout(() => ScrollTrigger.refresh(), 650);
-});
-const medalCo = { Walmart: 'walmart', Fidelity: 'fidelity', TCS: 'tcs' };
-$('#medals').innerHTML = awards.map(([y, t, w], i) => `<li style="--r:${[-3, 2, -1, 3, -2][i % 5]}deg">
-  <div class="md"><span class="md-rib" style="--c:${({ walmart: '#0071CE', fidelity: '#368727', tcs: '#EE3984' })[medalCo[w]]}"></span><span class="md-coin">${y === '·' ? '★' : esc(y)}</span></div>
-  <p class="md-t">${esc(t)}</p><p class="md-w">${mark(medalCo[w], 'md-mk')}${esc(w)}</p></li>`).join('');
+initStack({ reduced });
 
 /* =====================================================================
    CONTACT: the chai stall at the end of the road, and the town at night
@@ -681,7 +680,7 @@ const glassSvg = (i) => `<svg viewBox="0 0 64 92" aria-hidden="true">
   <path d="M18 34 L20 76" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
   <ellipse cx="32" cy="30" rx="17" ry="2.6" fill="none" stroke="#211c33" stroke-width="2.4"/>
 </svg>`;
-$('#st-counter').innerHTML = GLASSES.map((g, i) => `<li><a class="glass" href="${g.href}" ${g.id === 'mail' ? '' : 'target="_blank" rel="noopener"'} data-i="${i}" aria-label="${g.name}: ${g.note}">
+$('#st-counter').innerHTML = GLASSES.map((g, i) => `<li style="--k:${i}"><a class="glass" href="${g.href}" ${g.id === 'mail' ? '' : 'target="_blank" rel="noopener"'} data-i="${i}" aria-label="${g.name}: ${g.note}">
   <span class="gl-cup">${glassSvg(i)}<i class="gl-tag">${g.tag}</i></span>
   <b>${g.name}</b><span class="gl-note hand">${g.note}</span></a></li>`).join('');
 // the chaiwala: the same bot, behind the counter, holding a kettle. Hover (or tap) and it says hello.
@@ -734,7 +733,21 @@ $('.st-lights').innerHTML = Array.from({ length: 9 }, (_, i) => `<i style="--i:$
 
 const stall = $('#stall'), vendor = $('#st-vendor'), stream = $('#st-stream'), pourSvg = $('#st-pour');
 let pouring = false;
-function serve() { stall.classList.add('serving'); }
+// until someone picks a glass, the stall says so: the chaiwala greets on arrival, then every few
+// seconds the glasses hop in a little wave with a puff of steam
+let picked = false, waveTimer = 0;
+function wave() {
+  if (picked || reduced) return;
+  stall.classList.remove('wave'); void stall.offsetWidth; stall.classList.add('wave');
+  waveTimer = setTimeout(wave, 5200);
+}
+function serve() {
+  if (stall.classList.contains('serving')) return;
+  stall.classList.add('serving');
+  if (picked || reduced) return;
+  setTimeout(() => { if (!pouring) { vendor.classList.add('greet'); setTimeout(() => vendor.classList.remove('greet'), 3400); } }, 600);
+  clearTimeout(waveTimer); waveTimer = setTimeout(wave, 1400);
+}
 vendor.addEventListener('click', () => { if (pouring) return; vendor.classList.add('greet'); clearTimeout(vendor._g); vendor._g = setTimeout(() => vendor.classList.remove('greet'), 1800); });
 document.addEventListener('stall', (e) => { if (e.detail === 'arrive') serve(); else if (e.detail === 'leave' && !pouring) stall.classList.remove('serving'); });
 function pour(glass) {
@@ -747,6 +760,7 @@ function pour(glass) {
   };
   if (reduced) { open(); return; }
   pouring = true;
+  picked = true; clearTimeout(waveTimer); stall.classList.remove('wave');
   stall.classList.add('pouring');
   serve();
   gsap.killTweensOf(vendor);
@@ -822,8 +836,6 @@ band.appendChild(foot);
 if (!reduced) {
   $$('.sec-h, .gz, .pp-detail').forEach((el) => gsap.from(el, { y: 50, autoAlpha: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' } }));
   gsap.from('.pol', { y: -120, rotation: () => gsap.utils.random(-25, 25), autoAlpha: 0, stagger: 0.08, duration: 1, ease: 'elastic.out(1, .5)', scrollTrigger: { trigger: '#line', start: 'top 80%' } });
-  gsap.fromTo('.md', { y: -50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.06, duration: 0.9, ease: 'bounce.out', clearProps: 'transform,opacity,visibility', scrollTrigger: { trigger: '#medals', start: 'top 85%' } });
-  gsap.from('.tier', { x: 80, autoAlpha: 0, stagger: 0.08, duration: 0.7, ease: 'back.out(1.6)', scrollTrigger: { trigger: '#tiffin', start: 'top 80%' } });
   gsap.fromTo('.stamps a', { y: 40, rotation: 30, autoAlpha: 0 }, { y: 0, rotation: 0, autoAlpha: 1, stagger: 0.1, ease: 'back.out(2)', clearProps: 'transform,scale,rotate,translate', scrollTrigger: { trigger: '.stamps', start: 'top 90%' } });
 }
 
@@ -846,3 +858,4 @@ addEventListener('load', () => ScrollTrigger.refresh());
 
 /* ---------------- the guide: one bot that walks you through the whole page ---------------- */
 initGuide({ reduced });
+initNudge({ reduced, scrollToEl });

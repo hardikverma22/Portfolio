@@ -69,7 +69,7 @@ export const buildings = [
     go: ['Read the paper', '#writing'],
   },
   {
-    id: 'home', name: 'After hours', when: '', place: 'home, Bengaluru', x: 1466, y: 552,
+    id: 'home', name: 'After hours', when: '', place: 'home, Bengaluru', x: 1460, y: 482,
     kicker: 'After hours · side projects',
     role: 'Travel Planner AI, now part of Rutugo',
     title: 'A side project taught me to ship like a founder.',

@@ -64,10 +64,10 @@ export const caseStudies = [
 ];
 
 export const skillsBuilt = [
-  ['Skill miner', 'Scans session history across AI tools, finds the workflows you keep repeating, and offers to turn them into reusable skills.'],
-  ['Headless scheduler', 'Runs any agent skill on a schedule with no open session. launchd-based, survives reboots.'],
-  ['PR analytics', 'DORA benchmarks, cycle-time breakdowns and per-developer coaching notes, generated on demand.'],
-  ['Incident-to-fix pipeline', 'Works a ServiceNow queue end to end: a sub-agent per incident, a second wave to verify, a data lake check, a scripted fix, then an Excel report, a ServiceNow update over MCP and a stakeholder email through Microsoft Graph.'],
+  ['Skill miner', 'Finds the workflows you keep repeating across AI tools and turns them into reusable skills.', 'miner', 'repeats → skills'],
+  ['Headless scheduler', 'Runs any agent skill on a schedule, with no session open. Survives reboots.', 'clock', 'runs while you sleep'],
+  ['PR analytics', 'DORA metrics, cycle-time breakdowns and coaching notes for every developer, on demand.', 'bars', 'team health, on demand'],
+  ['Incident-to-fix pipeline', 'Clears a ServiceNow queue end to end: an agent per incident, a second wave to verify, a scripted fix, then the report and the stakeholder email.', 'pipe', 'queue → fixed → reported'],
 ];
 
 // Three chapters, newest first. Every chapter has 3 stats and 6 capability cards so the layout stays even.

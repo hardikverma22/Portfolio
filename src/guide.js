@@ -153,10 +153,14 @@ export function initGuide({ reduced }) {
     return (a + (y - T.Y[a]) / ((T.Y[b] - T.Y[a]) || 1)) * STEP;
   }
   const goal = () => {
-    // at the very bottom of the page the auto pulls all the way into the parking bay
-    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 6) return A.L + B.L;
     const y = scrollY + eye();
-    return y < (jTop + jBot) / 2 ? sOnY(A, y) : A.L + sOnY(B, y);
+    if (y < (jTop + jBot) / 2) return sOnY(A, y);
+    // over the last stretch of scrolling the auto glides on into the parking bay, instead of waiting
+    // short of it and snapping in at the very last pixel
+    const left = document.documentElement.scrollHeight - innerHeight - scrollY;
+    const k = gsap.utils.clamp(0, 1, 1 - left / (innerHeight * 0.7)), e = k * k * (3 - 2 * k);
+    const s = sOnY(B, y);
+    return A.L + s + (B.L - s) * e;
   };
   const where = (u) => (u <= A.L ? pt(A, u) : pt(B, u - A.L));
   function heading(u) {
@@ -337,7 +341,10 @@ export function initGuide({ reduced }) {
     secs.forEach((el, i) => { if (el.getBoundingClientRect().top + scrollY <= yy) k = i; });
     if (k === current) return;
     current = k;
-    document.querySelectorAll('.nav a').forEach((l) => l.classList.toggle('on', k >= 0 && l.getAttribute('href') === `#${secs[k].id}`));
+    // sections without their own tab light up the one they belong to: the passport is part of the journey, the postcards sit with the writing
+    const tab = { passport: 'journey', words: 'writing' };
+    const id = k >= 0 ? tab[secs[k].id] || secs[k].id : '';
+    document.querySelectorAll('.nav a').forEach((l) => l.classList.toggle('on', l.getAttribute('href') === `#${id}`));
   }
 
   document.addEventListener('town', (e) => { document.documentElement.classList.toggle('town-focus', !!e.detail.open); });
