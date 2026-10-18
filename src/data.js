@@ -290,7 +290,7 @@ export const toolbox = [
   ['fe', 'Ts', 'TypeScript', 'The default'],
   ['fe', 'Ng', 'Angular', '12 full-stack apps at TCS'],
   ['fe', 'Tw', 'Tailwind', 'Every side project'],
-  ['fe', 'Th', 'Three.js · WebGL', 'Shoe Forge, and this site\u2019s fluid and portrait shaders'],
+  ['fe', 'Th', 'Three.js · WebGL', 'Shoe Forge, and the steam on this site\u2019s chai, a hand-written shader'],
   ['fe', 'Gs', 'GSAP · Motion', 'Scroll stories and micro-interactions'],
   ['be', 'Py', 'Python', 'Agents, evals and model training'],
   ['be', 'Rs', 'Rust', 'A single-binary token runtime, built in hack week'],

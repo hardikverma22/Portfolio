@@ -146,12 +146,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .ly { position: absolute; inset: 0; will-change: transform; transform-origin: 50% 78%; }
 .ly > svg { width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .ly-mid .bld { pointer-events: visiblePainted; }
-.ly-mid .bld:hover { filter: drop-shadow(0 0 0 transparent) brightness(1.06); }
-.cam:not(.focus) .ly-mid .bld:hover { transform: translateY(-4px); }
-.ly-mid .bld { transition: opacity .6s, filter .4s, transform .4s var(--spring); }
+/* hover: the building and its night lights lift together (main.js adds .up to both); transform only, so it stays smooth */
+.ly-mid .bld, .ly-mid .bl { transition: opacity .6s, filter .6s, transform .45s cubic-bezier(.22, 1, .36, 1); }
+.cam:not(.focus) .ly-mid .up { transform: translateY(-5px); }
 .pins { z-index: 3; }
 .ly { pointer-events: none; }
-.ly-mid svg .bld { cursor: pointer; transition: opacity .6s, filter .6s; }
+.ly-mid svg .bld { cursor: pointer; }
 .cam.focus .bld:not(.on), .cam.focus .pin:not(.on) { opacity: .28; filter: saturate(.4); }
 /* ---- night system: every light has its own --wd delay, so on-call mode switches the town on piece by piece ---- */
 .tint { fill: var(--tint); opacity: var(--tint-o); mix-blend-mode: multiply; pointer-events: none; }
@@ -950,10 +950,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---------- night, enhanced ---------- */
 .nightonly { opacity: 0; transition: opacity .8s; }
 [data-mode='night'] .nightonly { opacity: 1; transition-delay: 1.4s; }
-.plane { animation: plane 70s linear infinite; }
-@keyframes plane { from { transform: translate(-200px, 110px); } to { transform: translate(1900px, 40px); } }
-.nav-r { animation: redblink 1.2s steps(1) infinite; }
-.nav-w { animation: redblink 1.2s steps(1) .6s infinite; }
+/* the night plane: a slow, steady climb across the sky with real aircraft lighting
+   (a red beacon pulsing, a white strobe double-flashing, cabin windows flickering faintly) */
+.plane { animation: plane 90s linear infinite; }
+@keyframes plane { from { transform: translate(1900px, 120px); } to { transform: translate(-200px, 52px); } } /* right to left, nose first (the drawing is mirrored) */
+.pl-beacon { animation: plbeacon 1.3s ease-out infinite; }
+@keyframes plbeacon { 0%, 100% { opacity: .15; } 8% { opacity: 1; } 30% { opacity: .2; } }
+.pl-strobe { opacity: 0; animation: plstrobe 1.6s linear infinite; }
+@keyframes plstrobe { 0%, 4% { opacity: 1; } 5%, 10% { opacity: 0; } 11%, 15% { opacity: 1; } 16%, 100% { opacity: 0; } }
+.pl-win { animation: plwin 4s ease-in-out calc(var(--wi) * -4s) infinite alternate; }
+@keyframes plwin { from { opacity: .95; } to { opacity: .55; } }
 .moon-halo { animation: moonglow 6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
 @keyframes moonglow { to { opacity: .75; transform: scale(.94); } }
 [data-mode='night'] .moon > path:first-of-type { filter: drop-shadow(0 0 18px rgba(255, 246, 207, .9)); }
@@ -1435,9 +1441,10 @@ html.theme-snap .mode-i svg, html.theme-snap .mode-l b { transition: transform .
   .scene { width: 108vw; transition: none; }
   .buddy, .fly-cue, .tap-hint { display: none; }
   /* roof tags shrink to just the logo, which matches the directory */
-  .pin { font-size: 11px; }
-  .pin-tag { font-size: 0; gap: 0; padding: 3px; }
-  .pin-tag .pin-mk { font-size: 11px; width: 22px; height: 22px; }
+  .pin { font-size: 7px; }
+  .pin-tag { font-size: 0; gap: 0; padding: 2px; border-width: 1.5px; box-shadow: 1.5px 1.5px 0 var(--ink); }
+  [data-mode='night'] .pin-tag { box-shadow: 1.5px 1.5px 0 var(--ink), 0 0 8px rgba(255, 214, 107, .3); }
+  .pin-tag .pin-mk { font-size: 7px; width: 15px; height: 15px; border-radius: 4px; }
   .pin-tag small { display: none; }
   .town-dir { position: absolute; z-index: 6; left: var(--gutter); right: var(--gutter); bottom: calc(108vw * 9 / 16 * .8 + 40px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-width: 560px; margin: 0 auto; }
   .td-k { grid-column: 1 / -1; margin: 0 0 2px; font: 700 20px var(--f-hand); color: var(--hero-ink, var(--ink)); }
@@ -1869,3 +1876,14 @@ html.has-cur input, html.has-cur textarea, html.has-cur select, html.has-cur [co
 [data-mode='night'] .cur-ring::before { border-color: #fff4dd; box-shadow: 0 0 12px rgba(255, 201, 74, .35); }
 [data-mode='night'] .cur[data-s='hover'] .cur-ring::before { border-color: var(--sun); }
 [data-mode='night'] .cur-label { background: var(--sun); color: var(--ink); box-shadow: 0 0 16px rgba(255, 201, 74, .5); }
+
+/* steam at the stall, drawn by steam.js (WebGL); the drawn steam lines stay as the fallback */
+.st-steam { position: absolute; z-index: 6; left: 0; right: 0; top: -150px; bottom: 0; width: 100%; height: calc(100% + 150px); pointer-events: none; }
+.gl-steam-on .gl-steam, .gl-steam-on .sv-ksteam { visibility: hidden; }
+
+/* hero shader layers (herofx.js): the sky behind the town, the town's lights and weather over the street */
+.fx-sky, .fx-town { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fx-sky { z-index: 0; }
+/* lit windows get a soft bloom at night */
+[data-mode='night'] .ly-mid .lights { filter: drop-shadow(0 0 5px rgba(255, 214, 107, .55)); }
+.fx-on .ly-street .puffs { visibility: hidden; }

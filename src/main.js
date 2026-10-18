@@ -11,6 +11,8 @@ import { initGuide } from './guide.js';
 import { initStack } from './stack.js';
 import { initNudge } from './nudge.js';
 import { initCursor } from './cursor.js';
+import { initSteam } from './steam.js';
+import { initHeroFx } from './herofx.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -42,6 +44,8 @@ document.addEventListener('click', (e) => {
   const id = a.getAttribute('href');
   if (id.length < 2 || id.startsWith('#/') || !$(id)) return;
   e.preventDefault();
+  // a mouse click shouldn't leave the focus ring on the link (keyboard use, e.detail 0, keeps it)
+  if (e.detail) a.blur();
   if (townOpen) closeBuilding();
   scrollToEl(id === '#town' ? document.body : id);
 });
@@ -272,6 +276,13 @@ $('#tour-btn').addEventListener('click', () => {
   };
   if (scrollY > 40) { scrollToEl(document.body); setTimeout(go, 900); } else go();
 });
+// hovering a building lifts it together with its night lights, which live in a separate layer
+cam.addEventListener('pointerover', (e) => {
+  const b = e.target.closest?.('.bld')?.dataset.id || null;
+  $$('.ly-mid .up', cam).forEach((el) => { if ((el.dataset.id || el.dataset.b) !== b) el.classList.remove('up'); });
+  if (b) $$(`.ly-mid .bld[data-id="${b}"], .ly-mid .bl[data-b="${b}"]`, cam).forEach((el) => el.classList.add('up'));
+});
+cam.addEventListener('pointerleave', () => $$('.ly-mid .up', cam).forEach((el) => el.classList.remove('up')));
 cam.addEventListener('click', (e) => {
   const t = e.target.closest('.pin, .bld');
   if (t) openBuilding(t.dataset.id);
@@ -820,3 +831,5 @@ addEventListener('load', () => ScrollTrigger.refresh());
 initGuide({ reduced });
 initNudge({ reduced, scrollToEl });
 initCursor({ reduced });
+initSteam({ reduced });
+initHeroFx({ reduced });

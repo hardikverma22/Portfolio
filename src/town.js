@@ -64,8 +64,26 @@ function sky() {
   <g class="moon">
     <path d="M1320 118 A62 62 0 1 0 1340 222 A50 50 0 1 1 1320 118 Z" fill="#fffdf0" stroke="#fff3c4" stroke-width="3"/>
     <path d="M1300 124 A50 50 0 0 0 1306 214" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"/><circle cx="1262" cy="168" r="6" fill="#e9dcb5"/><circle cx="1282" cy="200" r="4" fill="#e9dcb5"/><circle cx="1250" cy="196" r="3" fill="#e9dcb5"/></g>
-  <g class="nightonly"><g class="plane"><path d="M-22 0 h40 l8 -3 l-8 -3 h-6 l-10 -10 h-6 l5 10 h-14 l-5 -5 h-4 l2 8 Z" fill="#3a3866"/>
-    <circle class="nav-r" cx="-4" cy="-14" r="2.4" fill="#ff4d4d"/><circle class="nav-w" cx="-22" cy="-2" r="2" fill="#fff"/><circle class="nav-g" cx="2" cy="1" r="2" fill="#7dffb0"/></g></g>
+  <g class="nightonly"><g class="plane"><g transform="scale(-.8 .8)">
+    <!-- an airliner seen side-on at night: a dark silhouette, a row of warm cabin windows and its real lights -->
+    <path class="pl-wing-far" d="M2 -2 L-8 -8 H-3 L10 -2 Z" fill="#26244a"/>
+    <path d="M-36 -1 Q-36 -4.6 -30 -4.6 H22 Q33 -4.6 38 -0.6 Q33 3.6 22 3.6 H-30 Q-36 3.6 -36 -1 Z" fill="#33315e" stroke="#4b4885" stroke-width=".8"/>
+    <path d="M-31 -4 L-38 -17 H-32.5 L-22 -4 Z" fill="#33315e" stroke="#4b4885" stroke-width=".8"/>
+    <path d="M-33 1 L-42 4.6 H-36 L-27 1.4 Z" fill="#2b2954"/>
+    <path d="M6 2 L-10 12 H-4 L18 2 Z" fill="#2b2954" stroke="#4b4885" stroke-width=".7"/>
+    <rect x="-2" y="5.2" width="9" height="3.6" rx="1.8" fill="#24224a" stroke="#4b4885" stroke-width=".6"/>
+    <path d="M31 -2.6 Q34 -2.8 35.6 -1.2" fill="none" stroke="#9fb4ff" stroke-width="1" stroke-linecap="round" opacity=".7"/>
+    <g fill="#ffe2a0">${Array.from({ length: 13 }, (_, i) => `<circle class="pl-win" style="--wi:${(i * 0.37 % 1).toFixed(2)}" cx="${-24 + i * 4}" cy="-1.3" r=".75"/>`).join('')}</g>
+    <circle class="pl-glow pl-beacon" cx="-4" cy="-5.4" r="5" fill="url(#g-pl-red)"/><circle class="pl-beacon" cx="-4" cy="-5.2" r="1.3" fill="#ff5a4d"/>
+    <circle class="pl-glow pl-strobe" cx="-10" cy="12" r="7" fill="url(#g-pl-white)"/><circle class="pl-strobe" cx="-10" cy="12" r="1.3" fill="#fff"/>
+    <circle class="pl-glow" cx="-10" cy="12" r="4" fill="url(#g-pl-green)" opacity=".8"/><circle cx="-10.6" cy="11.6" r=".9" fill="#7dffb0"/>
+    <circle class="pl-glow" cx="-42" cy="4.6" r="3.5" fill="url(#g-pl-white)" opacity=".6"/><circle cx="-42" cy="4.6" r=".8" fill="#fff"/>
+    <defs>
+      <radialGradient id="g-pl-red"><stop offset="0" stop-color="#ff5a4d" stop-opacity=".8"/><stop offset="1" stop-color="#ff5a4d" stop-opacity="0"/></radialGradient>
+      <radialGradient id="g-pl-white"><stop offset="0" stop-color="#ffffff" stop-opacity=".9"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+      <radialGradient id="g-pl-green"><stop offset="0" stop-color="#7dffb0" stop-opacity=".7"/><stop offset="1" stop-color="#7dffb0" stop-opacity="0"/></radialGradient>
+    </defs>
+  </g></g></g>
   <g class="drift-a">${cloud(960, 60, 0.85)}${cloud(1440, 250, 1)}</g>
   <g class="drift-b">${cloud(1120, 330, 0.55)}</g>
 </svg>`;
@@ -321,7 +339,11 @@ function home() {
 function mid() {
   lights.length = 0;
   const trees = tree(1408, 700, 0.6) + tree(398, 702, 0.72) + tree(982, 702, 0.66) + tree(1203, 702, 0.6);
-  const body = trees + tcs() + fidelity() + lab() + tower() + press() + home();
+  // each building's night lights are drawn in the lights layer (above the tint), so group them by building:
+  // when a building lifts on hover, its lights lift with it
+  const lit = {};
+  const build = (id, fn) => { const from = lights.length; const out = fn(); lit[id] = lights.splice(from).join(''); return out; };
+  const body = trees + build('tcs', tcs) + build('fidelity', fidelity) + build('lab', lab) + build('tower', tower) + build('press', press) + build('home', home);
   return `<svg viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true"><g class="art">
   <defs><radialGradient id="g-sunwash" cx="1290" cy="170" r="1100" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff6d6" stop-opacity=".55"/><stop offset=".6" stop-color="#fff6d6" stop-opacity="0"/></radialGradient></defs>
   <rect x="-1600" y="696" width="4800" height="30" fill="var(--hill-near)"/>
@@ -332,11 +354,12 @@ function mid() {
   </g>
   <g class="lights">
     <defs><linearGradient id="g-beam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6cf" stop-opacity="1"/><stop offset=".55" stop-color="#fff6cf" stop-opacity=".35"/><stop offset="1" stop-color="#fff6cf" stop-opacity="0"/></linearGradient></defs>
-    <rect class="lit sign-lit" style="--wd:.8s" x="1244" y="534" width="108" height="26" rx="3"/><text class="lit lit-text" style="--wd:.8s" x="1298" y="553" text-anchor="middle">THE PRESS</text>
-    <text class="lit lit-agent" style="--wd:.3s" x="840" y="596" text-anchor="middle">AGENT LAB</text>
-    <g class="lit wm-lit" style="--wd:.15s"><text x="1102" y="236" text-anchor="middle" class="wm-sign">Walmart</text><g transform="translate(1046 229) scale(.95) translate(-12 -12)">${spark('#ffc220')}</g></g>
-    ${[[1444, 576], [1454, 579], [1464, 581], [1474, 582], [1484, 582], [1494, 581], [1504, 579], [1514, 577], [1524, 579], [1534, 581], [1544, 579]].map(([x, y], i) => `<circle class="lit fairy" style="--wd:${(1 + i * 0.06).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0', '#9fd0ff'][i % 4]};--fd:${(i * 0.23).toFixed(2)}s" cx="${x}" cy="${y + 3}" r="3"/>`).join('')}
+    <g class="bl" data-b="press"><rect class="lit sign-lit" style="--wd:.8s" x="1244" y="534" width="108" height="26" rx="3"/><text class="lit lit-text" style="--wd:.8s" x="1298" y="553" text-anchor="middle">THE PRESS</text></g>
+    <g class="bl" data-b="lab"><text class="lit lit-agent" style="--wd:.3s" x="840" y="596" text-anchor="middle">AGENT LAB</text></g>
+    <g class="bl" data-b="tower"><g class="lit wm-lit" style="--wd:.15s"><text x="1102" y="236" text-anchor="middle" class="wm-sign">Walmart</text><g transform="translate(1046 229) scale(.95) translate(-12 -12)">${spark('#ffc220')}</g></g></g>
+    <g class="bl" data-b="home">${[[1444, 576], [1454, 579], [1464, 581], [1474, 582], [1484, 582], [1494, 581], [1504, 579], [1514, 577], [1524, 579], [1534, 581], [1544, 579]].map(([x, y], i) => `<circle class="lit fairy" style="--wd:${(1 + i * 0.06).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0', '#9fd0ff'][i % 4]};--fd:${(i * 0.23).toFixed(2)}s" cx="${x}" cy="${y + 3}" r="3"/>`).join('')}</g>
     ${lights.join('')}
+    ${Object.entries(lit).map(([id, l]) => `<g class="bl" data-b="${id}">${l}</g>`).join('')}
   </g>
 </svg>`;
 }
