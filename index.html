@@ -39,6 +39,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..900,100,1;1,9..144,400..900,100,1&family=Figtree:wght@400..800&family=Caveat:wght@500..700&family=Space+Mono:wght@400;700&display=swap" />
   <link rel="stylesheet" href="/src/style.css" />
   <script>try{var m=localStorage.getItem('hv-mode');var h=new Date().getHours();if(m==='night'||(!m&&(h>=19||h<6)))document.documentElement.dataset.mode='night'}catch(e){}</script>
+  <script>
+    // the intro (src/intro.js) starts from a blank sheet: set it up before the first paint, once per session
+    try { if (!sessionStorage.getItem('hv-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro', 'intro-hide', 'sketch'); } catch (e) {}
+  </script>
 </head>
 <body>
   <noscript>
@@ -50,12 +54,6 @@
   </noscript>
   <a class="skip" href="#main">Skip to content</a>
 
-  <!-- rolling shop shutter, lifts on load -->
-  <div id="shutter" aria-hidden="true">
-    <div class="sh-board"><span class="sh-k">est. 2016 · Bengaluru</span><b>Hardik’s Agent Town</b><span class="sh-s">opening up…</span></div>
-    <div class="sh-lock"></div>
-    <div class="sh-handle"></div>
-  </div>
 
   <header class="top" id="top-bar">
     <a href="#town" class="logo" aria-label="Hardik Verma, back to town">hv<i>.</i></a>

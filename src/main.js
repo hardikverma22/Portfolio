@@ -11,6 +11,7 @@ import { initGuide } from './guide.js';
 import { initStack } from './stack.js';
 import { initNudge } from './nudge.js';
 import { initCursor } from './cursor.js';
+import { runIntro } from './intro.js';
 import { initSteam } from './steam.js';
 import { initHeroFx } from './herofx.js';
 import { initMusic, toggle as toggleMusic, onMusic, musicLevel, musicBands, wasOn } from './music.js';
@@ -811,21 +812,8 @@ if (!reduced) {
   gsap.fromTo('.stamps a', { y: 40, rotation: 30, autoAlpha: 0 }, { y: 0, rotation: 0, autoAlpha: 1, stagger: 0.1, ease: 'back.out(2)', clearProps: 'transform,scale,rotate,translate', scrollTrigger: { trigger: '.stamps', start: 'top 90%' } });
 }
 
-/* ---------------- intro: the shutter rolls up ---------------- */
-const lift = () => {
-  $('#shutter').classList.add('up');
-  setTimeout(() => $('.h1').classList.add('done'), reduced ? 0 : 900);
-  setTimeout(() => $('#shutter')?.remove(), 1400);
-  if (!reduced) {
-    gsap.from('.ly-fg', { scale: 1.15, duration: 1.8, ease: 'power3.out' });
-    gsap.from('.ly-street', { scale: 1.12, duration: 2, ease: 'power3.out' });
-    gsap.from('.hero-copy > *', { y: 40, autoAlpha: 0, stagger: 0.09, duration: 0.9, delay: 0.45, ease: 'power3.out' });
-    gsap.from('.pin', { autoAlpha: 0, stagger: 0.1, duration: 0.5, delay: 0.9, clearProps: 'opacity,visibility' });
-  }
-};
-if (reduced) lift();
-else if (document.readyState === 'complete') setTimeout(lift, 500);
-else addEventListener('load', () => setTimeout(lift, 400));
+/* ---------------- intro: the town draws itself (see intro.js) ---------------- */
+runIntro({ reduced, onDone: () => $('.h1').classList.add('done') });
 addEventListener('load', () => ScrollTrigger.refresh());
 
 /* ---------------- the guide: one bot that walks you through the whole page ---------------- */

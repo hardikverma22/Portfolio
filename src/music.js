@@ -140,7 +140,7 @@ export function initMusic() {
     if (visible) {
       ac.resume();
       // timers are throttled in a hidden tab, so the next pass may not have been queued in time
-      if (!sources.length || nextAt < ac.currentTime) pass(ac.currentTime + 0.05, false);
+      if (buf && (!sources.length || nextAt < ac.currentTime)) pass(ac.currentTime + 0.05, false); // (still loading: play() starts it)
       duckTo(1.5);
     } else duckTo(0.6);
   });
