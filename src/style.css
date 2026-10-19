@@ -1887,3 +1887,60 @@ html.has-cur input, html.has-cur textarea, html.has-cur select, html.has-cur [co
 /* lit windows get a soft bloom at night */
 [data-mode='night'] .ly-mid .lights { filter: drop-shadow(0 0 5px rgba(255, 214, 107, .55)); }
 .fx-on .ly-street .puffs { visibility: hidden; }
+
+/* ---------------- music (music.js): the balloon radio in the hero sky and the top-bar button ---------------- */
+/* top-bar play/pause: it slides in the first time the music starts */
+.music { display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); cursor: pointer; opacity: 0; scale: .4; translate: 20px 0; transition: opacity .35s, scale .6s var(--spring), translate .6s var(--spring); }
+.music[hidden] { display: none; }
+.music.in { opacity: 1; scale: 1; translate: 0 0; }
+.music:hover { rotate: -6deg; }
+.mu-bars { display: flex; align-items: flex-end; gap: 3px; height: 18px; }
+.mu-bars i { width: 4px; height: 18px; border-radius: 2px; background: currentColor; transform-origin: bottom; scale: 1 var(--h, .25); transition: scale .09s linear; }
+.mu-play { position: absolute; width: 16px; height: 16px; fill: currentColor; opacity: 0; transition: opacity .25s; }
+.music { position: relative; }
+.music:not([aria-pressed='true']) .mu-bars { opacity: 0; }
+.music:not([aria-pressed='true']) .mu-play { opacity: 1; }
+[data-mode='night'] .music { background: #2a2a2a; color: #ffd86b; border-color: #ffd86b; box-shadow: 0 10px 30px -10px rgba(255, 196, 70, .55); }
+
+/* the balloon drifts back and forth through the open sky right of the headline, bobbing and swaying */
+.balloon-lane { position: absolute; z-index: 4; left: 56%; right: 5%; top: 12%; height: 26%; pointer-events: none; }
+.balloon { position: absolute; left: 0; top: 30%; width: clamp(80px, 6.6vw, 108px); aspect-ratio: 120 / 190; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; animation: bldrift 52s ease-in-out infinite alternate; -webkit-tap-highlight-color: transparent; }
+@keyframes bldrift { 0% { left: 0%; top: 35%; } 50% { top: 0%; } 100% { left: 80%; top: 25%; } }
+.balloon svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: 50% 10%; animation: blbob 5.5s ease-in-out infinite; filter: drop-shadow(3px 5px 0 rgba(33, 28, 51, .18)); }
+@keyframes blbob { 50% { translate: 0 -8px; rotate: 2.5deg; } }
+.balloon:hover svg { animation-play-state: paused; scale: 1.05; transition: scale .3s var(--spring); }
+.balloon:focus-visible { outline: 3px solid var(--sun); outline-offset: 6px; border-radius: 40px; }
+/* the banner on its line, fluttering */
+.bl-banner { position: absolute; left: 66%; top: 86%; padding: 2px 9px 3px; border: 2px solid var(--ink); border-radius: 3px 12px 12px 3px; background: #fffaf0; color: var(--ink); font: 700 16px/1.1 var(--f-hand); white-space: nowrap; transform-origin: 0 50%; rotate: -5deg; animation: blflap 2.4s ease-in-out infinite; box-shadow: 2px 2px 0 rgba(33, 28, 51, .25); }
+.bl-banner i { font-style: normal; color: var(--rose); }
+@keyframes blflap { 50% { rotate: 3deg; } }
+/* burner: always a small flame, flickering */
+.bl-flame { transform-box: fill-box; transform-origin: 50% 100%; animation: blflame .5s ease-in-out infinite alternate; }
+@keyframes blflame { to { scale: .85 1.15; } }
+/* playing: the envelope glows from inside with the music, notes stream out of the radio, the LED goes green */
+.bl-glow { opacity: 0; transition: opacity .6s; }
+.music-on .bl-glow { opacity: calc(.25 + var(--lv, 0) * 1.4); transition: opacity .1s; }
+[data-mode='night'] .bl-glow { opacity: .3; }
+[data-mode='night'].music-on .bl-glow { opacity: calc(.45 + var(--lv, 0) * 1.4); }
+.music-on .bl-led { fill: #7dffb0; }
+.music-on .bl-dial { fill: #ffd86b; }
+.bl-cone { transform-box: fill-box; transform-origin: center; scale: calc(1 + var(--lv, 0) * .18); }
+.bl-note { opacity: 0; }
+.music-on .bl-note { animation: blnote 3.4s ease-out calc(var(--n) * 1.13s) infinite; }
+@keyframes blnote {
+  0% { opacity: 0; transform: translate(4px, 120px) scale(.7) rotate(-10deg); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(44px + var(--n) * 16px), calc(64px - var(--n) * 14px)) scale(1.5) rotate(14deg); }
+}
+[data-mode='night'] .balloon svg { filter: drop-shadow(0 0 14px rgba(255, 196, 70, .35)); }
+[data-mode='night'] .bl-note { fill: #fff4dd; } [data-mode='night'] .bl-note path { stroke: #fff4dd; }
+/* upright screens: a smaller balloon in the gap between the buttons and the building list */
+@media (max-aspect-ratio: 1/1) {
+  .balloon-lane { left: 6%; right: 10%; top: 35%; height: 8%; }
+  .balloon { width: 66px; }
+  .bl-banner { font-size: 13.5px; left: 70%; top: 74%; }
+  @keyframes bldrift { 0% { left: 0%; top: 0%; } 50% { top: 100%; } 100% { left: 58%; top: 20%; } }
+}
+/* short upright screens: no room in the sky, so the top-bar button is there from the start instead */
+@media (max-aspect-ratio: 1/1) and (max-height: 740px) { .balloon-lane { display: none; } }
+@media (prefers-reduced-motion: reduce) { .balloon { animation: none; left: 30%; } .balloon svg, .bl-banner { animation: none; } }

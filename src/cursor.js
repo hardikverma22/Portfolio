@@ -8,6 +8,7 @@ import { gsap } from 'gsap';
 // what a click does, for targets that don't say it themselves (first match wins)
 const LABELS = [
   ['.nudge', () => 'Take me there'],
+  ['.balloon', () => (document.documentElement.classList.contains('music-on') ? 'Pause music' : 'Play music')],
   ['.pin, .bld', (el) => { const id = el.dataset.id; const pin = document.querySelector(`.pin[data-id="${id}"]`); return `Open ${(pin?.getAttribute('aria-label') || '').split(',')[0]}`; }],
   ['[data-case]', () => 'Open'],
   ['.kb-space', () => 'Surprise me'],
@@ -19,7 +20,7 @@ const LABELS = [
   ['.pc:not(.reading)', (el, t) => (t.closest('.pc-more, .pc-fold, a') ? '' : 'Next card')],
   ['.gz a[target="_blank"]', () => 'Read ↗'],
 ];
-const HOVER = 'a, button, [role="button"], summary, label, .pin, .bld, .glass, .stamp, .pc, [data-case]';
+const HOVER = 'a, button, [role="button"], summary, label, .pin, .bld, .glass, .stamp, .pc, [data-case], .balloon';
 
 export function initCursor({ reduced }) {
   if (reduced || !matchMedia('(pointer: fine)').matches) return;

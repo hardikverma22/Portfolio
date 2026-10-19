@@ -13,6 +13,7 @@ import { initNudge } from './nudge.js';
 import { initCursor } from './cursor.js';
 import { initSteam } from './steam.js';
 import { initHeroFx } from './herofx.js';
+import { initMusic, toggle as toggleMusic, onMusic, musicLevel, musicBands, wasOn } from './music.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -165,7 +166,7 @@ function openBuilding(id) {
   const px = (b.x / 1600) * W, py = (((b.y + (withAuto ? 860 : 700)) / 2) / 900) * H;
   const sx = narrow ? innerWidth * 0.5 : innerWidth * 0.66, sy = narrow ? innerHeight * 0.3 : innerHeight * (withAuto ? 0.52 : 0.56);
   gsap.to(cam, { x: sx - r.left - px * scale, y: sy - r.top - py * scale, scale, duration: 1.3, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#town-dir'], { autoAlpha: 0, duration: 0.4 });
+  gsap.to(['#hero-copy', '#fly-cue', '#town-dir', '.balloon-lane'], { autoAlpha: 0, duration: 0.4 });
   cam.classList.add('focus');
   $$('.bld, .pin', cam).forEach((el) => el.classList.toggle('on', el.dataset.id === id));
   panel.innerHTML = `
@@ -197,7 +198,7 @@ function closeBuilding() {
   const was = townOpen;
   townOpen = null;
   gsap.to(cam, { x: 0, y: 0, scale: 1, duration: 1.1, ease: 'power3.inOut' });
-  gsap.to(['#hero-copy', '#fly-cue', '#town-dir'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
+  gsap.to(['#hero-copy', '#fly-cue', '#town-dir', '.balloon-lane'], { autoAlpha: 1, duration: 0.5, delay: 0.5 });
   cam.classList.remove('focus');
   panel.classList.remove('open');
   panel.setAttribute('inert', '');
@@ -833,3 +834,56 @@ initNudge({ reduced, scrollToEl });
 initCursor({ reduced });
 initSteam({ reduced });
 initHeroFx({ reduced });
+
+/* ---------------- music: a hot-air balloon with a radio drifts through the hero sky; tap it to play,
+   and a play/pause button slides into the top bar ---------------- */
+initMusic();
+{
+  const btn = $('#music'), balloon = $('#balloon');
+  // the balloon: striped envelope, burner, wicker basket with the radio in it, and a banner on a line
+  const GORES = ['#ef6a5b', '#fffaf0', '#ffc94a', '#fffaf0', '#ef6a5b'];
+  balloon.innerHTML = `<svg viewBox="-60 -10 120 190" aria-hidden="true">
+    <defs><clipPath id="bl-env"><path d="M0 0 C34 0 52 24 52 50 C52 76 30 92 16 106 H-16 C-30 92 -52 76 -52 50 C-52 24 -34 0 0 0 Z"/></clipPath>
+      <radialGradient id="bl-glow" cx=".5" cy=".85" r=".7"><stop offset="0" stop-color="#ffd86b" stop-opacity=".9"/><stop offset="1" stop-color="#ffd86b" stop-opacity="0"/></radialGradient></defs>
+    <g clip-path="url(#bl-env)">${GORES.map((c, i) => `<rect x="${-52 + i * 20.8}" y="0" width="20.8" height="106" fill="${c}"/>`).join('')}
+      <path d="M-52 62 Q0 74 52 62 V70 Q0 82 -52 70 Z" fill="#2a9d8f"/>
+      <rect class="bl-glow" x="-60" y="0" width="120" height="110" fill="url(#bl-glow)"/>
+      <path d="M-30 14 Q-40 30 -40 50" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".55"/></g>
+    <path d="M0 0 C34 0 52 24 52 50 C52 76 30 92 16 106 H-16 C-30 92 -52 76 -52 50 C-52 24 -34 0 0 0 Z" fill="none" stroke="#211c33" stroke-width="3"/>
+    <path d="M-10.4 2 C-16 30 -16 80 -8 106 M10.4 2 C16 30 16 80 8 106" fill="none" stroke="#211c33" stroke-width="1.6" opacity=".5"/>
+    <rect x="-16" y="104" width="32" height="7" rx="2" fill="#a3683f" stroke="#211c33" stroke-width="2.4"/>
+    <path d="M-15 111 L-15 134 M15 111 L15 134" stroke="#211c33" stroke-width="1.6"/>
+    <g class="bl-flame"><path d="M0 108 C-4 112 -3 116 0 119 C3 116 4 112 0 108 Z" fill="#ffb03b"/><path d="M0 111.5 C-1.6 113.5 -1 116 0 117.5 C1 116 1.6 113.5 0 111.5 Z" fill="#fff4c4"/></g>
+    <g class="bl-notes" fill="#211c33">${[0, 1, 2].map((i) => `<g class="bl-note" style="--n:${i}"><path d="M0 0 v-12 l8 -2.6 v10" fill="none" stroke="#211c33" stroke-width="2" stroke-linecap="round"/><ellipse cx="-2.4" cy=".4" rx="3" ry="2.2"/><ellipse cx="5.6" cy="-2.2" rx="3" ry="2.2"/></g>`).join('')}</g>
+    <g class="bl-radio"><path d="M-6 121 L-14 110" stroke="#c9c3d6" stroke-width="1.8" stroke-linecap="round"/><circle cx="-14" cy="110" r="1.8" fill="#ffc94a" stroke="#211c33" stroke-width="1"/>
+      <rect x="-12" y="121" width="24" height="15" rx="3.5" fill="#e05a47" stroke="#211c33" stroke-width="2"/>
+      <circle class="bl-cone" cx="-5" cy="129" r="4.6" fill="#fff4e0" stroke="#211c33" stroke-width="1.4"/><rect class="bl-dial" x="1.5" y="125" width="8" height="4" rx="1" fill="#2a2440"/><circle class="bl-led" cx="9" cy="132" r="1.4" fill="#5c556f"/></g>
+    <rect x="-17" y="134" width="34" height="18" rx="3" fill="#c08552" stroke="#211c33" stroke-width="2.6"/>
+    <path d="M-17 140 H17 M-17 146 H17 M-9 134 V152 M0 134 V152 M9 134 V152" stroke="#8a5a32" stroke-width="1.4"/>
+    <path class="bl-line" d="M14 150 Q26 160 22 174" fill="none" stroke="#211c33" stroke-width="1.4"/>
+  </svg><span class="bl-banner"><span class="bl-say">tap for music</span> <i aria-hidden="true">♪</i></span>`;
+  const say = $('.bl-say', balloon);
+  const reveal = () => { if (!btn.hidden) return; btn.hidden = false; requestAnimationFrame(() => btn.classList.add('in')); };
+  // the button is there from the start if they've listened before (nothing plays until they ask), or on
+  // short upright screens, where there's no room in the sky for the balloon
+  if (wasOn() || matchMedia('(max-aspect-ratio: 1/1) and (max-height: 740px)').matches) reveal();
+  onMusic((on) => {
+    root.classList.toggle('music-on', on);
+    for (const b of [btn, balloon]) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Pause music' : 'Play music'); }
+    say.textContent = on ? 'tap to pause' : 'tap for music';
+    if (on) reveal();
+  });
+  btn.addEventListener('click', toggleMusic);
+  balloon.addEventListener('click', toggleMusic);
+  // the radio's speaker, the balloon's glow and the button's bars move with the sound
+  const bands = [0, 0, 0], bars = [...btn.querySelectorAll('.mu-bars i')];
+  const beat = () => {
+    if (root.classList.contains('music-on')) {
+      musicBands(bands);
+      bars.forEach((b, i) => b.style.setProperty('--h', (0.25 + Math.min(1, bands[i] * 2.6) * 0.75).toFixed(3)));
+      balloon.style.setProperty('--lv', musicLevel().toFixed(3));
+    }
+    requestAnimationFrame(beat);
+  };
+  requestAnimationFrame(beat);
+}

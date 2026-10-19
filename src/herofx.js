@@ -7,6 +7,8 @@
 // Plain WebGL, no library. It runs only while the hero is on screen, eases between day and night with
 // the site's own switch, and stays off entirely for reduced motion.
 
+import { musicLevel } from './music.js';
+
 const NOISE = `
 float h1(float n) { return fract(sin(n) * 43758.5453); }
 float h2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -17,7 +19,7 @@ float fbm(vec2 p) { float v = 0.0, a = 0.5; for (int k = 0; k < 4; k++) { v += a
 
 // ---- the sky, in screen pixels
 const SKY = `precision mediump float;
-uniform vec2 res; uniform float t, night, k; uniform vec3 sun; // sun: x, y, radius (px)
+uniform vec2 res; uniform float t, night, k, beat; uniform vec3 sun; // sun: x, y, radius (px)
 ${NOISE}
 // a star in each cell of a grid, at a random spot, with its own size and twinkle
 float stars(vec2 p, float cell, float seed) {
@@ -38,7 +40,7 @@ void main() {
   vec3 col = vec3(0.0); float a = 0.0;
   if (night > 0.01) {
     float s = stars(p, 90.0 * k, 0.0) + 0.5 * stars(p + 400.0, 60.0 * k, 5.0);
-    s *= smoothstep(0.35, 0.8, up);                 // none down where the buildings are
+    s *= smoothstep(0.35, 0.8, up) * (1.0 + beat * 0.8);   // the stars brighten a touch with the music                 // none down where the buildings are
     // a shooting star every ~9 seconds, crossing the upper sky
     float cyc = floor(t / 9.0), ph = fract(t / 9.0);
     // starts in the open sky on the right, away from the headline; none on narrow screens, where the text fills the sky
@@ -68,7 +70,7 @@ void main() {
 
 // ---- the town, in scene units (the drawing's own 1600 x 900 space)
 const TOWN = `precision mediump float;
-uniform vec2 res; uniform float t, night, u; // u: canvas pixels per scene unit
+uniform vec2 res; uniform float t, night, u, beat; // u: canvas pixels per scene unit
 ${NOISE}
 const vec2 CUP = vec2(707.0, 675.0);   // the glasses on the chai cart's counter, under its canopy
 float soft(float d, float r) { return exp(-(d * d) / (r * r)); }
@@ -81,7 +83,7 @@ void main() {
     for (int i = 0; i < 3; i++) {
       float lx = i == 0 ? 398.0 : i == 1 ? 1206.0 : 1614.0;   // the bulbs (lamp x + 26)
       vec2 b = vec2(lx, 606.0);
-      float fl = 0.88 + 0.12 * vn(vec2(t * 7.0, float(i) * 9.0));
+      float fl = (0.88 + 0.12 * vn(vec2(t * 7.0, float(i) * 9.0))) * (1.0 + beat * 0.6);   // and the lamps swell with it
       glow += (soft(length(p - b), 9.0) * 0.9 + soft(length(p - b), 34.0) * 0.35) * fl;
       // dust drifting through the cone of light under the bulb
       float inCone = step(b.y, p.y) * step(p.y, 712.0) * step(abs(p.x - b.x), (p.y - b.y) * 0.45 + 6.0);
@@ -98,7 +100,7 @@ void main() {
       vec2 home = vec2(tx + (h1(fi * 3.1) - 0.5) * 120.0, 600.0 + h1(fi * 7.3) * 90.0);
       vec2 at = home + vec2(sin(t * (0.3 + 0.2 * h1(fi)) + fi * 2.0) * 26.0, cos(t * (0.25 + 0.2 * h1(fi + 1.0)) + fi) * 14.0);
       float blink = smoothstep(0.35, 0.95, sin(t * (0.6 + 0.5 * h1(fi + 2.0)) + fi * 4.0));
-      ff += (soft(length(p - at), 2.2) + soft(length(p - at), 8.0) * 0.45) * blink;
+      ff += (soft(length(p - at), 2.2) + soft(length(p - at), 8.0) * (0.45 + beat * 0.5)) * blink;
     }
     col += (vec3(1.0, 0.86, 0.5) * glow + vec3(1.0, 0.93, 0.7) * dust * 0.9 + vec3(0.85, 1.0, 0.55) * ff) * night;
     a += clamp(glow * 0.9 + dust * 0.8 + ff, 0.0, 1.0) * night;
@@ -187,14 +189,14 @@ export function initHeroFx({ reduced }) {
     if (sky) {
       const cr = skyCv.getBoundingClientRect(), sr = sunEl?.getBoundingClientRect();
       sky.draw((gl, U) => {
-        gl.uniform1f(U('t'), t); gl.uniform1f(U('night'), night); gl.uniform1f(U('k'), skyS);
+        gl.uniform1f(U('t'), t); gl.uniform1f(U('night'), night); gl.uniform1f(U('k'), skyS); gl.uniform1f(U('beat'), musicLevel());
         if (sr && sr.width) gl.uniform3f(U('sun'), (sr.left + sr.width / 2 - cr.left) * skyS, (sr.top + sr.height / 2 - cr.top) * skyS, (sr.width / 2) * skyS);
         else gl.uniform3f(U('sun'), 0, 0, 0);
       });
     }
     if (town) {
       town.draw((gl, U) => {
-        gl.uniform1f(U('t'), t); gl.uniform1f(U('night'), night);
+        gl.uniform1f(U('t'), t); gl.uniform1f(U('night'), night); gl.uniform1f(U('beat'), musicLevel());
         gl.uniform1f(U('u'), townCv.width / 1600);
       });
     }
