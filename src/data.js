@@ -174,7 +174,8 @@ export const commits = [
   { lane: 3, date: 'Feb 2026', msg: 'feat(cl): Chile launch, passwordless sign-in', body: 'National-ID support, routing migration, launch.' },
   { lane: 3, date: 'Aug 2025', msg: 'feat(agents): multi-agent incident triage', body: 'Supervisor + specialised sub-agents; an hour of triage down to minutes.' },
   { lane: 3, date: 'Jul 2024', msg: 'init: join Walmart Global Tech', body: 'Senior Software Engineer, International Profile team.' },
-  { lane: 4, date: 'Mar 2024', msg: 'feat: Voice Wise AI, voice notes to action items', body: 'Next.js, Whisper, Together.ai, Convex.' },
+  { lane: 4, date: 'Oct 2026', msg: 'feat: Voice Notes, on-device Whisper in the browser', body: 'React, transformers.js on WebGPU, TipTap, an offline PWA.' },
+  { lane: 4, date: 'Oct 2026', msg: 'refactor: rebuilt Shoe Forge and CodeMe', body: 'Shoe Forge on Next.js and React Three Fiber; CodeMe with share links and forks on Convex.' },
   { lane: 4, date: 'Jan 2024', msg: 'feat: Travel Planner AI', body: 'Itineraries, packing lists and places to visit. Next.js, OpenAI, Convex, Clerk, Razorpay.' },
   { lane: 2, date: '2023', msg: 'award: Impact Award, fastest delivery of a top feature', body: 'Fidelity Investments.' },
   { lane: 4, date: 'May 2023', msg: 'feat: Shoe Forge, real-time 3D configurator', body: 'Three.js, React, Valtio.' },
@@ -196,11 +197,10 @@ export const commits = [
 
 export const projects = [
   { name: 'Travel Planner AI', alias: 'Rutugo', what: 'A full travel-planning SaaS. Made me a Convex Champion, then Rutugo acquired it.', stack: 'Next.js · Convex · Clerk · Razorpay · AI', code: 'https://github.com/hardikverma22/travel-planner-ai', live: 'https://rutugo.com/', hue: 18 },
-  { name: 'Voice Wise AI', what: 'Record a voice note; get transcript, summary and action items.', stack: 'Next.js · Whisper · Together.ai · Convex', code: 'https://github.com/hardikverma22/VoiceWiseAI', hue: 200 },
-  { name: 'Shoe Forge', what: 'Real-time 3D shoe configurator for textures and colours.', stack: 'Three.js · React · Valtio · Framer Motion', code: 'https://github.com/hardikverma22/shoe-forge', live: 'https://hardikverma22.github.io/shoe-forge', hue: 140 },
+  { name: 'Voice Notes', what: 'Private voice notes. Whisper transcribes on your own device, even offline; nothing leaves the browser.', stack: 'React · Whisper on WebGPU · TipTap · PWA', code: 'https://github.com/hardikverma22/voice-notes', live: 'https://hardikverma22.github.io/voice-notes/', hue: 175 },
+  { name: 'Shoe Forge', what: 'Design a sneaker part by part in real-time 3D, then share the whole pair as a link.', stack: 'Next.js · React Three Fiber · three.js · Zustand', code: 'https://github.com/hardikverma22/shoe-forge', live: 'https://shoe-forge.vercel.app/', hue: 140 },
+  { name: 'CodeMe', what: 'An HTML, CSS and JS playground with share links, forks and fixes it checks before suggesting.', stack: 'React · CodeMirror 6 · Convex · Tailwind', code: 'https://github.com/hardikverma22/code-me', live: 'https://codeme-play.vercel.app/', hue: 48 },
   { name: 'HDocs', what: 'Create, edit and share documents collaboratively.', stack: 'React · Quill · Firebase · AWS API Gateway', code: 'https://github.com/hardikverma22/HDocs', live: 'https://hdocs.netlify.app/', hue: 260 },
-  { name: 'Textop.AI', what: 'Sentiment, classification, keywords and summaries.', stack: 'React · OpenAI · AWS', code: 'https://github.com/hardikverma22/TextOp-AI', live: 'https://text-op-ai.vercel.app/', hue: 320 },
-  { name: 'CodeMe', what: 'In-browser HTML/CSS/JS editor with resizable panels.', stack: 'React · CodeMirror · Tailwind', code: 'https://github.com/hardikverma22/Code-Me-with-tailwind-reziable-panels', live: 'https://hardikverma22.github.io/Code-Me-with-tailwind-reziable-panels/', hue: 48 },
 ];
 
 export const writing = [
@@ -283,14 +283,14 @@ export const toolbox = [
   ['ai', 'Sk', 'Agent skills', 'mimo, skill miner, headless scheduler'],
   ['ai', 'A2', 'A2A · A2UI', 'Agent-to-agent calls and agents that drive native UI'],
   ['ai', 'Cl', 'Claude / OpenAI', 'Daily drivers, via API and coding agents'],
-  ['ai', 'Wh', 'Whisper · Speech', 'Voice notes to action items; on-device transcription in mimo'],
+  ['ai', 'Wh', 'Whisper · Speech', 'Voice Notes runs Whisper on WebGPU, fully offline; on-device transcription in mimo too'],
   ['ai', 'Mp', 'MediaPipe · ONNX', 'On-device hand tracking and segmentation, in the browser'],
   ['fe', 'Re', 'React', 'Ten years of interfaces, from Angular days to agent UIs'],
-  ['fe', 'Nx', 'Next.js', 'Travel Planner, Voice Wise'],
+  ['fe', 'Nx', 'Next.js', 'Travel Planner and Shoe Forge'],
   ['fe', 'Ts', 'TypeScript', 'The default'],
   ['fe', 'Ng', 'Angular', '12 full-stack apps at TCS'],
   ['fe', 'Tw', 'Tailwind', 'Every side project'],
-  ['fe', 'Th', 'Three.js · WebGL', 'Shoe Forge, and the steam on this site\u2019s chai, a hand-written shader'],
+  ['fe', 'Th', 'Three.js · WebGL', 'Shoe Forge in React Three Fiber, and the steam on this site\u2019s chai, a hand-written shader'],
   ['fe', 'Gs', 'GSAP · Motion', 'Scroll stories and micro-interactions'],
   ['be', 'Py', 'Python', 'Agents, evals and model training'],
   ['be', 'Rs', 'Rust', 'A single-binary token runtime, built in hack week'],

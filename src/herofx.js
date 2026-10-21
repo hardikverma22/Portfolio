@@ -184,6 +184,8 @@ export function initHeroFx({ reduced }) {
   function frame(now) {
     raf = 0;
     if (!on) return;
+    // while the intro covers the hero there is nothing to see, so don't spend frames on it
+    if (root.classList.contains('intro')) { raf = requestAnimationFrame(frame); return; }
     const t = (now - t0) / 1000;
     night += (target() - night) * 0.03;
     if (sky) {

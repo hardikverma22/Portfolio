@@ -40,8 +40,8 @@
   <link rel="stylesheet" href="/src/style.css" />
   <script>try{var m=localStorage.getItem('hv-mode');var h=new Date().getHours();if(m==='night'||(!m&&(h>=19||h<6)))document.documentElement.dataset.mode='night'}catch(e){}</script>
   <script>
-    // the intro (src/intro.js) starts from a blank sheet: set it up before the first paint, once per session
-    try { if (!sessionStorage.getItem('hv-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro', 'intro-hide', 'sketch'); } catch (e) {}
+    // the intro (src/intro.js) starts from a blank sheet: set it up before the first paint, on every load
+    try { if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro', 'intro-hide', 'sketch'); } catch (e) {}
   </script>
 </head>
 <body>

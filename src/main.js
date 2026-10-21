@@ -14,6 +14,7 @@ import { initCursor } from './cursor.js';
 import { runIntro } from './intro.js';
 import { initSteam } from './steam.js';
 import { initHeroFx } from './herofx.js';
+import { initBalloonFx } from './balloonfx.js';
 import { initMusic, toggle as toggleMusic, onMusic, musicLevel, musicBands, wasOn } from './music.js';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -588,10 +589,9 @@ const n = projects.length;
 const W = 'fill="none" stroke="#fffaf0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
 const polArt = {
   'Travel Planner AI': `<svg viewBox="0 0 64 64"><path d="M8 50 C20 44 18 30 32 30 S46 18 56 14" ${W} stroke-dasharray="4 5"/><path d="M50 6 a8 8 0 0 1 8 8 c0 7 -8 14 -8 14 s-8 -7 -8 -14 a8 8 0 0 1 8 -8 Z" fill="#fffaf0"/><circle cx="50" cy="14" r="3" fill="var(--ink)"/><circle cx="8" cy="50" r="4" fill="#fffaf0"/></svg>`,
-  'Voice Wise AI': `<svg viewBox="0 0 64 64"><rect x="24" y="8" width="16" height="28" rx="8" fill="#fffaf0"/><path d="M16 30 a16 16 0 0 0 32 0 M32 46 v10 M24 56 h16" ${W}/><path d="M4 32 v4 M10 28 v12 M54 28 v12 M60 32 v4" ${W}/></svg>`,
+  'Voice Notes': `<svg viewBox="0 0 64 64"><rect x="24" y="8" width="16" height="28" rx="8" fill="#fffaf0"/><path d="M16 30 a16 16 0 0 0 32 0 M32 46 v10 M24 56 h16" ${W}/><path d="M4 32 v4 M10 28 v12 M54 28 v12 M60 32 v4" ${W}/></svg>`,
   'Shoe Forge': `<svg viewBox="0 0 64 64"><path d="M6 44 V30 l10 -10 h8 l4 8 q10 6 24 8 q8 2 8 8 v4 Z" fill="#fffaf0"/><path d="M6 48 h54" ${W}/><path d="M22 28 l4 4 M26 25 l4 4" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/></svg>`,
   HDocs: `<svg viewBox="0 0 64 64"><rect x="18" y="8" width="32" height="42" rx="3" fill="#fffaf0" opacity=".55"/><rect x="12" y="14" width="32" height="42" rx="3" fill="#fffaf0"/><path d="M18 24 h20 M18 31 h20 M18 38 h14" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/><circle cx="46" cy="46" r="8" fill="var(--sun)" stroke="var(--ink)" stroke-width="2"/></svg>`,
-  'Textop.AI': `<svg viewBox="0 0 64 64"><path d="M6 10 h34 a6 6 0 0 1 6 6 v14 a6 6 0 0 1 -6 6 h-20 l-10 8 v-8 h-4 a6 6 0 0 1 -6 -6 v-14 a6 6 0 0 1 6 -6 Z" fill="#fffaf0"/><path d="M14 20 h20 M14 26 h12" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/><path d="M58 30 h-12 v14 h4 v6 l7 -6 a5 5 0 0 0 5 -5 v-4 a5 5 0 0 0 -4 -5 Z" fill="#fffaf0" opacity=".7"/></svg>`,
   CodeMe: `<svg viewBox="0 0 64 64"><path d="M22 18 L8 32 L22 46 M42 18 L56 32 L42 46 M36 12 L28 52" ${W} stroke-width="4"/></svg>`,
 };
 $('#line').innerHTML = projects.map((p, i) => {
@@ -813,8 +813,9 @@ if (!reduced) {
 }
 
 /* ---------------- intro: the town draws itself (see intro.js) ---------------- */
-runIntro({ reduced, onDone: () => $('.h1').classList.add('done') });
-addEventListener('load', () => ScrollTrigger.refresh());
+const introOver = runIntro({ reduced, onDone: () => $('.h1').classList.add('done') });
+// the full scroll refresh is heavy; let it wait until the intro has finished so it can't stall it
+addEventListener('load', () => introOver.then(() => ScrollTrigger.refresh()));
 
 /* ---------------- the guide: one bot that walks you through the whole page ---------------- */
 initGuide({ reduced });
@@ -830,7 +831,7 @@ initMusic();
   const btn = $('#music'), balloon = $('#balloon');
   // the balloon: striped envelope, burner, wicker basket with the radio in it, and a banner on a line
   const GORES = ['#ef6a5b', '#fffaf0', '#ffc94a', '#fffaf0', '#ef6a5b'];
-  balloon.innerHTML = `<svg viewBox="-60 -10 120 190" aria-hidden="true">
+  balloon.innerHTML = `<span class="bl-bob"><canvas class="bl-fx" aria-hidden="true"></canvas><svg viewBox="-60 -10 120 190" aria-hidden="true">
     <defs><clipPath id="bl-env"><path d="M0 0 C34 0 52 24 52 50 C52 76 30 92 16 106 H-16 C-30 92 -52 76 -52 50 C-52 24 -34 0 0 0 Z"/></clipPath>
       <radialGradient id="bl-glow" cx=".5" cy=".85" r=".7"><stop offset="0" stop-color="#ffd86b" stop-opacity=".9"/><stop offset="1" stop-color="#ffd86b" stop-opacity="0"/></radialGradient></defs>
     <g clip-path="url(#bl-env)">${GORES.map((c, i) => `<rect x="${-52 + i * 20.8}" y="0" width="20.8" height="106" fill="${c}"/>`).join('')}
@@ -848,9 +849,11 @@ initMusic();
       <circle class="bl-cone" cx="-5" cy="129" r="4.6" fill="#fff4e0" stroke="#211c33" stroke-width="1.4"/><rect class="bl-dial" x="1.5" y="125" width="8" height="4" rx="1" fill="#2a2440"/><circle class="bl-led" cx="9" cy="132" r="1.4" fill="#5c556f"/></g>
     <rect x="-17" y="134" width="34" height="18" rx="3" fill="#c08552" stroke="#211c33" stroke-width="2.6"/>
     <path d="M-17 140 H17 M-17 146 H17 M-9 134 V152 M0 134 V152 M9 134 V152" stroke="#8a5a32" stroke-width="1.4"/>
-    <path class="bl-line" d="M14 150 Q26 160 22 174" fill="none" stroke="#211c33" stroke-width="1.4"/>
-  </svg><span class="bl-banner"><span class="bl-say">tap for music</span> <i aria-hidden="true">♪</i></span>`;
-  const say = $('.bl-say', balloon);
+    <g class="bl-badge"><circle cx="0" cy="73" r="10.5" fill="#ffc94a" stroke="#211c33" stroke-width="2.4"/>
+      <path class="bl-play" d="M-3.2 67.6 L5.4 73 L-3.2 78.4 Z" fill="#211c33"/>
+      <g class="bl-pause" fill="#211c33"><rect x="-4.4" y="68.2" width="3.2" height="9.6" rx="1.2"/><rect x="1.2" y="68.2" width="3.2" height="9.6" rx="1.2"/></g></g>
+  </svg></span>`;
+  initBalloonFx({ reduced });
   const reveal = () => { if (!btn.hidden) return; btn.hidden = false; requestAnimationFrame(() => btn.classList.add('in')); };
   // the button is there from the start if they've listened before (nothing plays until they ask), or on
   // short upright screens, where there's no room in the sky for the balloon
@@ -858,7 +861,7 @@ initMusic();
   onMusic((on) => {
     root.classList.toggle('music-on', on);
     for (const b of [btn, balloon]) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Pause music' : 'Play music'); }
-    say.textContent = on ? 'tap to pause' : 'tap for music';
+    if (on) balloon.classList.add('played');
     if (on) reveal();
   });
   btn.addEventListener('click', toggleMusic);

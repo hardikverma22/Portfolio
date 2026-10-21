@@ -389,7 +389,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* the road runs behind the story; a soft wash of paper keeps the words clean without boxing them in */
 .story { overflow-x: clip; }
 .tell { position: relative; isolation: isolate; }
-.tell::before { content: ''; position: absolute; z-index: -1; inset: -28px -36px; border-radius: 48px; background: var(--paper, var(--bg)); box-shadow: 0 0 36px 30px var(--paper, var(--bg)); }
+/* see-through enough that the road, and the auto with its bot, still show faintly behind the words
+   (the same soft backing sits behind the passport and kind-words headers, where the road also crosses) */
+:is(#passport, #words) .sec-h { position: relative; isolation: isolate; }
+:is(#passport, #words) .sec-h::before { content: ''; position: absolute; z-index: -1; inset: -28px -36px; border-radius: 48px; --wash: color-mix(in srgb, var(--paper) 64%, transparent); background: var(--wash); box-shadow: 0 0 36px 30px var(--wash); pointer-events: none; }
+.tell::before { content: ''; position: absolute; z-index: -1; inset: -28px -36px; border-radius: 48px; --wash: color-mix(in srgb, var(--paper) 64%, transparent); background: var(--wash); box-shadow: 0 0 36px 30px var(--wash); }
 .tell .w { opacity: .14; transition: opacity .25s; }
 .mk { position: relative; display: inline; isolation: isolate; }
 @media (min-width: 900px) { .mk { white-space: nowrap; } }
@@ -1892,14 +1896,11 @@ html.has-cur input, html.has-cur textarea, html.has-cur select, html.has-cur [co
 .balloon-lane { position: absolute; z-index: 4; left: 56%; right: 5%; top: 12%; height: 26%; pointer-events: none; }
 .balloon { position: absolute; left: 0; top: 30%; width: clamp(80px, 6.6vw, 108px); aspect-ratio: 120 / 190; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; animation: bldrift 52s ease-in-out infinite alternate; -webkit-tap-highlight-color: transparent; }
 @keyframes bldrift { 0% { left: 0%; top: 35%; } 50% { top: 0%; } 100% { left: 80%; top: 25%; } }
-.balloon svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: 50% 10%; animation: blbob 5.5s ease-in-out infinite; filter: drop-shadow(3px 5px 0 rgba(33, 28, 51, .18)); }
+.bl-bob { position: absolute; inset: 0; display: block; transform-origin: 50% 10%; animation: blbob 5.5s ease-in-out infinite; }
+.balloon svg { position: relative; display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(3px 5px 0 rgba(33, 28, 51, .18)); }
 @keyframes blbob { 50% { translate: 0 -8px; rotate: 2.5deg; } }
-.balloon:hover svg { animation-play-state: paused; scale: 1.05; transition: scale .3s var(--spring); }
+.balloon:hover .bl-bob { animation-play-state: paused; scale: 1.05; transition: scale .3s var(--spring); }
 .balloon:focus-visible { outline: 3px solid var(--sun); outline-offset: 6px; border-radius: 40px; }
-/* the banner on its line, fluttering */
-.bl-banner { position: absolute; left: 66%; top: 86%; padding: 2px 9px 3px; border: 2px solid var(--ink); border-radius: 3px 12px 12px 3px; background: #fffaf0; color: var(--ink); font: 700 16px/1.1 var(--f-hand); white-space: nowrap; transform-origin: 0 50%; rotate: -5deg; animation: blflap 2.4s ease-in-out infinite; box-shadow: 2px 2px 0 rgba(33, 28, 51, .25); }
-.bl-banner i { font-style: normal; color: var(--rose); }
-@keyframes blflap { 50% { rotate: 3deg; } }
 /* burner: always a small flame, flickering */
 .bl-flame { transform-box: fill-box; transform-origin: 50% 100%; animation: blflame .5s ease-in-out infinite alternate; }
 @keyframes blflame { to { scale: .85 1.15; } }
@@ -1924,37 +1925,51 @@ html.has-cur input, html.has-cur textarea, html.has-cur select, html.has-cur [co
 @media (max-aspect-ratio: 1/1) {
   .balloon-lane { left: 6%; right: 10%; top: 35%; height: 8%; }
   .balloon { width: 66px; }
-  .bl-banner { font-size: 13.5px; left: 70%; top: 74%; }
   @keyframes bldrift { 0% { left: 0%; top: 0%; } 50% { top: 100%; } 100% { left: 58%; top: 20%; } }
 }
 /* short upright screens: no room in the sky, so the top-bar button is there from the start instead */
 @media (max-aspect-ratio: 1/1) and (max-height: 740px) { .balloon-lane { display: none; } }
-@media (prefers-reduced-motion: reduce) { .balloon { animation: none; left: 30%; } .balloon svg, .bl-banner { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .balloon { animation: none; left: 30%; } .bl-bob, .bl-badge { animation: none !important; } }
 
 
-/* ---------------- intro (intro.js): the town draws itself, then colour washes up ---------------- */
+/* ---------------- intro (intro.js): the town draws itself, then colour washes up ----------------
+   Built to stay smooth: the line drawing is a static copy of the town, revealed by a paper "eraser" that
+   slides off it, and the colour comes up as the whole cover wipes away. Only transforms animate. */
 :root { --sketch: #211c33; }
 [data-mode='night'] { --sketch: #f3ecdf; }
-/* a blank sheet over the sky until the colour comes in */
-.sketch .stage::before { content: ''; position: absolute; inset: 0; z-index: 0; background: var(--paper); transition: opacity 1.2s ease .35s; }
-.wash .stage::before { opacity: 0; }
-.sketch :is(.ly-sky, .ly-pins, .fx-sky, .fx-town), .sketch .ly .lights { opacity: 0; transition: opacity 1.1s ease .5s; }
-.wash :is(.ly-sky, .ly-pins, .fx-sky, .fx-town), .wash .ly .lights { opacity: 1; }
+/* before the cover is in place, the finished town must not show */
+.sketch:not(.cover-ready) .stage { background: var(--paper); }
+.sketch:not(.cover-ready) .stage > :not(.hero-copy) { visibility: hidden; }
+/* the cover: plain paper, the line drawing on it, and the eraser that reveals the drawing */
+/* the cover reaches 140px below the screen, where its soft lower edge waits out of sight; as it wipes up,
+   that edge is what passes over the town, so the colour rises like a wash rather than a hard line */
+.intro-cover { position: absolute; inset: 0 0 -140px; z-index: 4; overflow: hidden; pointer-events: none; will-change: transform;
+  -webkit-mask: linear-gradient(to top, transparent 0, #000 130px); mask: linear-gradient(to top, transparent 0, #000 130px); }
+.intro-cover-in { bottom: 140px !important; }
+.intro-cover-in { position: absolute; inset: 0; will-change: transform; background: var(--paper); }
+.intro-sketch .scene { pointer-events: none; }
+.intro-sketch * { animation: none !important; transition: none !important; }
+.intro-sketch :is(.lights, defs, .tint, .sunwash, .side-shade, .contact-shadows, .dayonly, .nightonly, .pins, .tap-hint, .fx-town) { display: none !important; }
+.intro-sketch :is(path, rect, circle, ellipse, line, polyline, polygon, text) { fill: none !important; stroke: var(--sketch) !important; stroke-width: 1.25px !important; vector-effect: non-scaling-stroke; stroke-dasharray: none !important; opacity: 1 !important; }
+.intro-eraser { position: absolute; inset: 0 -160px 0 0; will-change: transform; background: linear-gradient(90deg, transparent 0, var(--paper) 140px); }
+/* the pen nib rides the eraser's edge, wobbling a little as it draws */
+.intro-pen { position: absolute; left: 70px; bottom: 16%; width: 34px; height: 34px; color: var(--sketch); animation: penwob .32s ease-in-out infinite alternate; }
+.intro-pen svg { width: 100%; height: 100%; overflow: visible; }
+@keyframes penwob { from { transform: translate(0, -60px) rotate(-6deg); } to { transform: translate(0, 40px) rotate(4deg); } }
 /* the copy, tags and top bar wait for the colour */
 .intro-hide :is(.hero-copy > :not(.hello, .h1), .town-dir, .balloon-lane, #top-bar, .fly-cue, .tap-hint) { opacity: 0; }
-/* the headline is inked in as outlines first, then filled when the colour arrives */
+.intro-hide .hello { clip-path: inset(-20% 100% -40% 0); }
+/* the headline is inked in as outlines first, then filled as the colour arrives */
 .sketch:not(.wash) .h1, .sketch:not(.wash) .h1 * { color: transparent; -webkit-text-stroke: 1.3px var(--sketch); }
-/* as the colour comes in, the fill rises while the outline fades, so the headline never blinks out */
 .sketch.wash .h1, .sketch.wash .h1 * { -webkit-text-stroke: 1.3px transparent; transition: color .9s ease, -webkit-text-stroke-color .9s ease; }
 .intro-hide .h1 { clip-path: inset(-20% 100% -30% 0); }
 .sketch:not(.wash) .fix-strike { opacity: 0; }
-.intro-hide .hello { clip-path: inset(-20% 100% -40% 0); }
-/* the drawing: fills off, every outline drawn by a pen sweeping left to right */
-.sketch:not(.drawing) :is(.ly-far, .ly-mid, .ly-street, .ly-fg) { visibility: hidden; }
-.sketch:not(.wash) :is(.ly-far, .ly-mid, .ly-street, .ly-fg) * { fill-opacity: 0; }
-.sketch:not(.wash) .pen { stroke: var(--sketch); vector-effect: non-scaling-stroke; stroke-width: 1.5px; }
-.sketch .pen { stroke-dasharray: var(--len) var(--len); stroke-dashoffset: var(--len); }
-.drawing .pen { stroke-dashoffset: 0; transition: stroke-dashoffset .75s cubic-bezier(.5, 0, .3, 1) var(--dd), stroke .7s ease; }
-/* the colour floods up from the street: foreground first, then the road, the buildings, the far skyline */
-.ly-fg { --ld: 0s; } .ly-street { --ld: .12s; } .ly-mid { --ld: .26s; } .ly-far { --ld: .42s; }
-.wash :is(.ly-far, .ly-mid, .ly-street, .ly-fg) * { transition: fill-opacity .8s ease var(--ld), stroke .7s ease; }
+
+/* the play badge on the balloon's band: pulses until the music has been played once, then shows pause */
+.bl-badge { transform-box: fill-box; transform-origin: center; }
+.balloon:not(.played) .bl-badge { animation: blbadge 2.2s ease-in-out infinite; }
+@keyframes blbadge { 0%, 70%, 100% { scale: 1; } 35% { scale: 1.22; } }
+.bl-pause { display: none; }
+.music-on .bl-pause { display: inline; } .music-on .bl-play { display: none; }
+/* the shader layer around the balloon (balloonfx.js): burner glow, sound ripples, halo */
+.bl-fx { position: absolute; z-index: 0; left: -70%; top: -25%; width: 240%; height: 160%; pointer-events: none; }
