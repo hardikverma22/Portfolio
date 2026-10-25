@@ -1,6 +1,6 @@
-// One auto ride. Below the town a wide road curves in from off the edge of the screen and sweeps across
+// One car ride. Below the town a wide road curves in from off the edge of the screen and sweeps across
 // the page behind the content, then curves away again before the journey (which has a highway of its
-// own). After the journey it curves back in and ends in a parking bay beside the chai stall. The bot's auto
+// own). After the journey it curves back in and ends in a parking bay beside the chai stall. The bot's car
 // drives it as you scroll, easing toward where it should be every frame, like a vehicle would.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,13 +11,12 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const pageTop = (el) => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
 const NS = 'http://www.w3.org/2000/svg';
 
-// the auto from above, nose down the road: three wheels, a ribbed canopy, the bot at the wheel looking
-// out through the windscreen, mirrors, number plates, and lights that do what lights do
+// the agent car from above, nose down the road: four wheels, a lidar puck on the roof, the bot at the
+// wheel looking out through the windscreen, mirrors, and lights that do what lights do
 const AUTO = `<svg viewBox="-32 -56 64 136">
   <defs>
     <linearGradient id="ride-beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff4cc" stop-opacity=".85"/><stop offset="1" stop-color="#fff4cc" stop-opacity="0"/></linearGradient>
     <radialGradient id="ride-red"><stop offset="0" stop-color="#ff4d4d" stop-opacity=".95"/><stop offset="1" stop-color="#ff4d4d" stop-opacity="0"/></radialGradient>
-    <linearGradient id="ride-can" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f0bf22"/><stop offset=".35" stop-color="#ffd84a"/><stop offset=".65" stop-color="#ffd84a"/><stop offset="1" stop-color="#e8b31c"/></linearGradient>
   </defs>
   <path class="ride-beam" d="M-5 41 L-22 80 H22 L5 41 Z" fill="url(#ride-beam)"/>
   <g class="ride-speed" stroke="#fffaf0" stroke-width="2.6" stroke-linecap="round"><path d="M-14 -50 v-14"/><path d="M14 -50 v-10"/><path d="M0 -52 v-18"/></g>
@@ -25,26 +24,22 @@ const AUTO = `<svg viewBox="-32 -56 64 136">
   <circle class="ride-ring" cx="0" cy="0" r="40" fill="rgba(255,201,74,.18)" stroke="#ffc94a" stroke-width="3"/>
   <g class="ride-waves" opacity="0" fill="none" stroke="#211c33" stroke-width="2.4" stroke-linecap="round"><path d="M-8 50 q8 6 16 0"/><path d="M-13 57 q13 9 26 0"/><path d="M-18 64 q18 12 36 0"/></g>
   <g class="ride-body">
-    <ellipse cx="4" cy="2" rx="22" ry="44" fill="rgba(20,16,40,.22)"/>
-    <rect x="-23" y="-34" width="7" height="16" rx="3" fill="#2a2638"/><rect x="16" y="-34" width="7" height="16" rx="3" fill="#2a2638"/>
-    <rect x="-3.5" y="30" width="7" height="13" rx="3" fill="#2a2638"/>
-    <path d="M-19 -38 Q-19 -45 -12 -45 H12 Q19 -45 19 -38 V10 Q19 27 9 38 Q0 44 -9 38 Q-19 27 -19 10 Z" fill="#1f8a4c" stroke="#211c33" stroke-width="2.5" stroke-linejoin="round"/>
-    <path d="M-13 30 Q0 37 13 30" fill="none" stroke="#3aa866" stroke-width="2.5" stroke-linecap="round"/>
-    <rect x="-17" y="-44" width="34" height="9" rx="4" fill="#2a2638" stroke="#211c33" stroke-width="2"/>
-    <rect x="-6" y="-48" width="12" height="5" rx="1.2" fill="#fffaf0" stroke="#211c33" stroke-width="1.4"/>
-    <rect x="-14" y="-47.5" width="5" height="3.5" rx="1" fill="#c0392b"/><rect x="9" y="-47.5" width="5" height="3.5" rx="1" fill="#c0392b"/>
-    <path d="M-17 -38 Q-17 -41 -13 -41 H13 Q17 -41 17 -38 V12 Q17 17 12 17 H-12 Q-17 17 -17 12 Z" fill="url(#ride-can)" stroke="#211c33" stroke-width="2.5" stroke-linejoin="round"/>
-    <path d="M-15 -28 H15 M-15 -17 H15 M-15 -6 H15 M-15 5 H15" stroke="#211c33" stroke-width="1.4" opacity=".22"/>
-    <path d="M-11 -36 Q-11 -38 -9 -38 H-3" stroke="#fff6c4" stroke-width="2.4" stroke-linecap="round" fill="none"/>
-    <rect x="-11.5" y="17" width="23" height="9" rx="3.5" fill="#cfe8f7" stroke="#211c33" stroke-width="2"/>
-    <g transform="translate(0 19)"><rect x="-6" y="-1" width="12" height="9" rx="3" fill="#fff8e6" stroke="#211c33" stroke-width="1.6"/><rect x="-4.2" y="1" width="8.4" height="4.6" rx="1.4" fill="#211c33"/><circle class="ride-eye" cx="-1.8" cy="3.3" r="1.1" fill="#7dffb0"/><circle class="ride-eye" cx="1.8" cy="3.3" r="1.1" fill="#7dffb0"/><path class="ride-happy" d="M-2.9 3.9 q1.1 -1.7 2.2 0 M0.7 3.9 q1.1 -1.7 2.2 0" fill="none" stroke="#7dffb0" stroke-width="1.1" stroke-linecap="round" opacity="0"/></g>
-    <path d="M-8 26 l3 2 M8 26 l-3 2" stroke="#211c33" stroke-width="2" stroke-linecap="round"/>
-    <path d="M-19 20 h-5" stroke="#211c33" stroke-width="2"/><circle cx="-25" cy="20" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
-    <path d="M19 20 h5" stroke="#211c33" stroke-width="2"/><circle cx="25" cy="20" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
-    <g class="ride-ant"><path d="M0 -5 v-10" stroke="#211c33" stroke-width="2.2" stroke-linecap="round"/>
-    <circle class="ride-ball" cx="0" cy="-16" r="4" fill="#ef6a5b" stroke="#211c33" stroke-width="2"/><circle cx="-1.3" cy="-17.3" r="1.1" fill="#fff" opacity=".8"/></g>
-    <circle class="ind ind-l" cx="16" cy="28" r="2.6" fill="#ffb020"/><circle class="ind ind-r" cx="-16" cy="28" r="2.6" fill="#ffb020"/>
-    <circle cx="0" cy="39.5" r="3" fill="#fff3c4" stroke="#211c33" stroke-width="1.6"/>
+    <ellipse cx="4" cy="2" rx="22" ry="46" fill="rgba(20,16,40,.22)"/>
+    <rect x="-23" y="-36" width="7" height="15" rx="3" fill="#2a2638"/><rect x="16" y="-36" width="7" height="15" rx="3" fill="#2a2638"/>
+    <rect x="-23" y="18" width="7" height="15" rx="3" fill="#2a2638"/><rect x="16" y="18" width="7" height="15" rx="3" fill="#2a2638"/>
+    <path d="M-19 -36 Q-19 -46 -9 -46 H9 Q19 -46 19 -36 V32 Q19 44 7 44 H-7 Q-19 44 -19 32 Z" fill="#4f7cf0" stroke="#211c33" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M0 -44 V-34 M0 32 V42" stroke="#fff8e6" stroke-width="3" stroke-linecap="round"/>
+    <path d="M-14 -33 Q0 -37 14 -33 L12 -25 H-12 Z" fill="#cfe8f7" stroke="#211c33" stroke-width="2" stroke-linejoin="round"/>
+    <rect x="-13" y="-24" width="26" height="34" rx="6" fill="#3d6ad8" stroke="#211c33" stroke-width="2"/>
+    <path d="M-12 11 H12 L14 22 Q0 26 -14 22 Z" fill="#cfe8f7" stroke="#211c33" stroke-width="2" stroke-linejoin="round"/>
+    <g transform="translate(0 12)"><rect x="-6" y="-1" width="12" height="9" rx="3" fill="#fff8e6" stroke="#211c33" stroke-width="1.6"/><rect x="-4.2" y="1" width="8.4" height="4.6" rx="1.4" fill="#211c33"/><circle class="ride-eye" cx="-1.8" cy="3.3" r="1.1" fill="#7dffb0"/><circle class="ride-eye" cx="1.8" cy="3.3" r="1.1" fill="#7dffb0"/><path class="ride-happy" d="M-2.9 3.9 q1.1 -1.7 2.2 0 M0.7 3.9 q1.1 -1.7 2.2 0" fill="none" stroke="#7dffb0" stroke-width="1.1" stroke-linecap="round" opacity="0"/></g>
+    <path d="M-19 14 h-5" stroke="#211c33" stroke-width="2"/><circle cx="-25" cy="14" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
+    <path d="M19 14 h5" stroke="#211c33" stroke-width="2"/><circle cx="25" cy="14" r="2.8" fill="#cfe8f7" stroke="#211c33" stroke-width="1.6"/>
+    <rect x="-14" y="-47" width="6" height="3.5" rx="1.2" fill="#c0392b"/><rect x="8" y="-47" width="6" height="3.5" rx="1.2" fill="#c0392b"/>
+    <rect x="-14" y="41" width="7" height="3.5" rx="1.4" fill="#fff3c4" stroke="#211c33" stroke-width="1.2"/><rect x="7" y="41" width="7" height="3.5" rx="1.4" fill="#fff3c4" stroke="#211c33" stroke-width="1.2"/>
+    <g class="ride-ant"><rect x="-6" y="-12" width="12" height="9" rx="4.5" fill="#2a2638" stroke="#211c33" stroke-width="1.6"/>
+    <circle class="ride-ball" cx="0" cy="-7.5" r="2.4" fill="#7dffb0"/></g>
+    <circle class="ind ind-l" cx="17" cy="36" r="2.6" fill="#ffb020"/><circle class="ind ind-r" cx="-17" cy="36" r="2.6" fill="#ffb020"/>
   </g>
 </svg>`;
 
@@ -131,7 +126,7 @@ export function initGuide({ reduced }) {
       t.setAttribute('d', d); t.setAttribute('class', 'r-trail'); t.setAttribute('stroke-width', phone ? 5 : 7); t.dataset.piece = id;
       svg.appendChild(t);
     }
-    junction.insertAdjacentHTML('beforeend', `<g class="r-sign" transform="translate(${(park[0] + (stacked ? w * 1.4 : w * 0.78)).toFixed(1)} ${(park[1] + (stacked ? w * 0.95 : -w * 0.62)).toFixed(1)})"><ellipse cx="0" cy="2" rx="15" ry="4" fill="rgba(33,28,51,.14)"/><rect x="-3" y="-60" width="6" height="61" rx="3" fill="#c9c3d6" stroke="var(--ink)" stroke-width="2.4"/><rect x="-7" y="-4" width="14" height="6" rx="2" fill="#a9a2bb" stroke="var(--ink)" stroke-width="2"/><g class="r-plate"><rect x="-19" y="-104" width="38" height="40" rx="9" fill="#2e6fb7" stroke="var(--ink)" stroke-width="3"/><rect x="-15" y="-100" width="30" height="32" rx="6" fill="none" stroke="#fff" stroke-width="1.6" opacity=".9"/><text x="0" y="-75" text-anchor="middle">P</text><rect x="-29" y="-62" width="58" height="15" rx="4" fill="var(--sun)" stroke="var(--ink)" stroke-width="2.4"/><text class="r-sub" x="0" y="-51.5" text-anchor="middle">AUTO STAND</text></g></g>`);
+    junction.insertAdjacentHTML('beforeend', `<g class="r-sign" transform="translate(${(park[0] + (stacked ? w * 1.4 : w * 0.78)).toFixed(1)} ${(park[1] + (stacked ? w * 0.95 : -w * 0.62)).toFixed(1)})"><ellipse cx="0" cy="2" rx="15" ry="4" fill="rgba(33,28,51,.14)"/><rect x="-3" y="-60" width="6" height="61" rx="3" fill="#c9c3d6" stroke="var(--ink)" stroke-width="2.4"/><rect x="-7" y="-4" width="14" height="6" rx="2" fill="#a9a2bb" stroke="var(--ink)" stroke-width="2"/><g class="r-plate"><rect x="-19" y="-104" width="38" height="40" rx="9" fill="#2e6fb7" stroke="var(--ink)" stroke-width="3"/><rect x="-15" y="-100" width="30" height="32" rx="6" fill="none" stroke="#fff" stroke-width="1.6" opacity=".9"/><text x="0" y="-75" text-anchor="middle">P</text><rect x="-29" y="-62" width="58" height="15" rx="4" fill="var(--sun)" stroke="var(--ink)" stroke-width="2.4"/><text class="r-sub" x="0" y="-51.5" text-anchor="middle">AGENT BAY</text></g></g>`);
     A = sample(dA, STEP);
     B = sample(dB, STEP);
     gsap.set(ride, { scale: phone ? 0.62 : 1 });
@@ -253,7 +248,7 @@ export function initGuide({ reduced }) {
     const p = where(u);
     const b = document.createElement('span');
     b.className = 'ride-honk';
-    b.innerHTML = 'paam paam!';
+    b.innerHTML = 'beep beep!';
     route.appendChild(b);
     if (reduced) { gsap.set(b, { x: p.x, y: p.y - 80, xPercent: -50 }); setTimeout(() => b.remove(), 900); return; }
     gsap.timeline({ onComplete: () => b.remove() })

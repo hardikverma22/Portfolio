@@ -6,11 +6,12 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 const STOPS = [
-  ['story', 'Story'], ['lab', 'Agents'], ['journey', 'Journey'], ['passport', 'Passport'], ['writing', 'Writing'],
+  ['story', 'Story'], ['lab', 'Agents'], ['journey', 'Journey'], ['writing', 'Writing'],
   ['words', 'Kind words'], ['after-hours', 'After hours'], ['stack', 'Stack'], ['contact', 'Contact'],
 ];
-// sections without their own tab light up the one they belong to
-const TAB = { passport: 'journey', words: 'writing' };
+// sections without their own tab light up the one they belong to (the passport and medals are part of
+// the journey stop, so they simply count as it)
+const TAB = { words: 'writing' };
 
 export function initProgress({ reduced, scrollToEl }) {
   const root = document.documentElement;

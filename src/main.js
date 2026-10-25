@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { skillsBuilt, markets, writing, testimonials, projects, toolbox, toolboxGroups, awards, identity } from './data.js';
 import { buildings, story, stickies, milestones, tiffin } from './world.js';
-import { townMarkup, autoRickshaw, skylines } from './town.js';
+import { townMarkup, agentCar, skylines } from './town.js';
 import { mark } from './marks.js';
 import { initLab } from './lab.js';
 import { initGuide } from './guide.js';
@@ -13,6 +13,7 @@ import { initNudge } from './nudge.js';
 import { initProgress } from './progress.js';
 import { initCursor } from './cursor.js';
 import { runIntro } from './intro.js';
+import { initHeadline } from './headline.js';
 import { initSteam } from './steam.js';
 import { initHeroFx } from './herofx.js';
 import { initBalloonFx } from './balloonfx.js';
@@ -93,7 +94,7 @@ function toggleMode(from) {
 const clock = $('#clock');
 const tick = () => {
   const t = new Intl.DateTimeFormat('en-GB', { timeZone: identity.tz, hour: '2-digit', minute: '2-digit' }).format(new Date());
-  clock.textContent = `Bengaluru ${t}`;
+  clock.textContent = `${t} in Bengaluru`;
 };
 tick(); setInterval(tick, 20000);
 
@@ -227,12 +228,6 @@ function measureEdges() {
   if (!Number.isFinite(k) || k <= 0) return;
   edges.start = (0 - r.left) * k - 240;
   edges.end = (innerWidth - r.left) * k + 240;
-  const sc = $('.scooter');
-  if (sc) {
-    sc.style.setProperty('--scoot-from', `${edges.end.toFixed(0)}px`);
-    sc.style.setProperty('--scoot-to', `${(edges.start + 80).toFixed(0)}px`);
-    sc.style.setProperty('--scoot-dur', `${((edges.end - edges.start) / 175).toFixed(1)}s`);
-  }
 }
 measureEdges();
 addEventListener('resize', measureEdges);
@@ -474,7 +469,7 @@ ScrollTrigger.create({ trigger: '#mt-list', start: 'top 90%', end: 'bottom top',
    JOURNEY: the auto drives past highway milestones
    ===================================================================== */
 // the same auto that drives through town, now carrying the story between stops
-$('#jr-auto').innerHTML = `<svg viewBox="-80 -80 240 100">${autoRickshaw()}</svg>`;
+$('#jr-auto').innerHTML = `<svg viewBox="-80 -80 240 100">${agentCar()}</svg>`;
 const AUTO_BODY = 82 / 240; // where the auto's body sits within its svg box
 $('#jr-track').innerHTML = milestones.map((m, i) => `<div class="stone" data-i="${i}"><div class="stone-b"><div class="stone-top">${esc(m.place)}</div><div class="stone-y">${m.y}</div>${mark(m.co, 'stone-mk')}</div></div>`).join('');
 // one skyline per city; they cross-fade as the auto arrives somewhere new
@@ -933,7 +928,9 @@ const idleIO = new IntersectionObserver((es) => es.forEach((e) => e.target.class
 $$('main > section').forEach((s) => idleIO.observe(s));
 
 /* ---------------- intro: the town draws itself (see intro.js) ---------------- */
-const introOver = runIntro({ reduced, onDone: () => $('.h1').classList.add('done') });
+// the swap in the headline (headline.js) plays as the colour washes in, or straight away without the intro
+const headline = initHeadline({ reduced });
+const introOver = runIntro({ reduced, onSwap: headline.play, onDone: () => setTimeout(headline.play, 250) });
 // the full scroll refresh is heavy; let it wait until the intro has finished so it can't stall it
 addEventListener('load', () => introOver.then(() => ScrollTrigger.refresh()));
 

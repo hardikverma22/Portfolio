@@ -393,34 +393,22 @@ function chaiCart() {
   </g>`;
 }
 
-export function autoRickshaw() {
-  return `<defs><linearGradient id="g-hl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff4cc" stop-opacity=".9"/><stop offset=".45" stop-color="#fff4cc" stop-opacity=".35"/><stop offset="1" stop-color="#fff4cc" stop-opacity="0"/></linearGradient></defs><g class="auto"><g class="auto-bob">
-    <path d="M-62 -30 V-54 Q-62 -64 -50 -64 H20 Q38 -64 46 -44 L52 -30 Z" fill="#2a2638" ${S}/>
-    <path d="M-54 -32 V-54 H-8 V-32 Z" fill="#3d3852"/>
-    <g transform="translate(-30 -32)"><rect x="-8" y="-9" width="16" height="10" rx="3" fill="var(--rose)" ${s2(2)}/><circle cx="0" cy="-15" r="6" fill="#8a5a3a" ${s2(2)}/><path d="M-7 -17 q7 -9 14 0 Z" fill="#2a2638"/><path d="M5 -18 h6" stroke="#2a2638" stroke-width="2.4" stroke-linecap="round"/><path d="M-3 -14 h6" stroke="#2a2638" stroke-width="1.4" opacity=".7"/></g>
-    <path d="M4 -58 H22 Q34 -56 40 -34 H4 Z" fill="var(--glass)" ${s2(2.5)}/>
-    <g transform="translate(15 -32)"><rect x="-7" y="-8" width="14" height="9" rx="3" fill="#7cc4a8" ${s2(2)}/><rect x="-8" y="-21" width="16" height="13" rx="4" fill="#fff8e6" ${s2(2)}/><rect x="-5.5" y="-18" width="11" height="6" rx="2" fill="${INK}"/><circle cx="-2" cy="-15" r="1.2" fill="#7dffb0"/><circle cx="2.5" cy="-15" r="1.2" fill="#7dffb0"/><path d="M0 -21 v-4" ${s2(1.6)}/><circle cx="0" cy="-26" r="1.8" fill="var(--rose)"/><path d="M6 -4 l10 -2" ${s2(2.2)}/></g>
-    <path d="M-66 -32 H56 Q70 -30 70 -16 V-14 H-66 Z" fill="#ffd23f" ${S}/>
-    <path d="M-66 -14 H70 V-6 Q70 2 62 2 H-58 Q-66 2 -66 -6 Z" fill="#1f8a4c" ${S}/>
-    <circle cx="64" cy="-22" r="4" fill="#fff3c4" ${s2(2)}/>
-    <g transform="translate(-40 2)"><g class="wheel"><circle r="12" fill="#2a2638" ${S}/><circle r="4" fill="#bdb6cc"/></g></g>
-    <g transform="translate(48 2)"><g class="wheel"><circle r="11" fill="#2a2638" ${S}/><circle r="4" fill="#bdb6cc"/></g></g>
-    <ellipse class="hl hl-pool" cx="104" cy="2" rx="34" ry="5"/><path class="hl" d="M68 -22 L130 -33 Q136 -22 130 -9 Z"/>
-  </g></g>`;
-}
-function scooter() {
-  return `<g class="scooter"><g class="auto-bob">
-    <rect x="-42" y="-50" width="24" height="22" rx="3" fill="#ef8a3a" ${s2(2.5)}/><path d="M-42 -40 h24" stroke="#c96a22" stroke-width="2"/>
-    <path d="M-34 -8 Q-34 -26 -12 -26 H10 L26 -8 Z" fill="var(--skyc)" ${S}/>
-    <path d="M22 -10 L16 -44 h-8" fill="none" ${s2(3.5)}/>
-    <path d="M-14 -26 L-4 -46 L8 -44" fill="none" stroke="#4f7cf0" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M-14 -26 L-4 -46 L8 -44" fill="none" ${s2(2)}/>
-    <path d="M-12 -28 L4 -28 L10 -14" fill="none" stroke="#2a2638" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="-2" cy="-56" r="9" fill="var(--rose)" ${s2(2.5)}/><path d="M1 -60 h8 v6 h-6" fill="#2a2638"/>
-    <g transform="translate(-22 0)"><g class="wheel"><circle r="9" fill="#2a2638" ${s2(2.5)}/><circle r="3" fill="#bdb6cc"/></g></g>
-    <g transform="translate(22 0)"><g class="wheel"><circle r="9" fill="#2a2638" ${s2(2.5)}/><circle r="3" fill="#bdb6cc"/></g></g>
-    <circle cx="20" cy="-40" r="3.5" fill="#fff3c4" ${s2(1.5)}/><ellipse class="hl hl-pool" cx="72" cy="0" rx="28" ry="4"/><path class="hl" d="M22 -40 L78 -50 Q84 -38 78 -26 Z"/>
-    <circle class="tail" cx="-40" cy="-30" r="2.6" fill="#ff4d4d"/>
+// The agent car: a small self-driving car with a lidar puck scanning on the roof and the bot at the wheel.
+// It's the town's one vehicle and the tour's ride; the back seat is empty, for whoever hops in.
+export function agentCar() {
+  return `<defs><linearGradient id="g-hl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff4cc" stop-opacity=".9"/><stop offset=".45" stop-color="#fff4cc" stop-opacity=".35"/><stop offset="1" stop-color="#fff4cc" stop-opacity="0"/></linearGradient></defs><g class="auto car"><g class="auto-bob">
+    <path d="M-64 -8 V-24 Q-64 -32 -55 -33 L-40 -35 Q-30 -60 -6 -62 H14 Q34 -62 47 -37 L60 -34 Q70 -32 70 -21 V-8 Q70 2 61 2 H-55 Q-64 2 -64 -8 Z" fill="#4f7cf0" ${S}/>
+    <path d="M-32 -37 Q-25 -54 -8 -55 V-37 Z" fill="var(--glass)" ${s2(2.5)}/>
+    <path d="M-2 -55 H12 Q29 -55 39 -37 H-2 Z" fill="var(--glass)" ${s2(2.5)}/>
+    <g transform="translate(16 -37)"><rect x="-8" y="-15" width="16" height="13" rx="4" fill="#fff8e6" ${s2(2)}/><rect x="-5.5" y="-12" width="11" height="6" rx="2" fill="${INK}"/><circle cx="-2" cy="-9" r="1.2" fill="#7dffb0"/><circle cx="2" cy="-9" r="1.2" fill="#7dffb0"/></g>
+    <path d="M-60 -20 H66" stroke="#fff8e6" stroke-width="4" stroke-linecap="round"/>
+    <path d="M-5 -35 V-6 M-4 -24 h6" stroke="${INK}" stroke-width="1.8" stroke-linecap="round" opacity=".45"/>
+    <g transform="translate(4 -62)"><rect x="-11" y="-6" width="22" height="6" rx="3" fill="#2a2638" ${s2(2)}/><rect x="-6" y="-11" width="12" height="6" rx="3" fill="#2a2638" ${s2(2)}/><circle class="lidar" cx="0" cy="-8" r="1.8" fill="#7dffb0"/></g>
+    <rect x="-66" y="-29" width="6" height="7" rx="2" fill="var(--rose)" ${s2(1.8)}/>
+    <circle cx="64" cy="-24" r="4" fill="#fff3c4" ${s2(2)}/>
+    <g transform="translate(-38 2)"><g class="wheel"><circle r="12" fill="#2a2638" ${S}/><circle r="4.5" fill="#bdb6cc"/></g></g>
+    <g transform="translate(44 2)"><g class="wheel"><circle r="12" fill="#2a2638" ${S}/><circle r="4.5" fill="#bdb6cc"/></g></g>
+    <ellipse class="hl hl-pool" cx="104" cy="2" rx="34" ry="5"/><path class="hl" d="M68 -24 L130 -35 Q136 -24 130 -11 Z"/>
   </g></g>`;
 }
 const LAMPS = [372, 1180, 1588];
@@ -445,8 +433,7 @@ function street() {
   ${poles}
   ${chaiCart()}
   <g fill="var(--lane)" opacity=".8">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="1398" y="${727 + i * 14}" width="58" height="8" rx="1"/>`).join('')}</g>
-  <g transform="translate(0 764)">${scooter()}</g>
-  <g id="town-auto" transform="translate(0 810)">${autoRickshaw()}</g>
+  <g id="town-auto" transform="translate(0 810)">${agentCar()}</g>
   </g>
   <g class="lights">${cones}${Array.from({ length: 9 }, (_, i) => `<circle class="lit fairy" style="--wd:${(0.9 + i * 0.05).toFixed(2)}s;--fc:${['#ffd66b', '#ff8ab8', '#7dffb0'][i % 3]};--fd:${(i * 0.3).toFixed(2)}s" cx="${632 + i * 10}" cy="${650 + Math.sin(i / 8 * Math.PI) * 5}" r="2.6"/>`).join('')}</g>
 </svg>`;
