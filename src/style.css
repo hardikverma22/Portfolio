@@ -30,6 +30,7 @@
   --kraft: #e7d6b8;
   --card: #fffaf0;
   --rose: #ef6a5b;
+  --rose-ink: #b8352a; /* coral dark enough to read on the hero sky (3.5:1 at its brightest) */
   --sun: #ffc94a;
   --skyc: #6fb6ff;
   --mint: #7cc4a8;
@@ -112,11 +113,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---------------- top bar ---------------- */
 .top { position: fixed; z-index: 60; inset: 14px var(--gutter) auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: none; }
 .top > * { pointer-events: auto; }
-.logo { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: #fff8e6; font: 900 20px var(--f-display); text-decoration: none; border: 3px solid var(--ink); box-shadow: 3px 3px 0 color-mix(in srgb, var(--ink) 40%, transparent); transition: transform .4s var(--spring); }
+.logo { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: #fff8e6; font: 900 20px var(--f-display); text-decoration: none; border: 3px solid var(--ink); box-shadow: 0 6px 18px -10px rgba(33, 28, 51, .45); transition: transform .4s var(--spring); }
 .logo i { color: var(--sun); font-style: normal; }
 [data-mode="night"] .logo { border-color: #fff4dd; }
 @media (hover: hover) and (pointer: fine) { .logo:hover { transform: rotate(-10deg) scale(1.06); } }
-.nav { display: flex; gap: 2px; padding: 5px; border-radius: 999px; background: #fffaf0; border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.nav { display: flex; gap: 2px; padding: 5px; border-radius: 999px; background: #fffaf0; border: 2px solid var(--ink); box-shadow: 0 6px 18px -10px rgba(33, 28, 51, .45); }
 .nav { position: relative; }
 .nav a { position: relative; z-index: 1; white-space: nowrap; padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; text-decoration: none; color: var(--ink); transition: background .2s; }
 .nav a.on { background: var(--sun); }
@@ -127,17 +128,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .nav-glide.snap { transition: none; }
 .nav:has(.nav-glide) a.on { background: transparent; }
 .top-r { display: flex; align-items: center; gap: 10px; }
-.clock { font: 700 12px var(--f-mono); padding: 9px 12px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); white-space: nowrap; }
-@media (max-width: 900px) { .nav, .clock { display: none; } }
-@media (max-width: 1180px) { .clock { display: none; } }
-.cv { display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-weight: 700; font-size: 14px; text-decoration: none; transition: transform .2s var(--out), box-shadow .2s var(--out); }
+@media (max-width: 900px) { .nav { display: none; } }
+/* Bengaluru's time lives in a small tag under the day/night switch, shown on hover */
+.mode { position: relative; }
+.mode-t { position: absolute; top: calc(100% + 8px); right: 0; padding: 5px 9px; border-radius: 8px; background: var(--ink); color: #fff8e6; font: 700 12px var(--f-body); white-space: nowrap; pointer-events: none;
+  opacity: 0; translate: 0 -4px; scale: .96; transform-origin: 85% 0; transition: opacity .15s var(--out), translate .2s var(--out), scale .2s var(--out); }
+@media (hover: hover) and (pointer: fine) { .mode:hover .mode-t { opacity: 1; translate: 0 0; scale: 1; transition-delay: .3s; } }
+.mode:focus-visible .mode-t { opacity: 1; translate: 0 0; scale: 1; }
+[data-mode='night'] .mode-t { background: #fff4dd; color: var(--ink); }
+.cv { display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 2px solid var(--ink); box-shadow: 0 6px 18px -10px rgba(33, 28, 51, .45); font-weight: 700; font-size: 14px; text-decoration: none; transition: transform .2s var(--out), box-shadow .2s var(--out); }
 .cv svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
-.cv:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); transition-duration: .08s; }
-@media (hover: hover) and (pointer: fine) { .cv:hover { background: var(--sun); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); } }
+.cv:active { scale: .96; }
+@media (hover: hover) and (pointer: fine) { .cv:hover { background: var(--sun); } }
 
 /* the hero's one line of proof: a receipt for the headline, and a way straight into the Grid case */
 .proof { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 6px 12px 6px 6px; border-radius: 999px; background: color-mix(in srgb, #fffaf0 82%, transparent); border: 2px solid var(--ink); color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 600; max-width: 100%; width: fit-content; transition: scale .12s var(--out), background-color .2s; }
-.proof-k { flex: none; font: 700 11px var(--f-mono); text-transform: uppercase; letter-spacing: .04em; padding: 4px 8px; border-radius: 999px; background: var(--ink); color: #fff8e6; }
+.proof-k { flex: none; font: 700 11px var(--f-body); text-transform: uppercase; letter-spacing: .04em; padding: 4px 8px; border-radius: 999px; background: var(--ink); color: #fff8e6; }
 .proof-t s { text-decoration-thickness: 2px; text-decoration-color: var(--rose); opacity: .7; }
 .proof-t b { font-weight: 800; }
 .proof-go { flex: none; transition: transform .2s var(--out); }
@@ -319,9 +325,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes sip { 0%, 60%, 100% { rotate: 0deg; } 70%, 85% { rotate: -6deg; } }
 .auto { animation: drive 24s linear infinite; animation-delay: -9s; }
 @keyframes drive { from { transform: translateX(-1000px); } to { transform: translateX(2600px); } }
-.scooter { animation: scoot var(--scoot-dur, 17s) linear infinite; animation-delay: -5s; }
-@keyframes scoot { from { transform: translateX(var(--scoot-from, 2600px)); } to { transform: translateX(var(--scoot-to, -1000px)); } }
-.scooter .auto-bob { transform: scaleX(-1); }
 .bus { animation: bus 34s linear infinite; animation-delay: -6s; }
 @keyframes bus { 0% { transform: translateX(1820px); } 45%, 100% { transform: translateX(-220px); } }
 .auto-bob { animation: bob .28s ease-in-out infinite alternate; }
@@ -363,12 +366,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .hello-arrow { width: 52px; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; transform: translateY(10px); }
 .h1 { margin: 0; font: 900 clamp(40px, 5.3vw, 86px)/.98 var(--f-display); font-variation-settings: 'SOFT' 100, 'WONK' 1, 'opsz' 144; letter-spacing: -.03em; text-wrap: balance; }
 .fix { position: relative; display: inline-block; white-space: nowrap; }
-.fix s { text-decoration: none; opacity: .5; }
+.fix s { text-decoration: none; opacity: .45; }
 .fix-strike { position: absolute; left: -4%; top: 22%; width: 108%; height: 60%; overflow: visible; pointer-events: none; }
-.fix-strike path { fill: none; stroke: var(--rose); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 260; stroke-dashoffset: 260; }
-.fix-new { display: inline-block; color: var(--rose); font-size: 1.12em; line-height: .8; transform: rotate(-7deg) scale(.5); opacity: 0; transform-origin: 50% 80%; }
-.h1.done .fix-strike path { transition: stroke-dashoffset .5s var(--out); stroke-dashoffset: 0; }
-.h1.done .fix-new { transition: transform .6s var(--spring) .35s, opacity .2s var(--out) .35s; transform: rotate(-7deg) scale(1); opacity: 1; }
+.fix-strike path { fill: none; stroke: var(--rose-ink); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 260; stroke-dashoffset: 0; }
+/* the final state is the default; headline.js sets the start of the swap and plays it (see there) */
+.fix-new { display: inline-block; color: var(--rose-ink); font-size: 1.12em; line-height: .8; transform: rotate(-7deg); transform-origin: 0% 80%; paint-order: stroke fill; -webkit-text-stroke: .09em #fff8e6; }
+.fix-work { display: inline-block; }
+[data-mode='night'] .fix-new, [data-mode='dusk'] .fix-new { color: var(--rose); -webkit-text-stroke: 0; }
+[data-mode='night'] .fix-strike path { stroke: var(--rose); }
 .lede { font-size: clamp(15px, 1.3vw, 19px); max-width: 520px; margin: 16px 0 0; font-weight: 500; }
 .hero-cta { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
 .tap-hint { position: absolute; z-index: 4; left: 37%; top: 31%; margin: 0; white-space: nowrap; font-size: clamp(13px, 1.5cqw, 26px); color: var(--hero-ink, var(--ink)); display: flex; gap: 4px; pointer-events: none; rotate: -6deg; transition: opacity .5s; }
@@ -489,7 +494,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .jr-auto .wheel { animation: none; }
 .jr-auto:not(.moving) .auto-bob { animation-play-state: paused; }
 .jr-card { position: absolute; z-index: 4; left: var(--gutter); top: clamp(150px, 25vh, 230px); width: min(380px, calc(100vw - 2 * var(--gutter))); background: var(--card); color: var(--ink); border: 3px solid var(--ink); border-radius: 18px; padding: 18px 20px; box-shadow: 6px 6px 0 var(--ink); }
-.jc-k { display: flex; align-items: center; gap: 10px; font: 700 12px var(--f-mono); text-transform: uppercase; color: var(--rose); letter-spacing: .05em; }
+.jc-k { display: flex; align-items: center; gap: 10px; font: 700 12px var(--f-body); text-transform: uppercase; color: var(--rose); letter-spacing: .05em; }
 .jc-k em { margin-left: auto; font-style: normal; color: var(--ink-2); }
 .jc-mk { width: 24px; height: 24px; border-radius: 6px; box-shadow: 0 0 0 2px var(--ink); flex: none; }
 .jr-card h3 { font: 800 clamp(22px, 2.4vw, 30px)/1.05 var(--f-display); margin: 10px 0 6px; font-variation-settings: 'SOFT' 100; }
@@ -518,7 +523,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 /* ---------------- passport ---------------- */
-.passport { padding: clamp(70px, 9vw, 120px) 0; }
+.passport { padding: clamp(40px, 5vw, 70px) 0 clamp(70px, 9vw, 120px); }
+.passport .sec-h { margin-bottom: clamp(24px, 3vw, 40px); }
 .pp { display: grid; grid-template-columns: minmax(0, 760px) minmax(280px, 1fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
 .pp-book { display: grid; grid-template-columns: 1fr 1fr; background: #1f2a5c; padding: 12px; border-radius: 18px; border: 3px solid var(--ink); box-shadow: 10px 10px 0 var(--ink); position: relative; }
 .pp-book::after { content: ''; position: absolute; top: 12px; bottom: 12px; left: 50%; width: 22px; translate: -50% 0; background: linear-gradient(90deg, transparent, rgba(0, 0, 0, .18), transparent); pointer-events: none; }
@@ -1055,7 +1061,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .stamp.round .stamp-in { width: min(128px, 100%); padding: 12px; }
 .stamp.oval .stamp-in { width: min(164px, 100%); padding: 10px 14px; }
 .stamp.round .stamp-in, .stamp.oval .stamp-in { font-size: 8.5px; }
-.passport { padding-bottom: clamp(40px, 5vw, 70px); }
+
 .writing { padding-top: clamp(40px, 5vw, 70px); }
 .gz-mast p { text-wrap: balance; }
 .pc-mark { margin-right: -12px; }
@@ -1065,7 +1071,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .ico + .ico { margin-left: .12em; }
 
 /* ---------- day / night switch, after jameschugh.com ---------- */
-.mode { display: flex; align-items: center; gap: 8px; height: 46px; padding: 0 16px 0 12px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-weight: 800; font-size: 14px; transition: transform .45s var(--spring); }
+.mode { display: flex; align-items: center; gap: 8px; height: 46px; padding: 0 16px 0 12px; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 2px solid var(--ink); box-shadow: 0 6px 18px -10px rgba(33, 28, 51, .45); font-weight: 800; font-size: 14px; transition: transform .45s var(--spring); }
 @media (hover: hover) and (pointer: fine) { .mode:hover { transform: rotate(-4deg) scale(1.04); } }
 .mode-i { position: relative; width: 22px; height: 22px; overflow: hidden; display: block; }
 .mode-i svg { position: absolute; inset: 0; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .8s var(--spring), opacity .4s; }
@@ -1095,7 +1101,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .dev:focus-visible .dev-frame { transform: translateY(-8px) rotate(-1deg); box-shadow: 8px 14px 0 var(--ink); }
 @media (hover: hover) and (pointer: fine) { .dev:hover .dev-frame { transform: translateY(-8px) rotate(-1deg); box-shadow: 8px 14px 0 var(--ink); } }
 @media (hover: hover) and (pointer: fine) { .dev:nth-child(even):hover .dev-frame { transform: translateY(-8px) rotate(1deg); } }
-.dev-grid .dev-frame { background: #3f0e40; }
+.dev-grid .dev-frame { background: #2c2550; } /* the town's night sky, not a chat app's purple */
 .dev-delegate .dev-frame { background: #2b2f45; }
 .dev-tokens .dev-frame { background: #ffc94a; }
 .dev-mimo .dev-frame { background: #f4ecdf; }
@@ -1856,7 +1862,7 @@ html.ride-hover .ride svg { filter: drop-shadow(0 4px 6px rgba(33, 28, 51, .25))
 .kb-space .kb-cap b { font: 700 12px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; color: #5d566f; }
 .keyboard.wave .kb-key[data-i] .kb-cap { animation: kbwave .5s ease-out both; animation-delay: calc(var(--col) * 70ms + var(--ro, 0) * 0ms); }
 @keyframes kbwave { 40% { background: var(--c); translate: 0 3px; } }
-.kb-legend { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font: 700 12px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); }
+.kb-legend { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font: 700 12px var(--f-body); text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); }
 .kb-legend li { display: inline-flex; align-items: center; gap: 7px; cursor: default; }
 .kb-legend i { width: 12px; height: 12px; border-radius: 4px; background: var(--c); border: 2px solid var(--ink); }
 /* by night the board is backlit */
@@ -1921,7 +1927,7 @@ html.has-cur input, html.has-cur textarea, html.has-cur select, html.has-cur [co
 
 /* ---------------- music (music.js): the balloon radio in the hero sky and the top-bar button ---------------- */
 /* top-bar play/pause: it slides in the first time the music starts */
-.music { display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); cursor: pointer; opacity: 0; scale: .4; translate: 20px 0; transition: opacity .35s, scale .6s var(--spring), translate .6s var(--spring); }
+.music { display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border-radius: 999px; background: #fffaf0; color: var(--ink); border: 2px solid var(--ink); box-shadow: 0 6px 18px -10px rgba(33, 28, 51, .45); cursor: pointer; opacity: 0; scale: .4; translate: 20px 0; transition: opacity .35s, scale .6s var(--spring), translate .6s var(--spring); }
 .music[hidden] { display: none; }
 .music.in { opacity: 1; scale: 1; translate: 0 0; }
 @media (hover: hover) and (pointer: fine) { .music:hover { rotate: -6deg; } }
@@ -2084,7 +2090,7 @@ section.idle, section.idle *, section.idle *::before, section.idle *::after { an
 
 /* stack: "used at" filter (keyboard.js) */
 .kb-where { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 0; }
-.kb-where > span { font: 700 12px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); margin-right: 2px; }
+.kb-where > span { font: 700 12px var(--f-body); text-transform: uppercase; letter-spacing: .05em; color: var(--text-2); margin-right: 2px; }
 .kb-where button { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border-radius: 999px; border: 2px solid var(--ink); background: #fffaf0; color: var(--ink); font: 700 13px var(--f-body); cursor: pointer; box-shadow: 2px 2px 0 var(--ink); transition: background-color .15s var(--out), box-shadow .15s var(--out), translate .15s var(--out); }
 .kb-where button i { font: 700 11px var(--f-mono); font-style: normal; opacity: .7; }
 .kb-where .kw-mk { width: 16px; height: 16px; }
@@ -2095,3 +2101,19 @@ section.idle, section.idle *, section.idle *::before, section.idle *::after { an
 .kb-board.filtered .kb-key[data-i]:not(.used) .kb-cap { opacity: .28; filter: saturate(.2); }
 .kb-board.filtered .kb-key.used .kb-cap { background: color-mix(in srgb, var(--c) 75%, #fffaf0); }
 @media (prefers-reduced-motion: reduce) { .kb-board .kb-key[data-i] .kb-cap { transition: none; } }
+
+/* the agent car glides rather than rattles, and its lidar sweeps while it drives */
+.car .auto-bob { animation: carbob .6s ease-in-out infinite alternate; }
+@keyframes carbob { to { translate: 0 -1.2px; } }
+.car .lidar { animation: lidar 1.4s ease-in-out infinite alternate; }
+@keyframes lidar { from { translate: -6px 0; } to { translate: 6px 0; } }
+@media (prefers-reduced-motion: reduce) { .car .auto-bob, .car .lidar { animation: none; } }
+
+/* a handwritten word in a heading, like the hero's "real" (used sparingly) */
+.h2-hand { font-weight: 600; font-size: 1.08em; color: var(--rose-ink); display: inline-block; rotate: -3deg; letter-spacing: 0; }
+[data-mode='night'] .h2-hand { color: var(--rose); }
+/* shorter desktop screens: the proof line takes the place of the lede's second sentence, so the
+   buttons stay clear of the building tags */
+@media (min-width: 901px) and (max-height: 900px) { .lede-more { display: none; } .proof { margin-top: 12px; } .hero-cta { margin-top: 16px; } }
+/* wide, short laptops (1366×768 and the like): the town sits higher, so the headline gives a little */
+@media (min-width: 901px) and (min-aspect-ratio: 17/10) and (max-height: 820px) { .h1 { font-size: min(5.3vw, 8svh); } .hero-copy .lede { margin-top: 12px; } .hero-copy .proof { margin-top: 10px; } .hero-copy .hero-cta { margin-top: 12px; } }

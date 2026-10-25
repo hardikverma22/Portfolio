@@ -17,7 +17,7 @@ const CAP = 1200;  // the most we wait for the page to settle before drawing any
 const PEN = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28 L8 18 L22 4 L28 10 L14 24 Z" fill="var(--paper)" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M8 18 L14 24 M19 7 L25 13" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 28 L6 23 L9 26 Z" fill="currentColor"/></svg>';
 
 // Resolves once the intro is over (straight away when it doesn't run), so heavy page work can wait for it.
-export function runIntro({ reduced, onDone }) {
+export function runIntro({ reduced, onDone, onSwap }) {
   let done;
   const over = new Promise((ok) => { done = ok; });
   const root = document.documentElement;
@@ -88,7 +88,7 @@ export function runIntro({ reduced, onDone }) {
     tl.to(cover, { y: -lift, duration: 1.25, ease: 'power2.inOut', force3D: true }, 0)
       .to(inner, { y: lift, duration: 1.25, ease: 'power2.inOut', force3D: true }, 0)
       .from('.hero-copy > *:not(.hello):not(.h1)', { y: 36, autoAlpha: 0, stagger: 0.09, duration: 0.85, ease: 'power3.out' }, 0.55)
-      .call(() => h1?.classList.add('done'), null, 1.2)
+      .call(() => onSwap?.(), null, 1.05)
       .from('.pin, .town-dir, .balloon-lane', { autoAlpha: 0, y: 10, stagger: 0.06, duration: 0.5, clearProps: 'opacity,visibility,transform' }, 0.9)
       .from('#top-bar', { autoAlpha: 0, y: -16, duration: 0.6, ease: 'power3.out', clearProps: 'opacity,visibility,transform' }, 0.8)
       .to({}, { duration: 0.3 });

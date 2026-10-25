@@ -264,15 +264,16 @@ export const certs = [
   'IIT Techkriti, Cyber Forensics Workshop',
 ];
 
-// The stack as a periodic table. g = group key (see toolboxGroups).
+// The stack as a periodic table. g = group key (see toolboxGroups). Group colours come from the town:
+// sky, lavender, leaf, sun, light leaf, coral and kraft.
 export const toolboxGroups = [
-  ['ai', 'AI & agents', '#a78bfa'],
-  ['fe', 'Frontend & motion', '#7fb2ff'],
-  ['be', 'Backend & languages', '#6ad19a'],
-  ['data', 'Data', '#f5c451'],
-  ['cloud', 'Cloud & infra', '#5eead4'],
-  ['sec', 'Security & identity', '#ff8b99'],
-  ['ship', 'Shipping', '#c9b6ff'],
+  ['ai', 'AI & agents', '#6fb6ff'],
+  ['fe', 'Frontend & motion', '#b9a6f2'],
+  ['be', 'Backend & languages', '#7cc4a8'],
+  ['data', 'Data', '#ffc94a'],
+  ['cloud', 'Cloud & infra', '#a6dc8f'],
+  ['sec', 'Security & identity', '#ef6a5b'],
+  ['ship', 'Shipping', '#e7c49a'],
 ];
 export const toolbox = [
   ['ai', 'Lg', 'LangGraph', 'Supervisor graphs for incident triage and delegated access'],
