@@ -80,7 +80,7 @@ function initMedals(reduced) {
     h.classList.toggle('flipped', on);
     sound('clink');
     const it = items.find((x) => x.el === h);
-    if (it) { it.w += 2.2; run(); }
+    if (it) { it.w += 1.2; run(); }
   });
   if (reduced) return;
 
@@ -91,9 +91,10 @@ function initMedals(reduced) {
     const dt = Math.min(0.033, (now - (last || now)) / 1000); last = now;
     let energy = 0;
     for (const it of items) {
-      it.w += (-26 * Math.sin(it.th) - 1.7 * it.w) * dt;
+      it.w += (-26 * Math.sin(it.th) - 3.2 * it.w) * dt;
       it.th += it.w * dt;
-      it.th = Math.max(-1.1, Math.min(1.1, it.th));
+      // a medal on a ribbon swings a little and settles; it never swings into its neighbours
+      if (Math.abs(it.th) > 0.32) { it.th = Math.sign(it.th) * 0.32; it.w *= -0.3; }
       it.el.style.transform = `rotate(${it.th}rad)`;
       energy = Math.max(energy, Math.abs(it.th) + Math.abs(it.w));
     }
@@ -108,7 +109,7 @@ function initMedals(reduced) {
       for (const it of items) {
         const r = it.el.getBoundingClientRect();
         const crossed = (prev.x - r.left) * (e.clientX - r.left) <= 0 || (prev.x - r.right) * (e.clientX - r.right) <= 0 || (e.clientX > r.left && e.clientX < r.right);
-        if (crossed && e.clientY > r.top + r.height * 0.35 && e.clientY < r.bottom + 6) it.w += vx * 0.0016;
+        if (crossed && e.clientY > r.top + r.height * 0.35 && e.clientY < r.bottom + 6) it.w += vx * 0.0006;
       }
       run();
     }
@@ -118,6 +119,6 @@ function initMedals(reduced) {
   // when the rack scrolls in, the medals are hung up one by one and swing into place
   ScrollTrigger.create({
     trigger: list, start: 'top 80%', once: true,
-    onEnter: () => items.forEach((it, i) => setTimeout(() => { it.th = (i % 2 ? 1 : -1) * 0.5; it.w = 0; run(); }, i * 90)),
+    onEnter: () => items.forEach((it, i) => setTimeout(() => { it.th = (i % 2 ? 1 : -1) * 0.28; it.w = 0; run(); }, i * 90)),
   });
 }
