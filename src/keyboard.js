@@ -88,7 +88,8 @@ export function initKeyboard({ reduced }) {
       </div>
     </div>
   </div>
-  <ul class="kb-legend">${toolboxGroups.map(([k, n, c]) => `<li data-g="${k}" style="--c:${c}"><i></i>${esc(n)}</li>`).join('')}</ul>`;
+  <ul class="kb-legend">${toolboxGroups.map(([k, n, c]) => `<li data-g="${k}" style="--c:${c}"><i></i>${esc(n)}</li>`).join('')}</ul>
+  <div class="kb-where" role="group" aria-label="Show the tools I used at"><span>Used at</span>${Object.entries(WHERE).map(([k, [id, n]]) => `<button type="button" data-w="${k}" aria-pressed="false">${id ? mark(id, 'kw-mk') : ''}${esc(n)}<i>${tools.filter((t) => (toolboxMeta[t.code]?.[0] || 'p').includes(k)).length}</i></button>`).join('')}</div>`;
 
   const keys = [...root.querySelectorAll('.kb-key[data-i]')];
   const nameEl = $('.ks-name', root), noteEl = $('.ks-note', root), metaEl = $('.ks-meta', root);
@@ -143,6 +144,23 @@ export function initKeyboard({ reduced }) {
     keys.forEach((k) => k.classList.toggle('lit', !!g && tools[+k.dataset.i].g === g));
   });
   root.querySelector('.kb-legend').addEventListener('pointerleave', () => keys.forEach((k) => k.classList.remove('lit')));
+
+  // "used at": pick a company and the keys used there light up while the rest step back
+  const board = $('.kb-board', root);
+  root.querySelector('.kb-where').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-w]');
+    if (!b) return;
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    root.querySelectorAll('.kb-where button').forEach((x) => x.setAttribute('aria-pressed', String(x === b && on)));
+    const w = on ? b.dataset.w : null;
+    board.classList.toggle('filtered', !!w);
+    keys.forEach((k, j) => {
+      const hit = !!w && (toolboxMeta[tools[+k.dataset.i].code]?.[0] || 'p').includes(w);
+      k.classList.toggle('used', hit);
+      // a quick ripple across the board, left to right
+      k.style.setProperty('--wd', `${((+k.style.getPropertyValue('--col') || 0) * 18)}ms`);
+    });
+  });
 
   // typing on a real keyboard presses the same key here, while the keyboard is on screen
   let inView = false;

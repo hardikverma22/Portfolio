@@ -332,25 +332,11 @@ export function initGuide({ reduced }) {
   }
   resetEnding();
 
-  // the nav follows along
-  let current = -2;
-  const secs = ['story', 'lab', 'journey', 'passport', 'writing', 'words', 'after-hours', 'stack', 'contact'].map((id) => document.getElementById(id)).filter(Boolean);
-  function section() {
-    const yy = scrollY + innerHeight * 0.45;
-    let k = -1;
-    secs.forEach((el, i) => { if (el.getBoundingClientRect().top + scrollY <= yy) k = i; });
-    if (k === current) return;
-    current = k;
-    // sections without their own tab light up the one they belong to: the passport is part of the journey, the postcards sit with the writing
-    const tab = { passport: 'journey', words: 'writing' };
-    const id = k >= 0 ? tab[secs[k].id] || secs[k].id : '';
-    document.querySelectorAll('.nav a').forEach((l) => l.classList.toggle('on', l.getAttribute('href') === `#${id}`));
-  }
+  // the nav and the phone's stop bar follow along in progress.js
 
   document.addEventListener('town', (e) => { document.documentElement.classList.toggle('town-focus', !!e.detail.open); });
-  ScrollTrigger.create({ start: 0, end: 'max', onUpdate: section });
-  gsap.ticker.add(frame);
-  const reset = () => { build(); u = goal(); rot = heading(u) ?? 0; section(); };
+    gsap.ticker.add(frame);
+  const reset = () => { build(); u = goal(); rot = heading(u) ?? 0; };
   ScrollTrigger.addEventListener('refresh', reset);
   reset();
 }

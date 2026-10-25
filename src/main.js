@@ -10,6 +10,7 @@ import { initLab } from './lab.js';
 import { initGuide } from './guide.js';
 import { initStack } from './stack.js';
 import { initNudge } from './nudge.js';
+import { initProgress } from './progress.js';
 import { initCursor } from './cursor.js';
 import { runIntro } from './intro.js';
 import { initSteam } from './steam.js';
@@ -222,6 +223,8 @@ const CRUISE = 150; // scene units per second
 const edges = { start: -1000, end: 2600 };
 function measureEdges() {
   const r = scene.getBoundingClientRect(), k = 1600 / r.width;
+  // a tab that isn't laid out yet has a zero-width scene: keep the last good edges rather than NaN
+  if (!Number.isFinite(k) || k <= 0) return;
   edges.start = (0 - r.left) * k - 240;
   edges.end = (innerWidth - r.left) * k + 240;
   const sc = $('.scooter');
@@ -279,6 +282,119 @@ $('#tour-btn').addEventListener('click', () => {
   };
   if (scrollY > 40) { scrollToEl(document.body); setTimeout(go, 900); } else go();
 });
+// On upright screens the balloon drifts in the gap between the hero buttons and the building list when
+// there's room for it, and otherwise in the town's own sky (the CSS default), so it never covers either.
+{
+  const lane = $('.balloon-lane'), cta = $('.hero-cta'), dir = $('#town-dir');
+  const upright = matchMedia('(max-aspect-ratio: 1/1)');
+  const placeLane = () => {
+    lane.style.top = lane.style.height = '';
+    if (!upright.matches || !cta || !dir) return;
+    const s = stage.getBoundingClientRect(), gap = dir.getBoundingClientRect().top - cta.getBoundingClientRect().bottom;
+    if (gap >= 140) {
+      lane.style.top = `${cta.getBoundingClientRect().bottom - s.top + 10}px`;
+      lane.style.height = `${Math.max(0, gap - 124)}px`;
+    } else {
+      // just under the building list, in the sky above the rooftops
+      lane.style.top = `${dir.getBoundingClientRect().bottom - s.top + 10}px`;
+      lane.style.height = '4%';
+    }
+  };
+  placeLane();
+  addEventListener('resize', placeLane);
+  document.fonts?.ready.then(placeLane);
+}
+
+// Hail the auto: it's the tour's ride, so tapping it as it cruises past starts the tour. On hover the
+// bot at the wheel leans out with an offer.
+townAuto.insertAdjacentHTML('beforeend', `<g class="ta-say" aria-hidden="true"><rect x="-74" y="-118" width="148" height="34" rx="17"/><path d="M-6 -85 l6 9 l6 -9"/><text x="0" y="-95.5" text-anchor="middle">Hop in? Town tour →</text></g>`);
+// size the bubble to its words once the font is in, so the text never spills out of the pill
+const fitSay = () => {
+  const t = $('.ta-say text', townAuto), r = $('.ta-say rect', townAuto);
+  const w = t?.getComputedTextLength();
+  if (w) { r.setAttribute('width', (w + 36).toFixed(0)); r.setAttribute('x', (-(w + 36) / 2).toFixed(0)); }
+};
+fitSay();
+document.fonts?.ready.then(fitSay);
+townAuto.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (townOpen || touring) return;
+  $('#tour-btn').click();
+});
+
+// Pull the sun down behind the hills and night falls; pull the moon down and the day comes back.
+// A tap does the same, so it works without dragging too. The real switch stays in the top bar.
+{
+  const sky = $('.ly-sky svg');
+  const sun = $('.sun', sky), moon = $('.moon', sky);
+  const SET = 470; // how far the sun sinks at night, in sky units (see .sun in style.css)
+  for (const [body, toNight] of [[sun, true], [moon, false]]) {
+    if (!body) continue;
+    body.classList.add('sky-grab');
+    // an invisible disc to grab: the moon is a crescent, so its middle would otherwise be empty
+    body.insertAdjacentHTML('afterbegin', '<circle cx="1290" cy="170" r="84" fill="transparent"/>');
+    body.insertAdjacentHTML('beforeend', `<text class="sky-hint" x="1290" y="${toNight ? 280 : 270}" text-anchor="middle">${toNight ? 'pull me down for night ↓' : 'pull me down for day ↓'}</text>`);
+    let y0 = 0, dy = 0, k = 1, id = null;
+    const live = () => (toNight ? !wantNight : wantNight) && !townOpen;
+    body.addEventListener('pointerdown', (e) => {
+      if (!live() || e.button > 0) return;
+      e.preventDefault();
+      id = e.pointerId; y0 = e.clientY; dy = 0;
+      k = 900 / sky.getBoundingClientRect().height; // screen pixels to sky units
+      body.setPointerCapture(id);
+      body.classList.add('dragging');
+    });
+    body.addEventListener('pointermove', (e) => {
+      if (e.pointerId !== id) return;
+      // it follows the finger downwards; upwards it only gives a little, like it's hung on a string
+      const raw = (e.clientY - y0) * k;
+      dy = raw > 0 ? Math.min(raw, SET) : raw * 0.15;
+      body.style.transform = `translateY(${dy.toFixed(1)}px)`;
+    });
+    const end = (e) => {
+      if (e.pointerId !== id) return;
+      id = null;
+      body.classList.remove('dragging');
+      // a tap or a pull past a third of the way switches; a short pull springs back
+      if (Math.abs(dy) < 6 || dy > SET / 3) {
+        body.style.transform = '';
+        if (live()) toggleMode(modeBtn);
+      } else {
+        body.classList.add('springback');
+        body.style.transform = '';
+        setTimeout(() => body.classList.remove('springback'), 500);
+      }
+    };
+    body.addEventListener('pointerup', end);
+    body.addEventListener('pointercancel', end);
+  }
+}
+
+// The building tags lean a little toward the cursor when it comes near, so they read as things to press.
+if (fine && !reduced) {
+  const pins = $$('.pin', stage).map((el) => ({ el, tag: $('.pin-tag', el), x: 0, y: 0, tx: 0, ty: 0 }));
+  let px = -1e4, py = -1e4, running = false;
+  const R = 110, PULL = 7;
+  const step = () => {
+    let moving = false;
+    for (const p of pins) {
+      const r = p.el.getBoundingClientRect();
+      const dx = px - (r.left + r.width / 2), dy = py - (r.top + r.height / 2), d = Math.hypot(dx, dy);
+      const f = d < R && !townOpen ? (1 - d / R) * PULL / Math.max(d, 1) : 0;
+      p.tx = dx * f; p.ty = dy * f;
+      // a light spring: ease toward the target every frame
+      p.x += (p.tx - p.x) * 0.18; p.y += (p.ty - p.y) * 0.18;
+      if (Math.abs(p.tx - p.x) > 0.05 || Math.abs(p.ty - p.y) > 0.05 || p.tx || p.ty) moving = true;
+      p.tag.style.translate = `${p.x.toFixed(2)}px ${p.y.toFixed(2)}px`;
+    }
+    running = moving;
+    if (running) requestAnimationFrame(step);
+  };
+  const kick = () => { if (!running) { running = true; requestAnimationFrame(step); } };
+  stage.addEventListener('pointermove', (e) => { px = e.clientX; py = e.clientY; kick(); });
+  stage.addEventListener('pointerleave', () => { px = py = -1e4; kick(); });
+}
+
 // hovering a building lifts it together with its night lights, which live in a separate layer
 cam.addEventListener('pointerover', (e) => {
   const b = e.target.closest?.('.bld')?.dataset.id || null;
@@ -812,6 +928,10 @@ if (!reduced) {
   gsap.fromTo('.stamps a', { y: 40, rotation: 30, autoAlpha: 0 }, { y: 0, rotation: 0, autoAlpha: 1, stagger: 0.1, ease: 'back.out(2)', clearProps: 'transform,scale,rotate,translate', scrollTrigger: { trigger: '.stamps', start: 'top 90%' } });
 }
 
+/* ---------------- sections off screen stop their idle loops (steam, bobbing, blinking) ---------------- */
+const idleIO = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('idle', !e.isIntersecting)), { rootMargin: '25% 0px' });
+$$('main > section').forEach((s) => idleIO.observe(s));
+
 /* ---------------- intro: the town draws itself (see intro.js) ---------------- */
 const introOver = runIntro({ reduced, onDone: () => $('.h1').classList.add('done') });
 // the full scroll refresh is heavy; let it wait until the intro has finished so it can't stall it
@@ -820,6 +940,7 @@ addEventListener('load', () => introOver.then(() => ScrollTrigger.refresh()));
 /* ---------------- the guide: one bot that walks you through the whole page ---------------- */
 initGuide({ reduced });
 initNudge({ reduced, scrollToEl });
+initProgress({ reduced, scrollToEl });
 initCursor({ reduced });
 initSteam({ reduced });
 initHeroFx({ reduced });
