@@ -1,6 +1,6 @@
 // The town's sounds: one small kit, all synthesized (nothing to download), and all one family. Every
-// sound is built from the same voice, a soft FM-bell pluck, tuned to the same notes (a D major
-// pentatonic) and sent through the same short room reverb, so a tap and a chime sound like one place.
+// sound is built from the same voice, a soft FM-bell pluck, tuned to the music's notes (D minor /
+// F major) and sent through the same short room reverb, so a tap and a chime sound like one place.
 // Clean tones only, short and quiet; the one exception is the ticket's paper tearing, which has to
 // sound like paper.
 //
@@ -18,8 +18,8 @@ export const soundMode = () => mode;
 export function setSoundMode(m) { mode = m; }
 const enabled = () => mode !== 'off';
 
-// the notes everything is tuned to (D major pentatonic)
-const N = { D4: 293.7, A4: 440, D5: 587.3, E5: 659.3, Fs5: 740, A5: 880, B5: 987.8, D6: 1174.7, E6: 1318.5, Fs6: 1480, A6: 1760 };
+// the notes everything is tuned to: D minor / F major, the same notes as the day and night music
+const N = { D4: 293.7, A4: 440, D5: 587.3, E5: 659.3, F5: 698.5, A5: 880, C6: 1046.5, D6: 1174.7, E6: 1318.5, F6: 1396.9, A6: 1760 };
 
 function ctx() {
   if (!ac) {
@@ -108,7 +108,7 @@ const KIT = {
   // a press: a tiny, dry tock (a very short pluck that drops a little)
   tap(t) { pluck(t, pick([N.D6, N.E6]), { vol: 0.045, decay: 0.05, bright: 0.6, glide: 0.7, wet: 0.25 }); },
   // lighter still: tabs, chips, the ticket's fibres
-  tick(t) { pluck(t, pick([N.A6, N.Fs6]), { vol: 0.022, decay: 0.03, bright: 0.3, wet: 0.2 }); },
+  tick(t) { pluck(t, pick([N.A6, N.F6]), { vol: 0.022, decay: 0.03, bright: 0.3, wet: 0.2 }); },
   // a choice made: two notes up
   select(t) { pluck(t, N.A5, { vol: 0.05, decay: 0.25 }); pluck(t + 0.07, N.D6, { vol: 0.045, decay: 0.4 }); },
   // something opens or closes: the "air rise" glides up, and back down to close
@@ -117,7 +117,7 @@ const KIT = {
   // moving on to the next stop: a lighter air rise
   whoosh(t) { air(t, 330, 880, { vol: 0.04, attack: 0.08, decay: 0.3 }); },
   // a page or postcard turning: two light plucks
-  paper(t) { pluck(t, N.B5, { vol: 0.03, decay: 0.12, bright: 0.5 }); pluck(t + 0.035, N.E6, { vol: 0.025, decay: 0.16, bright: 0.5 }); },
+  paper(t) { pluck(t, N.C6, { vol: 0.03, decay: 0.12, bright: 0.5 }); pluck(t + 0.035, N.E6, { vol: 0.025, decay: 0.16, bright: 0.5 }); },
   // the ticket: a short rip as you pull it a little further, and the full rip when it gives way
   ripStep(t) { rip(t, 0.05 + Math.random() * 0.04, 0.22); },
   tear(t) { rip(t, 0.34, 0.42); rip(t + 0.05, 0.22, 0.2); },
@@ -126,7 +126,7 @@ const KIT = {
   // a medal's clink: a bell with an inharmonic shimmer
   clink(t) { pluck(t, N.A6, { vol: 0.04, decay: 0.6, bright: 2.2, ratio: 3.5 }); },
   // a keycap: a soft click with a little body
-  clack(t) { thump(t, { f: 260, to: 120, vol: 0.12, decay: 0.05 }); pluck(t, pick([N.A6, N.Fs6]), { vol: 0.015, decay: 0.02, bright: 0.2, wet: 0 }); },
+  clack(t) { thump(t, { f: 260, to: 120, vol: 0.12, decay: 0.05 }); pluck(t, pick([N.A6, N.F6]), { vol: 0.015, decay: 0.02, bright: 0.2, wet: 0 }); },
   pop(t) { pluck(t, N.D5, { vol: 0.05, decay: 0.18, glide: 1.6, bright: 0.5 }); },
   clunk(t) { thump(t, { f: 180, to: 70, vol: 0.2, decay: 0.18 }); },
   // the agent car's polite electric beep-beep: a clean sine with a soft triangle an octave-and-a-fifth up
