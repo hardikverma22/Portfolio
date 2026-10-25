@@ -444,7 +444,7 @@ const paintStory = (p) => {
 if (reduced) paintStory(1);
 else ScrollTrigger.create({ trigger: '#tell', start: 'top 78%', end: 'bottom 42%', scrub: true, onUpdate: (s) => paintStory(s.progress) });
 
-$('#stickies').innerHTML = `<figure class="pola"><img src="hero-color.webp" alt="Hardik Verma" width="768" height="1024" loading="lazy" /><figcaption class="hand">hi, that’s me</figcaption></figure>` + stickies.map((s) => `<div class="sticky sk-${s.c}" style="--r:${s.r}deg">${esc(s.t)}<small>${esc(s.s)}</small></div>`).join('');
+$('#stickies').innerHTML = `<figure class="pola"><img src="hero-color.webp" alt="Hardik Verma" width="768" height="1024" loading="lazy" /><figcaption class="hand">hi, that’s me</figcaption></figure>` + stickies.map((s) => `<div class="sticky sk-${s.c}" style="--r:${s.r}deg">${esc(s.t)}${s.s ? `<small>${esc(s.s)}</small>` : ''}</div>`).join('');
 if (!reduced) gsap.fromTo('.pola, .sticky', { y: -70, rotation: 14, autoAlpha: 0 }, { y: 0, rotation: 0, autoAlpha: 1, stagger: 0.18, duration: 0.9, ease: 'back.out(1.8)', clearProps: 'transform,rotate,translate,scale', scrollTrigger: { trigger: '#stickies', start: 'top 75%' } });
 
 gsap.to('.rd-bot', { x: () => $('.rd-road').offsetWidth - 64, ease: 'none', scrollTrigger: { trigger: '.road-div', start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });

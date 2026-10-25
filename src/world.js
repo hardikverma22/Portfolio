@@ -85,12 +85,10 @@ export const buildings = [
 ];
 
 // The scroll-scrubbed story. [[text|doodle|tone]] marks a phrase that gets a hand-drawn mark.
-export const story = 'I started at TCS {{tcs}} in 2016, building tools for H&M {{hm}} and spending time [[on-site in Stockholm|under|sun]] {{sweden}}. At Fidelity {{fidelity}} I became a tech lead and learned [[what a team really is|circle]]. Today at Walmart {{walmart}} I keep [[millions of customers signed in|hilite|sky]] and build agents that do [[the parts of the job nobody wants|strike]]. On the side, one of my projects [[got acquired.|under|rose]]';
+export const story = 'I started at TCS {{tcs}} in 2016, building tools for H&M {{hm}} and spending time [[on-site in Stockholm|under|sun]] {{sweden}}. At Fidelity {{fidelity}} I became a tech lead and learned [[what a team really is|circle]]. Today at Walmart {{walmart}} I keep [[millions of customers signed in|hilite|sky]] and build agents that do [[the parts of the job nobody wants|hilite|sun]]. On the side, one of my projects [[got acquired.|under|rose]]';
 
 export const stickies = [
-  { t: 'Staff Software Engineer, since Sep 2026.', s: 'promotion', c: 'sun', r: -5 },
-  { t: 'Ten years shipping. Two of them teaching agents.', s: 'since 2016', c: 'rose', r: 4 },
-  { t: 'Finalist, Walmart’s global tech hackathon.', s: 'token-OS · 2026', c: 'sky', r: -2 },
+  { t: 'Staff Software Engineer, Walmart', c: 'sun', r: -5 },
 ];
 
 // Highway milestones for the journey. km is just how far along the road the stone sits.
