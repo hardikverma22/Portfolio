@@ -45,6 +45,8 @@
   <script>
     // the intro (src/intro.js) starts from a blank sheet: set it up before the first paint, on every load
     try { if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro', 'intro-hide', 'sketch'); } catch (e) {}
+    // every visit starts at the entry ticket and the top of the town (a link to a section still goes there)
+    try { if (!location.hash) { history.scrollRestoration = 'manual'; scrollTo(0, 0); } } catch (e) {}
   </script>
 </head>
 <body>
