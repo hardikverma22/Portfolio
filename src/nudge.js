@@ -52,6 +52,8 @@ export function initNudge({ reduced, scrollToEl }) {
     if (busy()) return;
     // on an upright phone the hero's own building directory is the guide
     if (k === 0 && matchMedia('(max-width: 600px) and (max-aspect-ratio: 1/1)').matches) return;
+    // below the hero on a phone, the stop bar (progress.js) already says what's next; only the chai stop still asks
+    if (k > 0 && !last && matchMedia('(max-width: 900px)').matches) return;
     if (last ? parkAsks >= 3 || stall?.classList.contains('serving') : seen.has(k)) return;
     if (scrollY + innerHeight >= root.scrollHeight - 40) return;
     const text = last ? 'A little more and your chai’s ready' : NEXT[k][1];

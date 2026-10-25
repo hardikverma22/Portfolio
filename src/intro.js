@@ -7,7 +7,8 @@
 // paper "eraser" sliding off it; the colour comes in as the whole cover wipes away. Only transforms
 // animate, so nothing in the town repaints during the motion.
 //
-// On every load, reloads included; never for reduced motion.
+// On every load, reloads included; never for reduced motion. Any click, key or scroll while it plays
+// fast-forwards it: it should welcome people, never hold them up.
 // index.html adds .intro, .intro-hide and .sketch to <html> before the first paint.
 import { gsap } from 'gsap';
 
@@ -20,7 +21,12 @@ export function runIntro({ reduced, onDone }) {
   let done;
   const over = new Promise((ok) => { done = ok; });
   const root = document.documentElement;
+  let active = null, hurry = false, hurried;
+  const skipped = new Promise((ok) => { hurried = ok; });
+  const SKIP = ['pointerdown', 'keydown', 'wheel', 'touchmove'];
+  const skip = () => { hurry = true; active?.timeScale(5); hurried(); };
   const finish = () => {
+    SKIP.forEach((ev) => removeEventListener(ev, skip));
     root.classList.remove('intro', 'intro-hide', 'sketch', 'wash', 'cover-ready');
     onDone?.();
     done();
@@ -40,6 +46,7 @@ export function runIntro({ reduced, onDone }) {
   cover.querySelector('.intro-sketch').append(copy);
   stage.append(cover);
   root.classList.add('cover-ready');
+  SKIP.forEach((ev) => addEventListener(ev, skip, { passive: true }));
 
   const inner = cover.querySelector('.intro-cover-in'), eraser = cover.querySelector('.intro-eraser');
   const hello = document.querySelector('.hello'), h1 = document.querySelector('.h1');
@@ -56,11 +63,13 @@ export function runIntro({ reduced, onDone }) {
     requestAnimationFrame(f);
   });
   const cap = new Promise((ok) => setTimeout(ok, CAP));
-  Promise.race([Promise.all([loaded, fonts]).then(steady), cap]).then(draw);
+  let drawn = false;
+  Promise.race([Promise.all([loaded, fonts]).then(steady), cap, skipped]).then(() => { if (!drawn) { drawn = true; draw(); } });
 
   function draw() {
     // the pen sweeps across; the hello line writes on and the headline inks in alongside it
-    const tl = gsap.timeline({ onComplete: () => { root.classList.add('wash'); const w = prepWash(); requestAnimationFrame(() => requestAnimationFrame(() => w.play())); } });
+    const tl = active = gsap.timeline({ onComplete: () => { root.classList.add('wash'); const w = active = prepWash(); if (hurry) w.timeScale(5); requestAnimationFrame(() => requestAnimationFrame(() => w.play())); } });
+    if (hurry) tl.timeScale(5);
     tl.fromTo(eraser, { xPercent: 0 }, { xPercent: 100, duration: SWEEP, ease: 'power1.inOut', force3D: true }, 0);
     if (hello) tl.fromTo(hello, { clipPath: 'inset(-20% 100% -40% 0)' }, { clipPath: 'inset(-20% 0% -40% 0)', duration: 1.1, ease: 'power1.inOut' }, 0);
     if (h1) tl.fromTo(h1, { clipPath: 'inset(-20% 100% -30% 0)' }, { clipPath: 'inset(-20% 0% -30% 0)', duration: 1.4, ease: 'power1.inOut' }, 0.3);
