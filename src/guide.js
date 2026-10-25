@@ -5,6 +5,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { buddySvg } from './town.js';
+import { sfx } from './sfx.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -205,39 +206,9 @@ export function initGuide({ reduced }) {
   /* ---------- micro-interactions ---------- */
   const shown = () => getComputedStyle(ride).opacity > 0.5 && ride.getBoundingClientRect().bottom > 0;
 
-  // 1. Tap the auto and it honks: a soft beep-beep, a bounce, a bubble, the bot's eyes light up
-  // Autos in India honk with a rubber bulb horn: a soft, nasal "paam paam". This builds one in Web Audio:
-  // a reedy tone that squeezes up in pitch and sags as the bulb empties, through a horn-shaped filter.
-  let audio = null;
-  function bulbHorn() {
-    try {
-      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
-      if (audio.state === 'suspended') audio.resume();
-      const t0 = audio.currentTime + 0.02;
-      const out = audio.createGain();
-      out.gain.value = 0.9;
-      const body = audio.createBiquadFilter(); body.type = 'bandpass'; body.frequency.value = 1100; body.Q.value = 1.6;
-      const soft = audio.createBiquadFilter(); soft.type = 'lowpass'; soft.frequency.value = 2600;
-      body.connect(soft).connect(out).connect(audio.destination);
-      [[0, 392, 0.15], [0.21, 440, 0.19]].forEach(([dt, f, len]) => {
-        const t = t0 + dt, g = audio.createGain();
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.11, t + 0.025);
-        g.gain.setValueAtTime(0.11, t + len * 0.55);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + len);
-        g.connect(body);
-        for (const [type, mul, lvl] of [['sawtooth', 1, 1], ['square', 2.01, 0.35]]) {
-          const o = audio.createOscillator(), og = audio.createGain();
-          o.type = type; og.gain.value = lvl;
-          o.frequency.setValueAtTime(f * mul * 0.9, t);
-          o.frequency.exponentialRampToValueAtTime(f * mul * 1.04, t + 0.04);
-          o.frequency.exponentialRampToValueAtTime(f * mul * 0.95, t + len);
-          o.connect(og).connect(g);
-          o.start(t); o.stop(t + len + 0.02);
-        }
-      });
-    } catch (_) { /* no sound is fine */ }
-  }
+  // 1. Tap the car and it honks: a soft beep-beep, a bounce, a bubble, the bot's eyes light up
+  // the agent car's beep comes from the shared kit (sfx.js), so it follows the visitor's sound choice
+  const bulbHorn = () => sfx('beep');
   // tap: the auto squashes and springs back, its antenna wobbles, the bot grins and the horn goes paam paam
   let honking = false;
   function honk() {

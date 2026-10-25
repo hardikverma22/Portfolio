@@ -7,6 +7,7 @@
 import { gsap } from 'gsap';
 import { toolbox, toolboxGroups, toolboxMeta } from './data.js';
 import { mark } from './marks.js';
+import { sfx } from './sfx.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -26,25 +27,8 @@ const SHORT = {
 };
 const WHERE = { w: ['walmart', 'Walmart'], f: ['fidelity', 'Fidelity'], t: ['tcs', 'TCS'], p: [null, 'Personal'] };
 
-let ac = null;
-function clack() {
-  try {
-    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
-    if (ac.state === 'suspended') ac.resume();
-    const t = ac.currentTime;
-    // a short, low-passed noise burst with a little thock underneath
-    const n = ac.createBuffer(1, ac.sampleRate * 0.04, ac.sampleRate), d = n.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) ** 4;
-    const src = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
-    f.type = 'bandpass'; f.frequency.value = 1800 + Math.random() * 600; f.Q.value = 1.2;
-    src.buffer = n; src.connect(f); f.connect(g); g.connect(ac.destination);
-    g.gain.setValueAtTime(0.28, t); src.start(t);
-    const o = ac.createOscillator(), og = ac.createGain();
-    o.type = 'sine'; o.frequency.setValueAtTime(190, t); o.frequency.exponentialRampToValueAtTime(90, t + 0.05);
-    og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.18, t + 0.004); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
-    o.connect(og); og.connect(ac.destination); o.start(t); o.stop(t + 0.08);
-  } catch { /* no audio, no problem */ }
-}
+// the keycap sound lives in the shared kit (sfx.js), so the visitor's sound choice applies to it
+const clack = () => sfx('clack');
 
 export function initKeyboard({ reduced }) {
   const root = $('#keyboard');

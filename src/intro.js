@@ -1,4 +1,4 @@
-// The intro: the town draws itself. On a blank sheet, a pen sweeps left to right and the town's line
+// The intro: the town draws itself. On a blank sheet, a sweep runs left to right and the town's line
 // drawing appears behind it while "hey, I'm Hardik Verma" writes itself on and the headline inks in as
 // outlines. When the page is ready, the colour rises from the street as the sheet wipes away upward,
 // and the headline, buttons and tags arrive. The loader becomes the hero.
@@ -12,12 +12,11 @@
 // index.html adds .intro, .intro-hide and .sketch to <html> before the first paint.
 import { gsap } from 'gsap';
 
-const SWEEP = 1.7; // seconds for the pen to cross the town
+const SWEEP = 1.7; // seconds for the sweep to cross the town
 const CAP = 1200;  // the most we wait for the page to settle before drawing anyway (ms)
-const PEN = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28 L8 18 L22 4 L28 10 L14 24 Z" fill="var(--paper)" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M8 18 L14 24 M19 7 L25 13" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 28 L6 23 L9 26 Z" fill="currentColor"/></svg>';
 
 // Resolves once the intro is over (straight away when it doesn't run), so heavy page work can wait for it.
-export function runIntro({ reduced, onDone, onSwap }) {
+export function runIntro({ reduced, onDone, onSwap, gate = Promise.resolve() }) {
   let done;
   const over = new Promise((ok) => { done = ok; });
   const root = document.documentElement;
@@ -38,7 +37,7 @@ export function runIntro({ reduced, onDone, onSwap }) {
   const cover = document.createElement('div');
   cover.className = 'intro-cover';
   cover.setAttribute('aria-hidden', 'true');
-  cover.innerHTML = '<div class="intro-cover-in"><div class="intro-sketch"></div><div class="intro-eraser"><span class="intro-pen">' + PEN + '</span></div></div>';
+  cover.innerHTML = '<div class="intro-cover-in"><div class="intro-sketch"></div><div class="intro-eraser"></div></div>';
   const copy = scene.cloneNode(true);
   copy.removeAttribute('id');
   copy.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
@@ -46,7 +45,6 @@ export function runIntro({ reduced, onDone, onSwap }) {
   cover.querySelector('.intro-sketch').append(copy);
   stage.append(cover);
   root.classList.add('cover-ready');
-  SKIP.forEach((ev) => addEventListener(ev, skip, { passive: true }));
 
   const inner = cover.querySelector('.intro-cover-in'), eraser = cover.querySelector('.intro-eraser');
   const hello = document.querySelector('.hello'), h1 = document.querySelector('.h1');
@@ -62,12 +60,17 @@ export function runIntro({ reduced, onDone, onSwap }) {
     const f = (t) => { calm = t - last < 24 ? calm + 1 : 0; last = t; if (calm >= 4) ok(); else requestAnimationFrame(f); };
     requestAnimationFrame(f);
   });
-  const cap = new Promise((ok) => setTimeout(ok, CAP));
+  // on a first visit the entry ticket (prefs.js) comes first: the drawing waits until it's torn, and only
+  // then can a click fast-forward the drawing (choosing on the ticket mustn't skip it)
   let drawn = false;
-  Promise.race([Promise.all([loaded, fonts]).then(steady), cap, skipped]).then(() => { if (!drawn) { drawn = true; draw(); } });
+  gate.then(() => {
+    SKIP.forEach((ev) => addEventListener(ev, skip, { passive: true }));
+    const cap = new Promise((ok) => setTimeout(ok, CAP));
+    Promise.race([Promise.all([loaded, fonts]).then(steady), cap, skipped]).then(() => { if (!drawn) { drawn = true; draw(); } });
+  });
 
   function draw() {
-    // the pen sweeps across; the hello line writes on and the headline inks in alongside it
+    // the sweep crosses; the hello line writes on and the headline inks in alongside it
     const tl = active = gsap.timeline({ onComplete: () => { root.classList.add('wash'); const w = active = prepWash(); if (hurry) w.timeScale(5); requestAnimationFrame(() => requestAnimationFrame(() => w.play())); } });
     if (hurry) tl.timeScale(5);
     tl.fromTo(eraser, { xPercent: 0 }, { xPercent: 100, duration: SWEEP, ease: 'power1.inOut', force3D: true }, 0);
@@ -76,7 +79,7 @@ export function runIntro({ reduced, onDone, onSwap }) {
     tl.to({}, { duration: 0.2 });
   }
 
-  // the wipe is set up during the pause after the pen (the style work lands there, unseen), then played
+  // the wipe is set up during the pause after the sweep (the style work lands there, unseen), then played
   function prepWash() {
     if (import.meta.env.DEV) window.__washAt = performance.now() - window.__introT0;
     // the cover moves up while its contents move down by the same amount, so it wipes away from the

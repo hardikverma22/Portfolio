@@ -1,6 +1,7 @@
 // Inside the Agent Lab: a workbench of four live devices, and a case page for each one.
 // Case pages have their own URL (#/lab/<id>), so they can be shared and the browser's Back button closes them.
 import { gsap } from 'gsap';
+import { sfx } from './sfx.js';
 import { gridFlowHTML, mountGridFlow } from './gridflow.js';
 import { delegateFlowHTML, mountDelegateFlow } from './delegateflow.js';
 import { lab } from './labdata.js';
@@ -322,6 +323,7 @@ export function initLab({ reduced, lenis }) {
   function open(id, push = true) {
     const wasOpen = !sheet.hidden && !hiding;
     if (!render(id)) return;
+    sfx(wasOpen ? 'paper' : 'open');
     gsap.killTweensOf(sheet); hiding = false;
     const url = `#/lab/${id}`;
     if (push) { history.pushState({ lab: id }, '', url); pushed = true; } else if (location.hash !== url) history.replaceState({ lab: id }, '', url);
@@ -342,6 +344,7 @@ export function initLab({ reduced, lenis }) {
     if (reduced) done(); else gsap.to(sheet, { yPercent: 100, duration: 0.55, ease: 'power3.in', onComplete: done });
   }
   function close() {
+    sfx('close');
     if (pushed) { pushed = false; history.back(); } else { history.replaceState(null, '', `${location.pathname}#lab`); hide(); }
   }
   const fromHash = () => (location.hash.match(/^#\/lab\/(\w+)/) || [])[1];

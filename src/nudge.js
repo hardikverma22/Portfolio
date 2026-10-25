@@ -1,7 +1,8 @@
 // If a visitor stops scrolling partway down, the bot peeks in from the left or right edge of the screen
 // (picked at random each time), on top of everything, and says what's next (and that there's chai at the end). It always appears in the same
 // place, so it never lands on top of the content in a surprising spot.
-// It waits a few seconds first, ducks back out the moment they scroll, and tapping it rides them on.
+// It waits until the page has fully arrived and the visitor has stopped scrolling for ten seconds, ducks
+// back out the moment they scroll, and tapping it rides them on.
 // Once per section (the last stop can ask up to three times, until the auto parks and the chaiwala
 // arrives), and never over an open building or case study.
 import { buddySvg } from './town.js';
@@ -16,7 +17,7 @@ const NEXT = [
   ['after-hours', 'Next: my stack, as a keyboard'],
   ['stack', 'Last stop: chai’s on me'],
 ];
-const IDLE = 6000;
+const IDLE = 10000; // only after ten quiet seconds: a gentle hint, never a pest
 
 export function initNudge({ reduced, scrollToEl }) {
   const ids = [...NEXT.map(([id]) => id), 'contact'];
@@ -40,7 +41,7 @@ export function initNudge({ reduced, scrollToEl }) {
     secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= mid) k = i; });
     return k;
   }
-  const busy = () => root.classList.contains('case-open') || root.classList.contains('town-focus') || document.hidden;
+  const busy = () => root.classList.contains('case-open') || root.classList.contains('town-focus') || root.classList.contains('intro') || root.classList.contains('tix-open') || document.hidden;
 
   // the stop that matters most: on the last section, the chaiwala only turns up once the auto parks,
   // so someone who stops just short would never meet them. Here the bot can ask more than once.
@@ -69,7 +70,13 @@ export function initNudge({ reduced, scrollToEl }) {
     timer = setTimeout(show, IDLE);
   }
   for (const ev of ['scroll', 'wheel', 'touchmove', 'keydown']) addEventListener(ev, poke, { passive: true });
-  poke();
+  // nothing until the page has fully arrived: the ticket torn and the town drawn and coloured in
+  const arrived = () => !root.classList.contains('intro') && !root.classList.contains('tix-open');
+  if (arrived()) poke();
+  else {
+    const mo = new MutationObserver(() => { if (arrived()) { mo.disconnect(); poke(); } });
+    mo.observe(root, { attributes: true, attributeFilter: ['class'] });
+  }
 
   el.addEventListener('click', () => {
     hide();

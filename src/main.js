@@ -13,11 +13,13 @@ import { initNudge } from './nudge.js';
 import { initProgress } from './progress.js';
 import { initCursor } from './cursor.js';
 import { runIntro } from './intro.js';
+import { sfx, initSfx } from './sfx.js';
 import { initHeadline } from './headline.js';
 import { initSteam } from './steam.js';
 import { initHeroFx } from './herofx.js';
 import { initBalloonFx } from './balloonfx.js';
-import { initMusic, toggle as toggleMusic, onMusic, musicLevel, musicBands, wasOn } from './music.js';
+import { initMusic, play as playMusic, pause as pauseMusic, isPlaying, onMusic, musicLevel, musicBands } from './music.js';
+import { initPrefs, SOUND_LABEL, SOUND_ICON } from './prefs.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,10 +64,16 @@ let modeTimer = 0;
 const modeBtns = [modeBtn, $('#case-mode')].filter(Boolean);
 const syncMode = () => modeBtns.forEach((b) => b.setAttribute('aria-label', wantNight ? 'Switch to day' : 'Switch to night'));
 syncMode();
+// set day or night straight away, with no dusk on the way (the entry ticket's live preview)
+function setNight(n) {
+  wantNight = n; syncMode(); clearTimeout(modeTimer);
+  if (n) root.dataset.mode = 'night'; else delete root.dataset.mode;
+}
 // the case-study sheet has its own switch; night spreads from whichever one was pressed
 modeBtns.forEach((b) => b.addEventListener('click', () => toggleMode(b)));
 function toggleMode(from) {
   wantNight = !wantNight;
+  sfx(wantNight ? 'dusk' : 'dawn');
   syncMode();
   try { localStorage.setItem('hv-mode', wantNight ? 'night' : 'day'); } catch (_) {}
   clearTimeout(modeTimer);
@@ -157,6 +165,7 @@ let townOpen = null;
 function openBuilding(id) {
   const b = buildings.find((x) => x.id === id);
   if (!b) return;
+  if (scrollY <= 40) sfx(townOpen ? 'whoosh' : 'open');
   if (scrollY > 40) { scrollToEl(document.body); setTimeout(() => openBuilding(id), 900); return; }
   const next = buildings.find((x) => x.id === TOUR[TOUR.indexOf(id) + 1]);
   townOpen = id;
@@ -197,6 +206,7 @@ function openBuilding(id) {
 }
 function closeBuilding() {
   if (!townOpen) return;
+  sfx('close');
   touring = false;
   if (townAuto.classList.contains('touring')) releaseAuto();
   const was = townOpen;
@@ -314,6 +324,7 @@ document.fonts?.ready.then(fitSay);
 townAuto.addEventListener('click', (e) => {
   e.stopPropagation();
   if (townOpen || touring) return;
+  sfx('beep');
   $('#tour-btn').click();
 });
 
@@ -599,15 +610,17 @@ function showMarket(id) {
 }
 $('#pp-book').insertAdjacentHTML('beforeend', `<div class="pp-cover" id="pp-cover" aria-hidden="true"><div class="ppc-in"><span class="ppc-k">Identity platform</span><span class="ppc-emb">${mark('walmart', 'ppc-mk')}</span><b>PASSPORT</b><span class="ppc-n">Hardik Verma</span></div></div>`);
 $('#pp-right').insertAdjacentHTML('beforeend', '<p class="pp-tip hand">tap a stamp ↑</p>');
+$('#pp-right').addEventListener('pointerdown', (e) => { if (e.target.closest('.stamp')) sfx('stamp'); });
 $('#pp-right').addEventListener('click', (e) => { const s = e.target.closest('.stamp'); if (s) showMarket(s.dataset.id); });
 showMarket('cl');
 if (!reduced) {
   const stl = gsap.timeline({ scrollTrigger: { trigger: '#pp-book', start: 'top 70%' } });
-  stl.to('#pp-cover', { rotateY: -178, duration: 1.1, ease: 'power3.inOut' })
+  stl.call(() => sfx('paper'), null, 0.1).to('#pp-cover', { rotateY: -178, duration: 1.1, ease: 'power3.inOut' }, 0)
     .set('#pp-cover', { autoAlpha: 0 });
   $$('.stamp').forEach((s, i) => {
     stl.fromTo(s, { scale: 2.6, autoAlpha: 0, rotation: 25 }, { scale: 1, autoAlpha: 1, rotation: 0, duration: 0.32, ease: 'power4.in', clearProps: 'transform,scale,rotate,translate' }, 1 + i * 0.26)
-      .fromTo('#pp-book', { x: 0, y: 0 }, { x: () => gsap.utils.random(-4, 4), y: 3, duration: 0.06, yoyo: true, repeat: 1 }, 1 + i * 0.26 + 0.3);
+      .fromTo('#pp-book', { x: 0, y: 0 }, { x: () => gsap.utils.random(-4, 4), y: 3, duration: 0.06, yoyo: true, repeat: 1 }, 1 + i * 0.26 + 0.3)
+      .call(() => sfx('stamp'), null, 1 + i * 0.26 + 0.3);
   });
   stl.from('.pp-tip', { autoAlpha: 0, y: 10, duration: 0.4 });
 }
@@ -669,6 +682,7 @@ function layoutCards(animate) {
   $('#pc-count').textContent = `${cur + 1} / ${n}`;
 }
 function flip(dir) {
+  sfx('paper');
   const n = cards.length;
   cards.forEach((c) => { c.classList.remove('reading'); $('.pc-full', c).hidden = true; });
   const top = cards[cur];
@@ -741,7 +755,7 @@ initStack({ reduced });
    CONTACT: the chai stall at the end of the road, and the town at night
    ===================================================================== */
 $('#mail').addEventListener('click', async () => {
-  try { await navigator.clipboard.writeText(identity.email); $('#mail-s').textContent = 'copied!'; }
+  try { await navigator.clipboard.writeText(identity.email); $('#mail-s').textContent = 'copied!'; sfx('select'); }
   catch (_) { location.href = `mailto:${identity.email}`; }
   setTimeout(() => { $('#mail-s').textContent = 'copy'; }, 1800);
 });
@@ -835,6 +849,7 @@ function serve() {
 vendor.addEventListener('click', () => { if (pouring) return; vendor.classList.add('greet'); clearTimeout(vendor._g); vendor._g = setTimeout(() => vendor.classList.remove('greet'), 1800); });
 document.addEventListener('stall', (e) => { if (e.detail === 'arrive') serve(); else if (e.detail === 'leave' && !pouring) stall.classList.remove('serving'); });
 function pour(glass) {
+  sfx('pop');
   const i = +glass.dataset.i, g = GLASSES[i];
   // opens once the glass is full and has had a moment to steam
   const open = () => {
@@ -930,7 +945,13 @@ $$('main > section').forEach((s) => idleIO.observe(s));
 /* ---------------- intro: the town draws itself (see intro.js) ---------------- */
 // the swap in the headline (headline.js) plays as the colour washes in, or straight away without the intro
 const headline = initHeadline({ reduced });
-const introOver = runIntro({ reduced, onSwap: headline.play, onDone: () => setTimeout(headline.play, 250) });
+// on a first visit the entry ticket (prefs.js) asks about sound and light before the town is drawn
+initMusic();
+initSfx();
+const prefs = initPrefs({ reduced, lenis, setNight, music: { play: playMusic, pause: pauseMusic } });
+// the page holds still until the town has been drawn and coloured in
+if (root.classList.contains('intro')) lenis?.stop();
+const introOver = runIntro({ reduced, gate: prefs.gate, onSwap: headline.play, onDone: () => { lenis?.start(); setTimeout(headline.play, 250); } });
 // the full scroll refresh is heavy; let it wait until the intro has finished so it can't stall it
 addEventListener('load', () => introOver.then(() => ScrollTrigger.refresh()));
 
@@ -944,7 +965,6 @@ initHeroFx({ reduced });
 
 /* ---------------- music: a hot-air balloon with a radio drifts through the hero sky; tap it to play,
    and a play/pause button slides into the top bar ---------------- */
-initMusic();
 {
   const btn = $('#music'), balloon = $('#balloon');
   // the balloon: striped envelope, burner, wicker basket with the radio in it, and a banner on a line
@@ -972,18 +992,30 @@ initMusic();
       <g class="bl-pause" fill="#211c33"><rect x="-4.4" y="68.2" width="3.2" height="9.6" rx="1.2"/><rect x="1.2" y="68.2" width="3.2" height="9.6" rx="1.2"/></g></g>
   </svg></span>`;
   initBalloonFx({ reduced });
-  const reveal = () => { if (!btn.hidden) return; btn.hidden = false; requestAnimationFrame(() => btn.classList.add('in')); };
-  // the button is there from the start if they've listened before (nothing plays until they ask), or on
-  // short upright screens, where there's no room in the sky for the balloon
-  if (wasOn() || matchMedia('(max-aspect-ratio: 1/1) and (max-height: 740px)').matches) reveal();
+  // the top-bar button is the sound switch: music & sounds → just sounds → silent. A small tag says
+  // which, for a moment, whenever it changes.
+  btn.hidden = false; requestAnimationFrame(() => btn.classList.add('in'));
+  btn.insertAdjacentHTML('beforeend', `<span class="mu-ic" aria-hidden="true"></span><span class="mu-t" aria-hidden="true"></span>`);
+  const ic = $('.mu-ic', btn), tag = $('.mu-t', btn);
+  let tagTimer = 0;
+  const showSound = (s, announce) => {
+    btn.setAttribute('aria-label', `Sound: ${SOUND_LABEL[s]}. Change`);
+    ic.innerHTML = s === 'all' ? '' : SOUND_ICON[s];
+    tag.textContent = SOUND_LABEL[s];
+    if (announce) { btn.classList.add('say'); clearTimeout(tagTimer); tagTimer = setTimeout(() => btn.classList.remove('say'), 1400); }
+  };
+  showSound(prefs.sound);
+  btn.addEventListener('click', () => showSound(prefs.cycle(), true));
   onMusic((on) => {
     root.classList.toggle('music-on', on);
-    for (const b of [btn, balloon]) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Pause music' : 'Play music'); }
+    balloon.setAttribute('aria-pressed', String(on)); balloon.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
     if (on) balloon.classList.add('played');
-    if (on) reveal();
+    showSound(prefs.sound);
   });
-  btn.addEventListener('click', toggleMusic);
-  balloon.addEventListener('click', toggleMusic);
+  balloon.addEventListener('click', () => { prefs.setMusic(!isPlaying()); showSound(prefs.sound, true); });
+  // the footer keeps a way back to the ticket
+  $('.foot').insertAdjacentHTML('beforeend', '<button class="foot-ticket" type="button">Change your ticket</button>');
+  $('.foot-ticket').addEventListener('click', () => prefs.reopen());
   // the radio's speaker, the balloon's glow and the button's bars move with the sound
   const bands = [0, 0, 0], bars = [...btn.querySelectorAll('.mu-bars i')];
   const beat = () => {

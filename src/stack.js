@@ -4,6 +4,7 @@
 // Tap one and the coin flips to its back, engraved with what it was for.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { sfx } from './sfx.js';
 import { awards } from './data.js';
 import { initKeyboard } from './keyboard.js';
 import { mark } from './marks.js';
@@ -12,42 +13,8 @@ const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const INK = '#211c33';
 
-// a tiny synth for the machine's sounds; created on the first gesture
-let ac = null;
-function sound(kind) {
-  try {
-    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
-    if (ac.state === 'suspended') ac.resume();
-    const t = ac.currentTime, g = ac.createGain();
-    g.connect(ac.destination);
-    if (kind === 'tick') {
-      // a ratchet click: a very short band-passed noise burst
-      const n = ac.createBuffer(1, ac.sampleRate * 0.03, ac.sampleRate), d = n.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) ** 3;
-      const src = ac.createBufferSource(), bp = ac.createBiquadFilter();
-      bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = 2;
-      src.buffer = n; src.connect(bp); bp.connect(g);
-      g.gain.setValueAtTime(0.35, t);
-      src.start(t);
-    } else if (kind === 'pop') {
-      const o = ac.createOscillator();
-      o.type = 'sine'; o.frequency.setValueAtTime(380, t); o.frequency.exponentialRampToValueAtTime(900, t + 0.08);
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
-      o.connect(g); o.start(t); o.stop(t + 0.16);
-    } else if (kind === 'clunk') {
-      const o = ac.createOscillator();
-      o.type = 'triangle'; o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(70, t + 0.12);
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.4, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
-      o.connect(g); o.start(t); o.stop(t + 0.22);
-    } else if (kind === 'clink') {
-      for (const [f, v] of [[2100, 0.12], [3150, 0.06]]) {
-        const o = ac.createOscillator(), gg = ac.createGain();
-        o.frequency.value = f; gg.gain.setValueAtTime(v, t); gg.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
-        o.connect(gg); gg.connect(ac.destination); o.start(t); o.stop(t + 0.36);
-      }
-    }
-  } catch { /* no audio, no problem */ }
-}
+// the medals' sounds live in the shared kit (sfx.js), so the visitor's sound choice applies to them
+const sound = (kind) => sfx(kind);
 
 export function initStack({ reduced }) {
   initKeyboard({ reduced });
