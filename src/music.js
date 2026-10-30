@@ -12,8 +12,8 @@
 //   with it (musicLevel()).
 
 const TRACKS = {
-  day: { src: 'audio/day-morning.mp3', skip: 0 },
-  night: { src: 'audio/sustained-chord.mp3', skip: 0.6 },
+  day: { src: ['audio/day-morning.mp3', 'audio/day-morning.m4a'], skip: 0 },
+  night: { src: ['audio/sustained-chord.mp3', 'audio/sustained-chord.m4a'], skip: 0.6 },
 };
 const XF = 4;         // seconds each pass crossfades into the next
 const SWITCH = 3.2;   // seconds for day ↔ night
@@ -53,7 +53,19 @@ function setup() {
 function load(name) {
   const t = T[name];
   if (t.buf) return Promise.resolve(t.buf);
-  t.loading ??= fetch(TRACKS[name].src).then((r) => r.arrayBuffer()).then((a) => new Promise((ok, no) => ac.decodeAudioData(a, ok, no))).then((b) => (t.buf = b));
+  // some corporate proxies reset audio/mpeg downloads, so each track also ships as AAC and the next format is tried
+  const get = async (srcs) => {
+    for (const src of srcs) {
+      try {
+        const r = await fetch(src);
+        if (!r.ok) continue;
+        const data = await r.arrayBuffer();
+        return await new Promise((ok, no) => ac.decodeAudioData(data, ok, no));
+      } catch { /* try the next one */ }
+    }
+    throw new Error('no playable audio');
+  };
+  t.loading ??= get(TRACKS[name].src).then((b) => (t.buf = b)).catch((e) => { t.loading = null; throw e; });
   return t.loading;
 }
 
