@@ -197,6 +197,7 @@ export const commits = [
 
 export const projects = [
   { name: 'Travel Planner AI', alias: 'Rutugo', what: 'A full travel-planning SaaS. Made me a Convex Champion, then Rutugo acquired it.', stack: 'Next.js · Convex · Clerk · Razorpay · AI', code: 'https://github.com/hardikverma22/travel-planner-ai', live: 'https://rutugo.com/', hue: 18 },
+  { name: 'sandfit', what: 'Reads what your coding agent already did and writes sandbox rules that allow exactly that, nothing more.', stack: 'TypeScript · Node.js CLI · Claude Code · Codex', code: 'https://github.com/hardikverma22/sandfit', hue: 205 },
   { name: 'Voice Notes', what: 'Private voice notes. Whisper transcribes on your own device, even offline; nothing leaves the browser.', stack: 'React · Whisper on WebGPU · TipTap · PWA', code: 'https://github.com/hardikverma22/voice-notes', live: 'https://hardikverma22.github.io/voice-notes/', hue: 175 },
   { name: 'Shoe Forge', what: 'Design a sneaker part by part in real-time 3D, then share the whole pair as a link.', stack: 'Next.js · React Three Fiber · three.js · Zustand', code: 'https://github.com/hardikverma22/shoe-forge', live: 'https://shoe-forge.vercel.app/', hue: 140 },
   { name: 'CodeMe', what: 'An HTML, CSS and JS playground with share links, forks and fixes it checks before suggesting.', stack: 'React · CodeMirror 6 · Convex · Tailwind', code: 'https://github.com/hardikverma22/code-me', live: 'https://codeme-play.vercel.app/', hue: 48 },
