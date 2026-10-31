@@ -77,7 +77,7 @@ export const buildings = [
       'I built **Travel Planner AI** just to learn **Convex**, and became one of their early **Convex Champions**. It grew into a full SaaS: itineraries, weather, budgets, packing lists, expenses, collaborators and payments.',
       '**Rutugo acquired it**, then brought me in to build more, like finding the cheapest flight and hotel links. I learned and earned from the same project, and that still drives me.',
     ],
-    stats: [['Acquired', 'by Rutugo'], ['Convex', 'Champion'], ['5', 'side projects live']],
+    stats: [['Acquired', 'by Rutugo'], ['Convex', 'Champion'], ['6', 'side projects live']],
     notes: ['Next.js · Convex · Clerk · Razorpay', 'AI tool calling'],
     links: [['rutugo.com', 'https://rutugo.com/'], ['Convex Champions', 'https://www.convex.dev/champions']],
     go: ['See the side projects', '#after-hours'],
